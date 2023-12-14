@@ -1,7 +1,5 @@
-* 入门
-    * [快速开始](zh-cn/quickstart.md)
-    * [多页文档](zh-cn/more-pages.md)
-    * [定制导航栏](zh-cn/custom-navbar.md)
-    * [封面](zh-cn/cover.md)
-    * [:us:, :uk:](/)
-    * [:cn:](/zh-cn/)
+* 历史
+    * [历史1](zh-cn/quickstart.md)
+    * [历史2](zh-cn/quickstart.md)
+      * [全部都是啊哈哈](/ss)
+    
