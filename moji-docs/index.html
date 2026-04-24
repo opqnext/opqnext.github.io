@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MojiDocs — 离线优先的 Markdown Wiki 桌面应用</title>
+<meta name="description" content="MojiDocs 是一款跨平台 Markdown Wiki 桌面应用。Git 管文件，SQLite 管索引，数据完全属于你。">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#fafafa;--bg2:#ffffff;--bg3:#f3f4f6;--bg4:#e5e7eb;
+  --text:#111827;--text2:#4b5563;--text3:#9ca3af;
+  --accent:#10b981;--accent2:#059669;--accent-soft:rgba(16,185,129,.08);
+  --blue:#3b82f6;--purple:#8b5cf6;--amber:#f59e0b;--rose:#f43f5e;--cyan:#06b6d4;
+  --border:#e5e7eb;--border2:#d1d5db;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);
+  line-height:1.6;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+.icon{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.icon svg{width:100%;height:100%}
+
+/* nav */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  background:rgba(250,250,250,.85);border-bottom:1px solid var(--border);
+}
+nav .inner{
+  max-width:1100px;margin:0 auto;padding:0 24px;
+  height:60px;display:flex;align-items:center;justify-content:space-between;
+}
+.nav-left{display:flex;align-items:center;gap:20px}
+.back-link{
+  font-size:13px;color:var(--text3);transition:color .2s;
+  display:flex;align-items:center;gap:4px;
+}
+.back-link:hover{color:var(--text)}
+.back-link svg{width:14px;height:14px}
+.nav-divider{width:1px;height:20px;background:var(--border)}
+.logo{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:700;letter-spacing:-0.3px}
+.logo img{width:28px;height:28px;border-radius:7px}
+.nav-right{display:flex;align-items:center;gap:20px}
+.nav-link{font-size:13px;color:var(--text2);transition:color .2s}
+.nav-link:hover{color:var(--text)}
+.nav-cta{
+  padding:7px 18px;border-radius:8px;font-size:13px;font-weight:500;
+  background:var(--accent);color:#fff;transition:all .2s;
+  display:flex;align-items:center;gap:6px;
+}
+.nav-cta:hover{background:var(--accent2)}
+.nav-cta svg{width:14px;height:14px}
+
+/* hero */
+.hero{
+  padding:140px 24px 80px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);
+  width:1000px;height:600px;
+  background:radial-gradient(ellipse,rgba(16,185,129,.04) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-badges{display:flex;gap:10px;justify-content:center;margin-bottom:28px;flex-wrap:wrap}
+.badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 14px;border-radius:999px;font-size:12px;font-weight:500;
+}
+.badge svg{width:12px;height:12px}
+.badge-ver{background:var(--accent-soft);color:var(--accent2)}
+.badge-plat{background:var(--bg3);border:1px solid var(--border);color:var(--text3)}
+.hero h1{
+  font-size:clamp(36px,5.5vw,58px);font-weight:800;
+  letter-spacing:-2px;line-height:1.1;max-width:720px;margin:0 auto;
+}
+.hero h1 .em{
+  background:linear-gradient(135deg,var(--accent2),var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero .sub{
+  font-size:18px;color:var(--text2);margin-top:18px;
+  max-width:560px;margin-left:auto;margin-right:auto;line-height:1.7;
+}
+.hero .sub strong{color:var(--text);font-weight:600}
+.hero-actions{display:flex;gap:12px;justify-content:center;margin-top:32px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:12px 26px;border-radius:10px;font-size:14px;font-weight:500;
+  transition:all .2s;cursor:pointer;border:none;
+}
+.btn svg{width:16px;height:16px}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 14px rgba(16,185,129,.25)}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(16,185,129,.3)}
+.btn-ghost{background:var(--bg2);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border2);box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.btn-sm{padding:8px 18px;font-size:13px;border-radius:8px}
+
+/* app preview */
+.app-preview{
+  margin:56px auto 0;max-width:860px;width:100%;
+  border-radius:14px;overflow:hidden;
+  border:1px solid var(--border);background:var(--bg2);
+  box-shadow:0 16px 48px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.03);
+}
+.win-bar{
+  height:38px;background:var(--bg3);
+  display:flex;align-items:center;padding:0 14px;gap:7px;
+  border-bottom:1px solid var(--border);
+}
+.win-dot{width:10px;height:10px;border-radius:50%}
+.win-dot.r{background:#fca5a5}.win-dot.y{background:#fde68a}.win-dot.g{background:#86efac}
+.win-title{flex:1;text-align:center;font-size:12px;color:var(--text3);font-weight:500}
+.win-body{display:grid;grid-template-columns:220px 1fr;min-height:380px}
+.win-side{
+  background:var(--bg);border-right:1px solid var(--border);
+  padding:14px;font-size:12px;
+}
+.ws-head{
+  display:flex;align-items:center;gap:8px;
+  padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:10px;
+}
+.ws-head img{width:22px;height:22px;border-radius:5px}
+.ws-head span{font-weight:600;font-size:13px}
+.ws-search{
+  width:100%;padding:7px 10px 7px 28px;border-radius:7px;
+  background:var(--bg3);border:1px solid transparent;
+  font-size:11px;color:var(--text3);margin-bottom:10px;
+  position:relative;
+}
+.ws-search-wrap{position:relative;margin-bottom:10px}
+.ws-search-wrap svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);width:12px;height:12px;color:var(--text3)}
+.ws-section{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);font-weight:600;margin:10px 0 4px;padding:0 6px}
+.ws-item{
+  padding:6px 10px;border-radius:7px;margin-bottom:1px;
+  color:var(--text2);display:flex;align-items:center;gap:7px;
+  font-size:12px;cursor:default;
+}
+.ws-item svg{width:14px;height:14px;opacity:.5}
+.ws-item:hover{background:var(--bg3)}
+.ws-item.active{background:var(--accent-soft);color:var(--accent2)}
+.ws-item.active svg{opacity:1;color:var(--accent)}
+.ws-item.indent{padding-left:28px}
+.win-content{padding:28px 32px;overflow:hidden}
+.wc-crumb{font-size:11px;color:var(--text3);margin-bottom:14px;display:flex;align-items:center;gap:4px}
+.wc-crumb span{color:var(--accent2)}
+.wc-crumb svg{width:10px;height:10px;opacity:.4}
+.wc-title{font-size:24px;font-weight:700;margin-bottom:4px;letter-spacing:-0.5px}
+.wc-meta{font-size:11px;color:var(--text3);margin-bottom:16px;display:flex;align-items:center;gap:14px}
+.wc-tag{
+  display:inline-block;padding:1px 7px;border-radius:4px;
+  background:var(--accent-soft);color:var(--accent2);font-size:10px;font-weight:500;
+}
+.wc-body{font-size:13px;color:var(--text2);line-height:1.8}
+.wc-body h4{font-size:14px;color:var(--text);font-weight:600;margin:14px 0 6px}
+.wc-body code{
+  background:var(--bg3);padding:1px 5px;border-radius:3px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent2);
+}
+.wc-code{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:12px 14px;margin:10px 0;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--text2);line-height:1.7;
+}
+
+/* section common */
+.section{padding:100px 0}
+.section-header{text-align:center;margin-bottom:56px}
+.section-label{
+  font-size:12px;font-weight:600;text-transform:uppercase;
+  letter-spacing:2px;color:var(--accent2);margin-bottom:10px;
+}
+.section-title{
+  font-size:clamp(26px,3.5vw,36px);font-weight:700;letter-spacing:-1px;margin-bottom:12px;
+}
+.section-desc{font-size:15px;color:var(--text2);max-width:480px;margin:0 auto;line-height:1.6}
+
+/* features */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.f-card{
+  padding:24px;border-radius:14px;
+  background:var(--bg2);border:1px solid var(--border);
+  transition:all .25s;position:relative;overflow:hidden;
+}
+.f-card::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--card-c,var(--accent));opacity:0;transition:opacity .25s;
+}
+.f-card:hover{border-color:var(--card-c,var(--accent));transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.04)}
+.f-card:hover::after{opacity:1}
+.f-icon{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:14px;background:var(--icon-bg,var(--accent-soft));
+}
+.f-icon svg{width:20px;height:20px;color:var(--icon-c,var(--accent2))}
+.f-card h3{font-size:15px;font-weight:600;margin-bottom:6px}
+.f-card p{font-size:13px;color:var(--text2);line-height:1.6}
+
+/* architecture */
+.arch-box{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:16px;padding:40px;margin-top:40px;
+  box-shadow:0 1px 3px rgba(0,0,0,.03);
+}
+.arch-flow{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
+.arch-node{
+  padding:16px 24px;border-radius:12px;text-align:center;min-width:120px;
+}
+.arch-node.primary{background:var(--accent-soft);border:1px solid rgba(16,185,129,.2)}
+.arch-node.secondary{background:var(--bg3);border:1px solid var(--border)}
+.arch-node .n-icon{width:28px;height:28px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center}
+.arch-node .n-icon svg{width:28px;height:28px}
+.arch-node.primary .n-icon svg{color:var(--accent2)}
+.arch-node.secondary .n-icon svg{color:var(--text3)}
+.arch-node .n-label{font-size:14px;font-weight:600;margin-bottom:2px}
+.arch-node .n-desc{font-size:11px;color:var(--text3)}
+.arch-arrow{display:flex;align-items:center}
+.arch-arrow svg{width:24px;height:24px;color:var(--border2)}
+
+/* tech */
+.tech-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:40px}
+.t-item{
+  padding:16px;border-radius:10px;background:var(--bg2);
+  border:1px solid var(--border);text-align:center;transition:all .2s;
+}
+.t-item:hover{border-color:var(--accent);box-shadow:0 2px 8px rgba(0,0,0,.03)}
+.t-name{font-size:14px;font-weight:600;margin-bottom:2px}
+.t-ver{font-size:11px;color:var(--accent2);margin-bottom:4px}
+.t-desc{font-size:11px;color:var(--text3)}
+
+/* download */
+.dl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px;max-width:680px;margin-left:auto;margin-right:auto}
+.dl-card{
+  padding:28px 20px;border-radius:14px;text-align:center;
+  background:var(--bg2);border:1px solid var(--border);transition:all .25s;
+}
+.dl-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.04)}
+.dl-icon{width:36px;height:36px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center}
+.dl-icon svg{width:36px;height:36px;color:var(--text2)}
+.dl-plat{font-size:16px;font-weight:600;margin-bottom:3px}
+.dl-fmt{font-size:11px;color:var(--text3);margin-bottom:14px}
+.dl-card .btn{width:100%;justify-content:center}
+
+/* cta */
+.cta-box{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:20px;padding:56px 40px;text-align:center;
+  box-shadow:0 1px 3px rgba(0,0,0,.03);
+}
+.cta-box h2{font-size:clamp(22px,3.5vw,32px);font-weight:700;letter-spacing:-0.5px;margin-bottom:10px}
+.cta-box p{font-size:15px;color:var(--text2);margin-bottom:28px;max-width:460px;margin-left:auto;margin-right:auto}
+.cta-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* footer */
+footer{border-top:1px solid var(--border);padding:36px 0}
+.footer-inner{display:flex;align-items:center;justify-content:space-between}
+.footer-brand{display:flex;align-items:center;gap:7px;font-size:15px;font-weight:600}
+.footer-brand img{width:20px;height:20px;border-radius:5px}
+.footer-links{display:flex;gap:20px}
+.footer-links a{font-size:12px;color:var(--text3);transition:color .2s}
+.footer-links a:hover{color:var(--accent)}
+.footer-copy{font-size:11px;color:var(--text3)}
+
+@media(max-width:768px){
+  .features-grid{grid-template-columns:1fr}
+  .tech-grid{grid-template-columns:repeat(2,1fr)}
+  .dl-grid{grid-template-columns:1fr}
+  .win-body{grid-template-columns:1fr}
+  .win-side{display:none}
+  .cta-box{padding:36px 20px}
+  .footer-inner{flex-direction:column;gap:12px;text-align:center}
+  .arch-arrow{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <div class="nav-left">
+      <a href="../" class="back-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        opqnext
+      </a>
+      <div class="nav-divider"></div>
+      <a href="./" class="logo">
+        <img src="icon.png" alt="MojiDocs">
+        MojiDocs
+      </a>
+    </div>
+    <div class="nav-right">
+      <a href="#features" class="nav-link">功能</a>
+      <a href="#architecture" class="nav-link">架构</a>
+      <a href="#download" class="nav-link">下载</a>
+      <a href="https://github.com/opqnext/moji-docs" target="_blank" class="nav-link">GitHub</a>
+      <a href="https://github.com/opqnext/moji-docs/releases/latest" target="_blank" class="nav-cta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        下载 v1.0.3
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-ver">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      v1.0.3
+    </span>
+    <span class="badge badge-plat">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      macOS · Windows · Linux
+    </span>
+  </div>
+  <h1>离线优先的<br>Markdown <span class="em">Wiki</span></h1>
+  <p class="sub">
+    <strong>Git 管文件，SQLite 管索引</strong>，数据完全属于你。<br>
+    你的笔记以标准 .md 格式存储，兼容 Obsidian、Hugo、Hexo。
+  </p>
+  <div class="hero-actions">
+    <a href="https://github.com/opqnext/moji-docs/releases/latest" target="_blank" class="btn btn-primary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      免费下载
+    </a>
+    <a href="https://github.com/opqnext/moji-docs" target="_blank" class="btn btn-ghost">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+      查看源码
+    </a>
+  </div>
+
+  <!-- App Preview -->
+  <div class="app-preview">
+    <div class="win-bar">
+      <div class="win-dot r"></div>
+      <div class="win-dot y"></div>
+      <div class="win-dot g"></div>
+      <div class="win-title">MojiDocs</div>
+      <div style="width:50px"></div>
+    </div>
+    <div class="win-body">
+      <div class="win-side">
+        <div class="ws-head">
+          <img src="icon.png" alt="">
+          <span>MojiDocs</span>
+        </div>
+        <div class="ws-search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="ws-search" value="搜索文档..." readonly>
+        </div>
+        <div class="ws-section">置顶</div>
+        <div class="ws-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="3"/><path d="M5 10l7 7 7-7"/></svg>
+          Quick Notes
+        </div>
+        <div class="ws-section">文档</div>
+        <div class="ws-item active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Getting Started
+        </div>
+        <div class="ws-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+          Projects
+        </div>
+        <div class="ws-item indent">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Architecture
+        </div>
+        <div class="ws-item indent">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          API Design
+        </div>
+        <div class="ws-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+          Daily
+        </div>
+      </div>
+      <div class="win-content">
+        <div class="wc-crumb">
+          首页
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <span>Getting Started</span>
+        </div>
+        <div class="wc-title">Getting Started</div>
+        <div class="wc-meta">
+          <span>2025-04-24</span>
+          <span><span class="wc-tag">guide</span> <span class="wc-tag">setup</span></span>
+        </div>
+        <div class="wc-body">
+          <p>Welcome to <code>MojiDocs</code>! 你的笔记以标准 Markdown 文件存储在本地。</p>
+          <h4>快速开始</h4>
+          <p>创建你的第一篇文档：</p>
+          <div class="wc-code">
+---<br>
+title: My First Note<br>
+tags: [hello, world]<br>
+---<br>
+<br>
+# Hello MojiDocs<br>
+This is your **first** document.
+          </div>
+          <p>所有文档自动通过 <code>Git</code> 同步，支持版本历史回滚。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="section container" id="features">
+  <div class="section-header">
+    <div class="section-label">Features</div>
+    <div class="section-title">功能特性</div>
+    <p class="section-desc">专为知识管理设计，每个功能都经过精心打磨。</p>
+  </div>
+
+  <div class="features-grid">
+    <div class="f-card" style="--card-c:var(--accent);--icon-bg:rgba(16,185,129,.07);--icon-c:var(--accent2)">
+      <div class="f-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </div>
+      <h3>Markdown 编辑器</h3>
+      <p>双栏实时预览，工具栏快捷操作，图片粘贴上传，14 种渲染主题随心切换。</p>
+    </div>
+    <div class="f-card" style="--card-c:var(--blue);--icon-bg:rgba(59,130,246,.07);--icon-c:var(--blue)">
+      <div class="f-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <h3>全文搜索</h3>
+      <p>SQLite FTS5 全文搜索引擎，关键字高亮 + 上下文片段，毫秒级响应。</p>
+    </div>
+    <div class="f-card" style="--card-c:var(--purple);--icon-bg:rgba(139,92,246,.07);--icon-c:var(--purple)">
+      <div class="f-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 009 9"/></svg>
+      </div>
+      <h3>Git 同步</h3>
+      <p>定时 pull + push，自动冲突检测与双版本保留，支持私有仓库 PAT 认证。</p>
+    </div>
+    <div class="f-card" style="--card-c:var(--amber);--icon-bg:rgba(245,158,11,.07);--icon-c:var(--amber)">
+      <div class="f-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+      </div>
+      <h3>树形文档管理</h3>
+      <p>文件夹即目录，最近 / 全部 / 树形三种视图，拖拽导入，文档移动和置顶。</p>
+    </div>
+    <div class="f-card" style="--card-c:var(--rose);--icon-bg:rgba(244,63,94,.07);--icon-c:var(--rose)">
+      <div class="f-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <h3>版本历史</h3>
+      <p>基于 Git log 的完整版本历史，预览任意历史版本，一键回滚。</p>
+    </div>
+    <div class="f-card" style="--card-c:var(--cyan);--icon-bg:rgba(6,182,212,.07);--icon-c:var(--cyan)">
+      <div class="f-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><path d="M17 2a5 5 0 015 5c0 6-9 13-9 13S4 13 4 7a5 5 0 019.5-3.5"/><path d="M2 21l5-5"/><path d="M14 14l5 5"/></svg>
+      </div>
+      <h3>个性化定制</h3>
+      <p>主题颜色自定义，字体大小调节，多种文档渲染主题（GitHub、掘金等）。</p>
+    </div>
+  </div>
+</section>
+
+<!-- Architecture -->
+<section class="section container" id="architecture">
+  <div class="section-header">
+    <div class="section-label">Architecture</div>
+    <div class="section-title">架构理念</div>
+    <p class="section-desc"><strong style="color:var(--text)">.md 文件是唯一数据源</strong>，SQLite 仅作为全文索引，可随时从文件重建。</p>
+  </div>
+
+  <div class="arch-box">
+    <div class="arch-flow">
+      <div class="arch-node primary">
+        <div class="n-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <div class="n-label">.md 文件</div>
+        <div class="n-desc">唯一数据源</div>
+      </div>
+      <div class="arch-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </div>
+      <div class="arch-node secondary">
+        <div class="n-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        </div>
+        <div class="n-label">SQLite</div>
+        <div class="n-desc">FTS5 全文索引</div>
+      </div>
+      <div class="arch-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </div>
+      <div class="arch-node secondary">
+        <div class="n-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 009 9"/></svg>
+        </div>
+        <div class="n-label">Git</div>
+        <div class="n-desc">版本 + 同步</div>
+      </div>
+      <div class="arch-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </div>
+      <div class="arch-node secondary">
+        <div class="n-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>
+        </div>
+        <div class="n-label">Remote</div>
+        <div class="n-desc">GitHub / GitLab</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Tech -->
+<section class="section container">
+  <div class="section-header">
+    <div class="section-label">Tech Stack</div>
+    <div class="section-title">技术栈</div>
+  </div>
+  <div class="tech-grid">
+    <div class="t-item"><div class="t-name">Electron</div><div class="t-ver">v33</div><div class="t-desc">跨平台桌面框架</div></div>
+    <div class="t-item"><div class="t-name">Vue 3</div><div class="t-ver">v3.5</div><div class="t-desc">前端 UI 框架</div></div>
+    <div class="t-item"><div class="t-name">SQLite</div><div class="t-ver">better-sqlite3</div><div class="t-desc">FTS5 全文搜索</div></div>
+    <div class="t-item"><div class="t-name">TypeScript</div><div class="t-ver">全栈</div><div class="t-desc">类型安全</div></div>
+    <div class="t-item"><div class="t-name">electron-vite</div><div class="t-ver">v2.3</div><div class="t-desc">构建工具</div></div>
+    <div class="t-item"><div class="t-name">marked</div><div class="t-ver">v17</div><div class="t-desc">Markdown 渲染</div></div>
+    <div class="t-item"><div class="t-name">simple-git</div><div class="t-ver">v3.27</div><div class="t-desc">Git 操作</div></div>
+    <div class="t-item"><div class="t-name">highlight.js</div><div class="t-ver">v11</div><div class="t-desc">代码高亮</div></div>
+  </div>
+</section>
+
+<!-- Download -->
+<section class="section container" id="download">
+  <div class="section-header">
+    <div class="section-label">Download</div>
+    <div class="section-title">免费下载</div>
+    <p class="section-desc">选择你的平台，即刻开始使用。完全免费，MIT 开源协议。</p>
+  </div>
+  <div class="dl-grid">
+    <div class="dl-card">
+      <div class="dl-icon">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M11.182.008C11.148-.03 9.923.023 8.857 1.18c-1.066 1.156-.902 2.482-.878 2.516s1.52.087 2.475-1.258.762-2.391.728-2.43m3.314 11.733c-.048-.096-2.325-1.234-2.113-3.422s1.675-2.789 1.698-2.854-.597-.79-1.254-1.157a3.7 3.7 0 0 0-1.563-.434c-.108-.003-.483-.095-1.254.116-.508.139-1.653.589-1.968.607-.316.018-1.256-.522-2.267-.665-.647-.125-1.333.131-1.824.328-.49.196-1.422.754-2.074 2.237-.652 1.482-.311 3.83-.067 4.56s.625 1.924 1.273 2.796c.576.984 1.34 1.667 1.659 1.899s1.219.386 1.843.067c.502-.308 1.408-.485 1.766-.472.357.013 1.061.154 1.782.539.571.197 1.111.115 1.652-.105.541-.221 1.324-1.059 2.238-2.758q.52-1.185.473-1.282"/></svg>
+      </div>
+      <div class="dl-plat">macOS</div>
+      <div class="dl-fmt">.dmg</div>
+      <a href="https://github.com/opqnext/moji-docs/releases/latest" target="_blank" class="btn btn-primary btn-sm">下载</a>
+    </div>
+    <div class="dl-card">
+      <div class="dl-icon">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M6.555 1.375 0 2.237v5.45h6.555zM0 13.795l6.555.933V8.313H0zm7.278-5.4.026 6.378L16 16V8.395zM16 0 7.33 1.244v6.414H16z"/></svg>
+      </div>
+      <div class="dl-plat">Windows</div>
+      <div class="dl-fmt">.exe</div>
+      <a href="https://github.com/opqnext/moji-docs/releases/latest" target="_blank" class="btn btn-primary btn-sm">下载</a>
+    </div>
+    <div class="dl-card">
+      <div class="dl-icon">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8.996 4.497c.104-.076.1-.168.186-.158s.022.102-.098.207c-.12.104-.308.243-.46.323-.291.152-.631.336-.993.336s-.647-.167-.853-.33c-.102-.082-.186-.162-.248-.221-.11-.086-.096-.207-.052-.204.075.01.087.109.134.153.064.06.144.137.241.214.195.154.454.304.778.304s.702-.19.932-.32c.13-.073.297-.204.433-.304M7.34 3.781c.055-.02.123-.031.174-.003.011.006.024.021.02.034-.012.038-.074.032-.11.05-.032.017-.057.052-.093.054-.034 0-.086-.012-.09-.046-.007-.044.058-.072.1-.089m.581-.003c.05-.028.119-.018.173.003.041.017.106.045.1.09-.004.033-.057.046-.09.045-.036-.002-.062-.037-.093-.053-.036-.019-.098-.013-.11-.051-.004-.013.008-.028.02-.034"/><path fill-rule="evenodd" d="M8.446.019c2.521.003 2.38 2.66 2.364 4.093-.01.939.509 1.574 1.04 2.244.474.56 1.095 1.38 1.45 2.32.29.765.402 1.613.115 2.465a.8.8 0 0 1 .254.152l.001.002c.207.175.271.447.329.698.058.252.112.488.224.615.344.382.494.667.48.922-.015.254-.203.43-.435.57-.465.28-1.164.491-1.586 1.002-.443.527-.99.83-1.505.871a1.25 1.25 0 0 1-1.256-.716v-.001a1 1 0 0 1-.078-.21c-.67.038-1.252-.165-1.718-.128-.687.038-1.116.204-1.506.206-.151.331-.445.547-.808.63-.5.114-1.126 0-1.743-.324-.577-.306-1.31-.278-1.85-.39-.27-.057-.51-.157-.626-.384-.116-.226-.095-.538.07-.988.051-.16.012-.398-.026-.648a2.5 2.5 0 0 1-.037-.369c0-.133.022-.265.087-.386v-.002c.14-.266.368-.377.577-.451s.397-.125.53-.258c.143-.15.27-.374.443-.56q.036-.037.073-.07c-.081-.538.007-1.105.192-1.662.393-1.18 1.223-2.314 1.811-3.014.502-.713.65-1.287.701-2.016.042-.997-.705-3.974 2.112-4.2q.168-.015.321-.013"/></svg>
+      </div>
+      <div class="dl-plat">Linux</div>
+      <div class="dl-fmt">.AppImage / .deb</div>
+      <a href="https://github.com/opqnext/moji-docs/releases/latest" target="_blank" class="btn btn-primary btn-sm">下载</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section container">
+  <div class="cta-box">
+    <h2>开始掌控你的知识</h2>
+    <p>MojiDocs 完全免费开源。你的笔记，你的文件，你的规则。</p>
+    <div class="cta-actions">
+      <a href="https://github.com/opqnext/moji-docs/releases/latest" target="_blank" class="btn btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        免费下载
+      </a>
+      <a href="https://github.com/opqnext/moji-docs" target="_blank" class="btn btn-ghost">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Star on GitHub
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="icon.png" alt="">
+        MojiDocs
+      </div>
+      <div class="footer-links">
+        <a href="../">opqnext</a>
+        <a href="https://github.com/opqnext/moji-docs" target="_blank">GitHub</a>
+        <a href="https://github.com/opqnext/moji-docs/releases" target="_blank">Releases</a>
+        <a href="https://github.com/opqnext/moji-docs/issues" target="_blank">Issues</a>
+      </div>
+      <div class="footer-copy">&copy; 2018&ndash;2025 opqnext &middot; MIT License</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
