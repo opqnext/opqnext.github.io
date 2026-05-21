@@ -21,7 +21,7 @@
 
 
 
-  <link rel="alternate" href="/blog/default" title="平等雲雾" >
+  <link rel="alternate" href="/blog/default" title="OPQNEXT" >
 
 
 
@@ -37,7 +37,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="搭了一套全自动&quot;聊天记录短视频&quot;生产线">
 <meta property="og:url" content="http://opqnext.com/blog/posts/5f2af7ab.html">
-<meta property="og:site_name" content="平等雲雾">
+<meta property="og:site_name" content="OPQNEXT">
 <meta property="og:description" content="针对视频号搬运聊天截图被判“非原创”的问题，设计了一套名为ChatVideo的全自动聊天记录视频生成系统。该系统通过提取原截图文字信息，利用程序重新绘制聊天界面，实现像素级别的原创改造。采用打标、拼图、AI识别、Canvas渲染、FFmpeg合成、自动发布的六步流水线，日产3条视频，全程无需人工干预。">
 <meta property="og:locale">
 <meta property="og:image" content="http://opqnext.com/blog/assets/2026-05/20_097412a4bdcf.png">
@@ -73,14 +73,14 @@
 
 
 
-    <title> 搭了一套全自动"聊天记录短视频"生产线 - 平等雲雾 </title>
+    <title> 搭了一套全自动"聊天记录短视频"生产线 - OPQNEXT </title>
   <meta name="generator" content="Hexo 8.1.2"></head>
 
   <body>
     <div id="page">
       <header id="masthead"><div class="site-header-inner">
     <h1 class="site-title">
-        <a href="/blog/." class="logo">平等雲雾</a>
+        <a href="/blog/." class="logo">OPQNEXT</a>
     </h1>
 
     <nav id="nav-top">
@@ -142,7 +142,7 @@
 <p>所以我想到了一个思路：<strong>把截图里的文字提取出来，用程序重新画一张全新的聊天界面图</strong>。像素级别完全不同，但内容等价。这不就是”原创”了吗？</p>
 <p>于是有了这个项目：<strong>ChatVideo — 聊天记录视频生成系统</strong>。</p>
 <h2 id="整体架构：六步流水线"><a href="#整体架构：六步流水线" class="headerlink" title="整体架构：六步流水线"></a>整体架构：六步流水线</h2><p>整个系统的工作流可以用一句话概括：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">打标 → 拼图 → AI 识别 → Canvas 渲染 → FFmpeg 合成 → 自动发布</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">打标 → 拼图 → AI 识别 → Canvas 渲染 → FFmpeg 合成 → 自动发布</code></pre>
 
 <p>展开来说：</p>
 <ol>
@@ -164,14 +164,49 @@
 </ol>
 <p>最终选择了 <code>@napi-rs/canvas</code>（Rust 实现的 Node.js Canvas 绑定），性能极好，单张图渲染 100-300ms。</p>
 <h3 id="渲染的完整要素"><a href="#渲染的完整要素" class="headerlink" title="渲染的完整要素"></a>渲染的完整要素</h3><p>一张完整的微信聊天截图需要渲染这些元素：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">┌────────────────────────────┐</span><br><span class="line">│  状态栏（时间、信号、WiFi、电池）  │  ← drawStatusBar()</span><br><span class="line">├────────────────────────────┤</span><br><span class="line">│  导航栏（返回箭头 + 联系人名）    │  ← drawHeader()</span><br><span class="line">├────────────────────────────┤</span><br><span class="line">│                            │</span><br><span class="line">│  聊天区域                    │</span><br><span class="line">│  ├ 时间标记（居中灰色）        │  ← drawTimeLine()</span><br><span class="line">│  ├ 左侧气泡（白色 + 三角箭头）  │  ← drawTextBubble()</span><br><span class="line">│  ├ 右侧气泡（绿色 + 三角箭头）  │  ← drawTextBubble()</span><br><span class="line">│  ├ 语音消息（波形条 + 时长）    │  ← drawVoiceBubble()</span><br><span class="line">│  ├ 红包消息（橙色卡片）        │  ← drawRedpacketBubble()</span><br><span class="line">│  └ 转账消息（橙色卡片 + 金额）  │  ← drawTransferBubble()</span><br><span class="line">│                            │</span><br><span class="line">├────────────────────────────┤</span><br><span class="line">│  输入栏（语音/输入框/表情/更多）  │  ← drawInputBar()</span><br><span class="line">├────────────────────────────┤</span><br><span class="line">│  底部安全区 + Home Indicator   │  ← drawHomeIndicator()</span><br><span class="line">└────────────────────────────┘</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">┌────────────────────────────┐
+│  状态栏（时间、信号、WiFi、电池）  │  ← drawStatusBar()
+├────────────────────────────┤
+│  导航栏（返回箭头 + 联系人名）    │  ← drawHeader()
+├────────────────────────────┤
+│                            │
+│  聊天区域                    │
+│  ├ 时间标记（居中灰色）        │  ← drawTimeLine()
+│  ├ 左侧气泡（白色 + 三角箭头）  │  ← drawTextBubble()
+│  ├ 右侧气泡（绿色 + 三角箭头）  │  ← drawTextBubble()
+│  ├ 语音消息（波形条 + 时长）    │  ← drawVoiceBubble()
+│  ├ 红包消息（橙色卡片）        │  ← drawRedpacketBubble()
+│  └ 转账消息（橙色卡片 + 金额）  │  ← drawTransferBubble()
+│                            │
+├────────────────────────────┤
+│  输入栏（语音/输入框/表情/更多）  │  ← drawInputBar()
+├────────────────────────────┤
+│  底部安全区 + Home Indicator   │  ← drawHomeIndicator()
+└────────────────────────────┘</code></pre>
 
 <h3 id="主题系统"><a href="#主题系统" class="headerlink" title="主题系统"></a>主题系统</h3><p>所有 UI 参数都不是硬编码的，而是通过 JSON 主题文件配置：</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;wechat-green&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;canvas&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;width&quot;</span><span class="punctuation">:</span> <span class="number">1080</span><span class="punctuation">,</span> <span class="attr">&quot;height&quot;</span><span class="punctuation">:</span> <span class="number">1920</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;chat&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;bubble&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;left&quot;</span><span class="punctuation">:</span>  <span class="punctuation">&#123;</span> <span class="attr">&quot;bgColor&quot;</span><span class="punctuation">:</span> <span class="string">&quot;#FFFFFF&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;font&quot;</span><span class="punctuation">:</span> <span class="string">&quot;400 46px ChatFont&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;radius&quot;</span><span class="punctuation">:</span> <span class="number">14</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;right&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;bgColor&quot;</span><span class="punctuation">:</span> <span class="string">&quot;#95EC69&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;font&quot;</span><span class="punctuation">:</span> <span class="string">&quot;400 46px ChatFont&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;radius&quot;</span><span class="punctuation">:</span> <span class="number">14</span> <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<pre><code class="highlight json"><span class="punctuation">&#123;</span>
+  <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;wechat-green&quot;</span><span class="punctuation">,</span>
+  <span class="attr">&quot;canvas&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;width&quot;</span><span class="punctuation">:</span> <span class="number">1080</span><span class="punctuation">,</span> <span class="attr">&quot;height&quot;</span><span class="punctuation">:</span> <span class="number">1920</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span>
+  <span class="attr">&quot;chat&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span>
+    <span class="attr">&quot;bubble&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span>
+      <span class="attr">&quot;left&quot;</span><span class="punctuation">:</span>  <span class="punctuation">&#123;</span> <span class="attr">&quot;bgColor&quot;</span><span class="punctuation">:</span> <span class="string">&quot;#FFFFFF&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;font&quot;</span><span class="punctuation">:</span> <span class="string">&quot;400 46px ChatFont&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;radius&quot;</span><span class="punctuation">:</span> <span class="number">14</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span>
+      <span class="attr">&quot;right&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;bgColor&quot;</span><span class="punctuation">:</span> <span class="string">&quot;#95EC69&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;font&quot;</span><span class="punctuation">:</span> <span class="string">&quot;400 46px ChatFont&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;radius&quot;</span><span class="punctuation">:</span> <span class="number">14</span> <span class="punctuation">&#125;</span>
+    <span class="punctuation">&#125;</span>
+  <span class="punctuation">&#125;</span>
+<span class="punctuation">&#125;</span></code></pre>
 
 <p>换一套 JSON，就能输出完全不同风格的界面（深色模式、iMessage 蓝、温暖粉等）。系统支持主题轮换策略，每个视频自动切换风格，进一步提升”原创度”。</p>
 <h3 id="动态画布高度"><a href="#动态画布高度" class="headerlink" title="动态画布高度"></a>动态画布高度</h3><p>早期版本画布高度固定为 1920px，消息太多时底部会被截断。后来改成了<strong>动态画布</strong>：先在一个”无限高”的虚拟画布上渲染所有消息，计算实际需要的高度，再裁剪到最终尺寸。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 先用超大画布渲染，计算实际高度</span></span><br><span class="line"><span class="keyword">const</span> tempCanvas = <span class="title function_">createCanvas</span>(W, <span class="title class_">Math</span>.<span class="title function_">max</span>(H, <span class="number">4000</span>));</span><br><span class="line"><span class="comment">// ... 渲染所有消息 ...</span></span><br><span class="line"><span class="keyword">const</span> actualH = <span class="title class_">Math</span>.<span class="title function_">max</span>(H, cursorY + <span class="number">200</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 再画到正式画布</span></span><br><span class="line"><span class="keyword">const</span> finalCanvas = <span class="title function_">createCanvas</span>(W, H);</span><br><span class="line"><span class="keyword">const</span> finalCtx = finalCanvas.<span class="title function_">getContext</span>(<span class="string">&#x27;2d&#x27;</span>);</span><br><span class="line">finalCtx.<span class="title function_">drawImage</span>(tempCanvas, <span class="number">0</span>, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight javascript"><span class="comment">// 先用超大画布渲染，计算实际高度</span>
+<span class="keyword">const</span> tempCanvas = <span class="title function_">createCanvas</span>(W, <span class="title class_">Math</span>.<span class="title function_">max</span>(H, <span class="number">4000</span>));
+<span class="comment">// ... 渲染所有消息 ...</span>
+<span class="keyword">const</span> actualH = <span class="title class_">Math</span>.<span class="title function_">max</span>(H, cursorY + <span class="number">200</span>);
+
+<span class="comment">// 再画到正式画布</span>
+<span class="keyword">const</span> finalCanvas = <span class="title function_">createCanvas</span>(W, H);
+<span class="keyword">const</span> finalCtx = finalCanvas.<span class="title function_">getContext</span>(<span class="string">&#x27;2d&#x27;</span>);
+finalCtx.<span class="title function_">drawImage</span>(tempCanvas, <span class="number">0</span>, <span class="number">0</span>);</code></pre>
 
 <h3 id="Emoji-渲染"><a href="#Emoji-渲染" class="headerlink" title="Emoji 渲染"></a>Emoji 渲染</h3><p>这个坑踩了很久。<code>@napi-rs/canvas</code> 默认不支持彩色 Emoji 渲染（显示为方块）。解决方案是<strong>分段渲染</strong>：</p>
 <ol>
@@ -182,11 +217,26 @@
 <p>还踩了一个 JavaScript 正则的经典坑：全局正则的 <code>lastIndex</code> 状态不重置，导致连续调用结果交替正确&#x2F;错误。</p>
 <p><img src="/blog/assets/2026-05/20_fc81b90e3cad.png" alt="image"></p>
 <h2 id="核心难点二：AI-对话提取与生成"><a href="#核心难点二：AI-对话提取与生成" class="headerlink" title="核心难点二：AI 对话提取与生成"></a>核心难点二：AI 对话提取与生成</h2><h3 id="Chat-DSL：对话的结构化描述"><a href="#Chat-DSL：对话的结构化描述" class="headerlink" title="Chat DSL：对话的结构化描述"></a>Chat DSL：对话的结构化描述</h3><p>我设计了一套 <strong>Chat DSL（Domain Specific Language）</strong> 来描述聊天内容：</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;contactName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;宝贝&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;participants&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;A&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;side&quot;</span><span class="punctuation">:</span> <span class="string">&quot;right&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;gender&quot;</span><span class="punctuation">:</span> <span class="string">&quot;female&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;B&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;side&quot;</span><span class="punctuation">:</span> <span class="string">&quot;left&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;gender&quot;</span><span class="punctuation">:</span> <span class="string">&quot;male&quot;</span> <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;messages&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;time&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;下午 3:42&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;from&quot;</span><span class="punctuation">:</span> <span class="string">&quot;A&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;text&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;你在干嘛&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;from&quot;</span><span class="punctuation">:</span> <span class="string">&quot;B&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;text&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;想你&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;from&quot;</span><span class="punctuation">:</span> <span class="string">&quot;A&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;voice&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;params&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;duration&quot;</span><span class="punctuation">:</span> <span class="number">3</span> <span class="punctuation">&#125;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;from&quot;</span><span class="punctuation">:</span> <span class="string">&quot;B&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;redpacket&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;params&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;remark&quot;</span><span class="punctuation">:</span> <span class="string">&quot;买奶茶&quot;</span> <span class="punctuation">&#125;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span> <span class="attr">&quot;from&quot;</span><span class="punctuation">:</span> <span class="string">&quot;A&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;transfer&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;params&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;amount&quot;</span><span class="punctuation">:</span> <span class="string">&quot;520.00&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;remark&quot;</span><span class="punctuation">:</span> <span class="string">&quot;爱你&quot;</span> <span class="punctuation">&#125;</span> <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;summary&quot;</span><span class="punctuation">:</span> <span class="string">&quot;情侣间甜蜜的日常互动&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<pre><code class="highlight json"><span class="punctuation">&#123;</span>
+  <span class="attr">&quot;contactName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;宝贝&quot;</span><span class="punctuation">,</span>
+  <span class="attr">&quot;participants&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span>
+    <span class="punctuation">&#123;</span> <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;A&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;side&quot;</span><span class="punctuation">:</span> <span class="string">&quot;right&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;gender&quot;</span><span class="punctuation">:</span> <span class="string">&quot;female&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span>
+    <span class="punctuation">&#123;</span> <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;B&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;side&quot;</span><span class="punctuation">:</span> <span class="string">&quot;left&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;gender&quot;</span><span class="punctuation">:</span> <span class="string">&quot;male&quot;</span> <span class="punctuation">&#125;</span>
+  <span class="punctuation">]</span><span class="punctuation">,</span>
+  <span class="attr">&quot;messages&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span>
+    <span class="punctuation">&#123;</span> <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;time&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;下午 3:42&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span>
+    <span class="punctuation">&#123;</span> <span class="attr">&quot;from&quot;</span><span class="punctuation">:</span> <span class="string">&quot;A&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;text&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;你在干嘛&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span>
+    <span class="punctuation">&#123;</span> <span class="attr">&quot;from&quot;</span><span class="punctuation">:</span> <span class="string">&quot;B&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;text&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;想你&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span>
+    <span class="punctuation">&#123;</span> <span class="attr">&quot;from&quot;</span><span class="punctuation">:</span> <span class="string">&quot;A&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;voice&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;params&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;duration&quot;</span><span class="punctuation">:</span> <span class="number">3</span> <span class="punctuation">&#125;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span>
+    <span class="punctuation">&#123;</span> <span class="attr">&quot;from&quot;</span><span class="punctuation">:</span> <span class="string">&quot;B&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;redpacket&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;params&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;remark&quot;</span><span class="punctuation">:</span> <span class="string">&quot;买奶茶&quot;</span> <span class="punctuation">&#125;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span>
+    <span class="punctuation">&#123;</span> <span class="attr">&quot;from&quot;</span><span class="punctuation">:</span> <span class="string">&quot;A&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;transfer&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;content&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;params&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;amount&quot;</span><span class="punctuation">:</span> <span class="string">&quot;520.00&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;remark&quot;</span><span class="punctuation">:</span> <span class="string">&quot;爱你&quot;</span> <span class="punctuation">&#125;</span> <span class="punctuation">&#125;</span>
+  <span class="punctuation">]</span><span class="punctuation">,</span>
+  <span class="attr">&quot;summary&quot;</span><span class="punctuation">:</span> <span class="string">&quot;情侣间甜蜜的日常互动&quot;</span>
+<span class="punctuation">&#125;</span></code></pre>
 
 <p>支持 5 种消息类型：<code>text</code>（文本）、<code>time</code>（时间&#x2F;系统消息）、<code>voice</code>（语音）、<code>redpacket</code>（红包）、<code>transfer</code>（转账）。有 <code>dsl/schema.js</code> 做验证和规范化。</p>
 <h3 id="两条内容生产线"><a href="#两条内容生产线" class="headerlink" title="两条内容生产线"></a>两条内容生产线</h3><p><strong>线路一：视觉提取（Vision Extract）</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">已标记截图 → 拼成大图 → MMX Vision API 识别 → 输出 Chat DSL JSON</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">已标记截图 → 拼成大图 → MMX Vision API 识别 → 输出 Chat DSL JSON</code></pre>
 
 <p>这条线路的核心是 Prompt 工程。提取时需要精确识别：</p>
 <ul>
@@ -197,7 +247,7 @@
 </ul>
 <p>提取出来的文字会做极小幅度的改写以规避查重，但有严格的”禁改区”——谐音梗、双关语、上下文呼应词绝对不能改。这个规则是被用户投诉后才加上的：比如”我的卷发棒在哪里” → “棒就棒在好看”，AI 把”卷发棒”改成了”卷发器”，整个梗就没了。</p>
 <p><strong>线路二：LLM 凭空生成</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">精心设计的 Prompt → LLM 直接生成 Chat DSL JSON</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">精心设计的 Prompt → LLM 直接生成 Chat DSL JSON</code></pre>
 
 <p>Prompt 里定义了多种内容风格：</p>
 <ul>
@@ -218,23 +268,47 @@
 <p>检测结果以可视化的方式展示（原文删除线 → 修正后绿色高亮），确认后一键保存。</p>
 <h3 id="LLM-输出的-JSON-修复"><a href="#LLM-输出的-JSON-修复" class="headerlink" title="LLM 输出的 JSON 修复"></a>LLM 输出的 JSON 修复</h3><p>和 LLM 打交道最头疼的就是：<strong>它返回的 JSON 经常是坏的</strong>。</p>
 <p>常见问题：尾随逗号、多余的 markdown 代码块标记、控制字符、括号不匹配。为此写了一个 <code>repairJson</code> 函数，能处理 90% 以上的畸形 JSON：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">repairJson</span>(<span class="params">text</span>) &#123;</span><br><span class="line">  <span class="keyword">let</span> s = text.<span class="title function_">trim</span>();</span><br><span class="line">  s = s.<span class="title function_">replace</span>(<span class="regexp">/```json\s*/g</span>, <span class="string">&#x27;&#x27;</span>).<span class="title function_">replace</span>(<span class="regexp">/```\s*/g</span>, <span class="string">&#x27;&#x27;</span>);</span><br><span class="line">  s = s.<span class="title function_">replace</span>(<span class="regexp">/,\s*([&#125;\]])/g</span>, <span class="string">&#x27;$1&#x27;</span>);         <span class="comment">// 尾随逗号</span></span><br><span class="line">  s = s.<span class="title function_">replace</span>(<span class="regexp">/[\x00-\x1F\x7F]/g</span>, <span class="string">&#x27; &#x27;</span>);      <span class="comment">// 控制字符</span></span><br><span class="line">  <span class="comment">// ... 更多修复规则 ...</span></span><br><span class="line">  <span class="comment">// 括号平衡检查</span></span><br><span class="line">  <span class="keyword">let</span> opens = (s.<span class="title function_">match</span>(<span class="regexp">/\[/g</span>) || []).<span class="property">length</span>;</span><br><span class="line">  <span class="keyword">let</span> closes = (s.<span class="title function_">match</span>(<span class="regexp">/\]/g</span>) || []).<span class="property">length</span>;</span><br><span class="line">  <span class="keyword">while</span> (closes &lt; opens) &#123; s += <span class="string">&#x27;]&#x27;</span>; closes++; &#125;</span><br><span class="line">  <span class="keyword">return</span> s;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight javascript"><span class="keyword">function</span> <span class="title function_">repairJson</span>(<span class="params">text</span>) &#123;
+  <span class="keyword">let</span> s = text.<span class="title function_">trim</span>();
+  s = s.<span class="title function_">replace</span>(<span class="regexp">/```json\s*/g</span>, <span class="string">&#x27;&#x27;</span>).<span class="title function_">replace</span>(<span class="regexp">/```\s*/g</span>, <span class="string">&#x27;&#x27;</span>);
+  s = s.<span class="title function_">replace</span>(<span class="regexp">/,\s*([&#125;\]])/g</span>, <span class="string">&#x27;$1&#x27;</span>);         <span class="comment">// 尾随逗号</span>
+  s = s.<span class="title function_">replace</span>(<span class="regexp">/[\x00-\x1F\x7F]/g</span>, <span class="string">&#x27; &#x27;</span>);      <span class="comment">// 控制字符</span>
+  <span class="comment">// ... 更多修复规则 ...</span>
+  <span class="comment">// 括号平衡检查</span>
+  <span class="keyword">let</span> opens = (s.<span class="title function_">match</span>(<span class="regexp">/\[/g</span>) || []).<span class="property">length</span>;
+  <span class="keyword">let</span> closes = (s.<span class="title function_">match</span>(<span class="regexp">/\]/g</span>) || []).<span class="property">length</span>;
+  <span class="keyword">while</span> (closes &lt; opens) &#123; s += <span class="string">&#x27;]&#x27;</span>; closes++; &#125;
+  <span class="keyword">return</span> s;
+&#125;</code></pre>
 
 <p>配合重试机制，整体成功率能到 95%+。</p>
 <p><img src="/blog/assets/2026-05/20_83e7780cd8d8.png" alt="image"></p>
 <h2 id="核心难点三：视频合成"><a href="#核心难点三：视频合成" class="headerlink" title="核心难点三：视频合成"></a>核心难点三：视频合成</h2><h3 id="毛玻璃背景效果"><a href="#毛玻璃背景效果" class="headerlink" title="毛玻璃背景效果"></a>毛玻璃背景效果</h3><p>渲染出的聊天图片是竖屏的（1080x1920），但有些图片高度不够 1920px。直接黑边填充太丑了。</p>
 <p>最终方案是<strong>毛玻璃效果</strong>：把原图放大模糊作为背景，再把清晰的原图叠在正中间。FFmpeg 的滤镜链：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=30:10[bg]</span><br><span class="line">[0:v]scale=1080:1920:force_original_aspect_ratio=decrease[fg]</span><br><span class="line">[bg][fg]overlay=(W-w)/2:(H-h)/2[out]</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=30:10[bg]
+[0:v]scale=1080:1920:force_original_aspect_ratio=decrease[fg]
+[bg][fg]overlay=(W-w)/2:(H-h)/2[out]</code></pre>
 
 <p>效果类似 iOS 的毛玻璃，既填满了画面又不突兀。</p>
 <h3 id="滑动水印"><a href="#滑动水印" class="headerlink" title="滑动水印"></a>滑动水印</h3><p>为了防盗和品牌露出，加了一个在视频中缓慢漂移的半透明水印”@测试水印”。</p>
 <p>技巧在于用 <code>sin/cos</code> 函数控制运动轨迹，并且<strong>每次合成都随机化相位和速度</strong>：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> sx = (baseSx * (<span class="number">0.7</span> + <span class="title class_">Math</span>.<span class="title function_">random</span>() * <span class="number">0.6</span>)).<span class="title function_">toFixed</span>(<span class="number">4</span>);  <span class="comment">// 速度随机</span></span><br><span class="line"><span class="keyword">const</span> phaseX = (<span class="title class_">Math</span>.<span class="title function_">random</span>() * <span class="title class_">Math</span>.<span class="property">PI</span> * <span class="number">2</span>).<span class="title function_">toFixed</span>(<span class="number">4</span>);       <span class="comment">// 相位随机</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// FFmpeg drawtext 表达式</span></span><br><span class="line">x = <span class="string">&#x27;100+(W-tw-200)*(0.5+0.5*sin(t*$&#123;sx&#125;+$&#123;phaseX&#125;))&#x27;</span></span><br><span class="line">y = <span class="string">&#x27;200+(H-th-400)*(0.5+0.5*cos(t*$&#123;sy&#125;+$&#123;phaseY&#125;))&#x27;</span></span><br></pre></td></tr></table></figure>
+<pre><code class="highlight javascript"><span class="keyword">const</span> sx = (baseSx * (<span class="number">0.7</span> + <span class="title class_">Math</span>.<span class="title function_">random</span>() * <span class="number">0.6</span>)).<span class="title function_">toFixed</span>(<span class="number">4</span>);  <span class="comment">// 速度随机</span>
+<span class="keyword">const</span> phaseX = (<span class="title class_">Math</span>.<span class="title function_">random</span>() * <span class="title class_">Math</span>.<span class="property">PI</span> * <span class="number">2</span>).<span class="title function_">toFixed</span>(<span class="number">4</span>);       <span class="comment">// 相位随机</span>
+
+<span class="comment">// FFmpeg drawtext 表达式</span>
+x = <span class="string">&#x27;100+(W-tw-200)*(0.5+0.5*sin(t*$&#123;sx&#125;+$&#123;phaseX&#125;))&#x27;</span>
+y = <span class="string">&#x27;200+(H-th-400)*(0.5+0.5*cos(t*$&#123;sy&#125;+$&#123;phaseY&#125;))&#x27;</span></code></pre>
 
 <p>这样每个视频的水印轨迹都不同——起始位置不同、运动形状不同（有的偏椭圆，有的偏圆），避免了”所有视频水印走一样的路”。</p>
 <p>水印文字和速度都通过 <code>.env</code> 配置，想关闭把 <code>WATERMARK_TEXT</code> 留空即可。</p>
 <h3 id="合成流程"><a href="#合成流程" class="headerlink" title="合成流程"></a>合成流程</h3><p>完整的视频合成是一个 7 步流水线：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1. 查询可用 Chat DSL（随机取 9 条）</span><br><span class="line">2. 逐张 Canvas 渲染为 PNG</span><br><span class="line">3. AI 生成视频元数据（标题、描述、话题）</span><br><span class="line">4. AI 生成背景音乐</span><br><span class="line">5. FFmpeg 逐张合成片段（毛玻璃背景，每张 3 秒）</span><br><span class="line">6. 拼接片段 + 混合音轨 + 添加滑动水印</span><br><span class="line">7. 写入数据库</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">1. 查询可用 Chat DSL（随机取 9 条）
+2. 逐张 Canvas 渲染为 PNG
+3. AI 生成视频元数据（标题、描述、话题）
+4. AI 生成背景音乐
+5. FFmpeg 逐张合成片段（毛玻璃背景，每张 3 秒）
+6. 拼接片段 + 混合音轨 + 添加滑动水印
+7. 写入数据库</code></pre>
 
 <p>每一步都有详细的耗时日志和进度回调，前端可以实时看到当前执行到哪一步。</p>
 <p><img src="/blog/assets/2026-05/20_d7f8d4e759f4.png" alt="image"></p>
@@ -294,7 +368,10 @@
 <li><strong>每 4 小时</strong>：检查可用 JSON 数量，不足 50 条时自动补充</li>
 <li><strong>每天 8:30 &#x2F; 12:30 &#x2F; 18:30</strong>：检查待发布视频数量，不足 5 个时自动合成</li>
 </ul>
-<h3 id="API-接口"><a href="#API-接口" class="headerlink" title="API 接口"></a>API 接口</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">GET  /api/stats          → 各池数量统计</span><br><span class="line">GET  /api/preview/:id    → 即时渲染某条 Chat DSL 为 PNG</span><br><span class="line">GET  /api/video/next     → 获取下一个待发布视频（Bearer Token 鉴权）</span><br><span class="line">POST /api/video/publish  → 回调：更新发布状态</span><br></pre></td></tr></table></figure>
+<h3 id="API-接口"><a href="#API-接口" class="headerlink" title="API 接口"></a>API 接口</h3><pre><code class="highlight plaintext">GET  /api/stats          → 各池数量统计
+GET  /api/preview/:id    → 即时渲染某条 Chat DSL 为 PNG
+GET  /api/video/next     → 获取下一个待发布视频（Bearer Token 鉴权）
+POST /api/video/publish  → 回调：更新发布状态</code></pre>
 
 <p>发布脚本通过这些 API 和主系统交互，实现松耦合。</p>
 <hr>
@@ -310,7 +387,7 @@
 </ol>
 <p>整个发布流程全自动，只有 Cookie 过期时需要人工介入重新登录。</p>
 <hr>
-<h2 id="踩过的坑（精选）"><a href="#踩过的坑（精选）" class="headerlink" title="踩过的坑（精选）"></a>踩过的坑（精选）</h2><h3 id="1-SQL-别名不匹配"><a href="#1-SQL-别名不匹配" class="headerlink" title="1. SQL 别名不匹配"></a>1. SQL 别名不匹配</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">AS</span> cnt <span class="keyword">FROM</span> generated_chats <span class="keyword">WHERE</span> is_used <span class="operator">=</span> <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<h2 id="踩过的坑（精选）"><a href="#踩过的坑（精选）" class="headerlink" title="踩过的坑（精选）"></a>踩过的坑（精选）</h2><h3 id="1-SQL-别名不匹配"><a href="#1-SQL-别名不匹配" class="headerlink" title="1. SQL 别名不匹配"></a>1. SQL 别名不匹配</h3><pre><code class="highlight sql"><span class="keyword">SELECT</span> <span class="built_in">COUNT</span>(<span class="operator">*</span>) <span class="keyword">AS</span> cnt <span class="keyword">FROM</span> generated_chats <span class="keyword">WHERE</span> is_used <span class="operator">=</span> <span class="number">0</span></code></pre>
 
 <p>JavaScript 里却 <code>const { available } = rows[0]</code>。这种 bug 不报错，只是默默返回 <code>undefined</code>，页面上显示为空。后来统一了命名规范。</p>
 <h3 id="2-任务锁未释放"><a href="#2-任务锁未释放" class="headerlink" title="2. 任务锁未释放"></a>2. 任务锁未释放</h3><p>生成任务失败后，<code>runningTask</code> 被设为 <code>{ status: &#39;failed&#39;, ... }</code> 而不是 <code>null</code>，导致后续请求被误判为”已有任务在运行中”。修复：判断条件从 <code>if (runningTask)</code> 改为 <code>if (runningTask?.status === &#39;running&#39;)</code>。</p>
@@ -318,7 +395,40 @@
 <h3 id="4-系统消息误识别"><a href="#4-系统消息误识别" class="headerlink" title="4. 系统消息误识别"></a>4. 系统消息误识别</h3><p>AI 经常把普通聊天消息识别为系统消息（居中灰色小字）。加了后处理函数，用正则白名单过滤：只有包含”撤回””新消息””拍了拍””已添加”等关键词的才算系统消息，其余强制改回普通文本。</p>
 <h3 id="5-谐音梗被-AI-改坏了"><a href="#5-谐音梗被-AI-改坏了" class="headerlink" title="5. 谐音梗被 AI 改坏了"></a>5. 谐音梗被 AI 改坏了</h3><p>最经典的案例：”我的卷发棒在哪里” → “棒就棒在好看”。AI 把”卷发棒”改成了”卷发器”，整个梗没了。被用户投诉后，在 Prompt 里加了严格的”禁改区”规则：谐音梗的关键词、上下文呼应词、构成笑点的核心词汇，一个字都不能动。</p>
 <hr>
-<h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">original-video-agent/</span><br><span class="line">├── src/</span><br><span class="line">│   ├── app.js                    # Express 入口</span><br><span class="line">│   ├── config.js                 # 环境配置（.env 读取）</span><br><span class="line">│   ├── db.js                     # MySQL 连接池</span><br><span class="line">│   ├── dsl/schema.js             # Chat DSL 验证与规范化</span><br><span class="line">│   ├── routes/</span><br><span class="line">│   │   ├── home.js               # 仪表盘</span><br><span class="line">│   │   ├── labeling.js           # 打标管理</span><br><span class="line">│   │   ├── generation.js         # 聊天 JSON 生成 + 调优</span><br><span class="line">│   │   ├── video.js              # 视频管理</span><br><span class="line">│   │   ├── api.js                # REST API</span><br><span class="line">│   │   └── system.js             # 系统管理（cron/reset/logs）</span><br><span class="line">│   ├── services/</span><br><span class="line">│   │   ├── chat-generator.js     # AI 对话提取与生成 (548 行)</span><br><span class="line">│   │   ├── chat-renderer.js      # Canvas 像素级渲染 (927 行)</span><br><span class="line">│   │   ├── video-composer.js     # FFmpeg 视频合成 (358 行)</span><br><span class="line">│   │   ├── tuner.js              # AI 调优（DeepSeek/MMX 双引擎）</span><br><span class="line">│   │   ├── mmx.js                # MMX CLI 封装</span><br><span class="line">│   │   ├── theme-loader.js       # 主题加载与轮换</span><br><span class="line">│   │   ├── cron.js               # 定时任务</span><br><span class="line">│   │   └── logger.js             # 统一日志</span><br><span class="line">│   ├── themes/</span><br><span class="line">│   │   └── wechat-green.json     # 微信经典绿主题</span><br><span class="line">│   ├── assets/</span><br><span class="line">│   │   ├── avatars/              # 头像库（male/female/unknown）</span><br><span class="line">│   │   ├── fonts/                # NotoSansSC 中文字体</span><br><span class="line">│   │   └── ui/                   # UI 元素素材</span><br><span class="line">│   ├── views/                    # 12 个 EJS 页面模板</span><br><span class="line">│   └── public/                   # CSS + JS 静态资源</span><br><span class="line">├── publisher/                    # Python 自动发布脚本</span><br><span class="line">├── migrations/                   # 数据库迁移</span><br><span class="line">├── data/                         # 运行时数据（视频/音乐/拼接图）</span><br><span class="line">└── .env                          # 环境配置</span><br></pre></td></tr></table></figure>
+<h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h2><pre><code class="highlight plaintext">original-video-agent/
+├── src/
+│   ├── app.js                    # Express 入口
+│   ├── config.js                 # 环境配置（.env 读取）
+│   ├── db.js                     # MySQL 连接池
+│   ├── dsl/schema.js             # Chat DSL 验证与规范化
+│   ├── routes/
+│   │   ├── home.js               # 仪表盘
+│   │   ├── labeling.js           # 打标管理
+│   │   ├── generation.js         # 聊天 JSON 生成 + 调优
+│   │   ├── video.js              # 视频管理
+│   │   ├── api.js                # REST API
+│   │   └── system.js             # 系统管理（cron/reset/logs）
+│   ├── services/
+│   │   ├── chat-generator.js     # AI 对话提取与生成 (548 行)
+│   │   ├── chat-renderer.js      # Canvas 像素级渲染 (927 行)
+│   │   ├── video-composer.js     # FFmpeg 视频合成 (358 行)
+│   │   ├── tuner.js              # AI 调优（DeepSeek/MMX 双引擎）
+│   │   ├── mmx.js                # MMX CLI 封装
+│   │   ├── theme-loader.js       # 主题加载与轮换
+│   │   ├── cron.js               # 定时任务
+│   │   └── logger.js             # 统一日志
+│   ├── themes/
+│   │   └── wechat-green.json     # 微信经典绿主题
+│   ├── assets/
+│   │   ├── avatars/              # 头像库（male/female/unknown）
+│   │   ├── fonts/                # NotoSansSC 中文字体
+│   │   └── ui/                   # UI 元素素材
+│   ├── views/                    # 12 个 EJS 页面模板
+│   └── public/                   # CSS + JS 静态资源
+├── publisher/                    # Python 自动发布脚本
+├── migrations/                   # 数据库迁移
+├── data/                         # 运行时数据（视频/音乐/拼接图）
+└── .env                          # 环境配置</code></pre>
 
 <hr>
 <h2 id="数据库设计"><a href="#数据库设计" class="headerlink" title="数据库设计"></a>数据库设计</h2><p>三张核心表：</p>
@@ -417,6 +527,12 @@
         
         
   <nav class="post-nav">
+    
+      <a class="prev" href="/blog/posts/ae46b7a9.html">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">从音频分析到视觉渲染的全栈工程实践</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
     
     
       <a class="next" href="/blog/posts/8eebebba.html">

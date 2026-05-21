@@ -509,6 +509,12 @@ h6 {
     width: 100%;
   }
 }
+@font-face {
+  font-family: "LuckiestGuy";
+  src: url("../fonts/LuckiestGuy-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
 .header:before, .header:after {
   content: " ";
   display: table;
@@ -548,6 +554,7 @@ h6 {
   margin: 0 auto;
   font-weight: 400;
   font-size: 22px;
+  font-family: "LuckiestGuy", cursive;
   color: rgba(0, 0, 0, 0.7);
 }
 
