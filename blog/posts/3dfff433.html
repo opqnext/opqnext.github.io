@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="很多教程都在教大家如何写一个自己的composer包，但总不放代码"/>
+
+
+
+
+  <meta name="keywords" content="PHP,composer," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/default" title="OPQNEXT" >
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://opqnext.com/blog/posts/3dfff433.html"/>
+
+
+<meta name="description" content="很多教程都在教大家如何写一个自己的composer包，但总不放代码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何写一个自己的渣渣composer包">
+<meta property="og:url" content="http://opqnext.com/blog/posts/3dfff433.html">
+<meta property="og:site_name" content="OPQNEXT">
+<meta property="og:description" content="很多教程都在教大家如何写一个自己的composer包，但总不放代码">
+<meta property="og:locale">
+<meta property="article:published_time" content="2017-08-22T06:26:00.000Z">
+<meta property="article:modified_time" content="2017-08-22T06:26:00.000Z">
+<meta property="article:author" content="opnext">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="composer">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="stylesheet" type="text/css" href="/blog/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title> 如何写一个自己的渣渣composer包 - OPQNEXT </title>
+  <meta name="generator" content="Hexo 8.1.2"></head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/blog/." class="logo">OPQNEXT</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/blog/archives">
+                            
+                            
+                                档案
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/blog/about">
+                            
+                            
+                                关于
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          如何写一个自己的渣渣composer包
+        
+      </h1>
+
+      <time class="post-time">
+          Aug 22 2017
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <p>很多教程都在教大家如何写一个自己的composer包，但总不放代码。</p>
+<p>你不放代码，就会导致看你帖子的人呐，不能得到很好很直观的理解。用产品的角度来思考呢，就是用户体验差。我就贴代码。简单的 Hello World 我也贴出来。你看，这样不仅能够凑字数，还能让用户觉得体验好，真是美滋滋呀。</p>
+<p>大家纷纷可以上 <a target="_blank" rel="noopener" href="https://packagist.org/">https://packagist.org/</a> 上搜一些包，放到自己的项目中，这样很方便。假如你有一些功能类，没地方保存，比如你的功能类很大，硬盘不够…不过这倒不太可能。那假如你丢三落四，好不容易有一天，写(chao)了（xi）一个很牛x的类，curl类，兴致勃勃保存到 curl.txt 第二天丢了。很尴尬…</p>
+<p>那你可以放到 <a target="_blank" rel="noopener" href="https://github.com/">github</a> 呀。如果方便使用呢，你就放到 <a target="_blank" rel="noopener" href="https://packagist.org/">packagist.org</a> 呀。</p>
+<p>比如我写了一个 <a target="_blank" rel="noopener" href="https://packagist.org/packages/opqnext/xor-encryption">XorEncryption(异或加密)</a> 的方法。</p>
+<p>关于 composer 的一些知识，需要自行了解呢。</p>
+<p>有人说贴图比较好，我就爱文字叙述&#x2F;(ㄒoㄒ)&#x2F;：首先你去 <a target="_blank" rel="noopener" href="https://github.com/">github</a> 上新建一个项目。比如我的 <a target="_blank" rel="noopener" href="https://github.com/opqnext/XorEncryption">opqnext&#x2F;XorEncryptiono</a></p>
+<p>然后你在你在本地创建一个目录。把项目 clone 下来。之后你可以用 composer init 一步一步按提示添加项目名称，描述，作者，依赖包等等信息最后生成一个 composer.json 的文件。或者也可以新建一个文件，然后直接把我下面这个内容拷贝到你的 composer.json 里。然后对应的配置改一改，第一步完成了。</p>
+<pre><code class="highlight json"><span class="punctuation">&#123;</span>
+    <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;opqnext/xor-encryption&quot;</span><span class="punctuation">,</span>
+    <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;php xor-encryption&quot;</span><span class="punctuation">,</span>
+    <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;library&quot;</span><span class="punctuation">,</span>
+    <span class="attr">&quot;keywords&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span>
+        <span class="string">&quot;php&quot;</span><span class="punctuation">,</span>
+        <span class="string">&quot;xor&quot;</span>
+    <span class="punctuation">]</span><span class="punctuation">,</span>
+    <span class="attr">&quot;license&quot;</span><span class="punctuation">:</span> <span class="string">&quot;MIT&quot;</span><span class="punctuation">,</span>
+    <span class="attr">&quot;authors&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span>
+        <span class="punctuation">&#123;</span>
+            <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;opqnext&quot;</span><span class="punctuation">,</span>
+            <span class="attr">&quot;email&quot;</span><span class="punctuation">:</span> <span class="string">&quot;309622694@qq.com&quot;</span>
+        <span class="punctuation">&#125;</span>
+    <span class="punctuation">]</span><span class="punctuation">,</span>
+    <span class="attr">&quot;require&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span>
+        <span class="attr">&quot;php&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&gt;=5.3.0&quot;</span>
+    <span class="punctuation">&#125;</span><span class="punctuation">,</span>
+    <span class="attr">&quot;autoload&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span>
+        <span class="attr">&quot;psr-0&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span>
+            <span class="attr">&quot;XorEncryption\\&quot;</span><span class="punctuation">:</span> <span class="string">&quot;src/&quot;</span>
+        <span class="punctuation">&#125;</span>
+    <span class="punctuation">&#125;</span>
+<span class="punctuation">&#125;</span></code></pre>
+<p>还是直接拷贝来的容易的，一定要写上 autoload</p>
+<p>然后你就开发你的代码 创建一个src目录。如果看我的代码，就到我的 github 去看。我这里说一下，假如我们要写一个 Hello World 的包。创建一个 src 目录。 创建一个 HelloWorld 的目录，写一个 HelloWorld 的类 :</p>
+<pre><code class="highlight php"><span class="meta">&lt;?php</span>
+<span class="comment">/**</span>
+<span class="comment"> * Hello World</span>
+<span class="comment"> * <span class="doctag">@author</span>: opqnext</span>
+<span class="comment"> * <span class="doctag">@website</span>: https://www.opqnext.com</span>
+<span class="comment"> * <span class="doctag">@date</span>: 2017-08-18</span>
+<span class="comment"> */</span>
+
+<span class="keyword">namespace</span> <span class="title class_">HelloWorld</span>;
+
+<span class="class"><span class="keyword">class</span> <span class="title">HelloWorld</span> </span>&#123;
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">say_hello</span>(<span class="params"></span>)</span>
+<span class="function">    </span>&#123;
+        <span class="keyword">return</span> <span class="string">&quot;hello world&quot;</span>;
+    &#125;
+&#125;</code></pre>
+
+<p>push 到 github 上面，你可以打一些 tag 标明版本号的呀。</p>
+<p>到这里，代码应该就开发完成了。然后你代码提交到 <a target="_blank" rel="noopener" href="https://packagist.org/packages/submit">submit packages</a> 把你的 git 地址写上。</p>
+<p>把 readme.md 完善一下。就这么多了。</p>
+<p>我提交了 v1.0.1 版本之后，不知道为什么，国内的镜像总是不能同步过来。真是伤心…</p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/blog/tags/PHP/">PHP</a>
+		  
+			<a href="/blog/tags/composer/">composer</a>
+		  
+		</div>
+		
+
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/blog/posts/39188d38.html">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">一个基于Swoole的websocket聊天室</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/blog/posts/a20e2f73.html">
+        <span class="next-text nav-default">git不同分支push之后通过hook自动部署到服务器不同路径</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2026
+    <span class="footer-author">opnext.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and <a class="theme-link" target="_blank" rel="noopener" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/blog/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+
+    <script type="text/javascript" src="/blog/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/blog/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>

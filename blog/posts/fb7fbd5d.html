@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="别怂，写就对了！学完PHP基础就该自己撸个框架练练手，别管别人说重复造轮子，动手才是硬道理💪"/>
+
+
+
+
+  <meta name="keywords" content="PHP,composer," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/default" title="OPQNEXT" >
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://opqnext.com/blog/posts/fb7fbd5d.html"/>
+
+
+<meta name="description" content="别怂，写就对了！学完PHP基础就该自己撸个框架练练手，别管别人说重复造轮子，动手才是硬道理💪">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何写一个自己的渣渣PHP框架（1）">
+<meta property="og:url" content="http://opqnext.com/blog/posts/fb7fbd5d.html">
+<meta property="og:site_name" content="OPQNEXT">
+<meta property="og:description" content="别怂，写就对了！学完PHP基础就该自己撸个框架练练手，别管别人说重复造轮子，动手才是硬道理💪">
+<meta property="og:locale">
+<meta property="article:published_time" content="2017-01-18T11:05:00.000Z">
+<meta property="article:modified_time" content="2017-01-18T11:05:00.000Z">
+<meta property="article:author" content="opnext">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="composer">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="stylesheet" type="text/css" href="/blog/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title> 如何写一个自己的渣渣PHP框架（1） - OPQNEXT </title>
+  <meta name="generator" content="Hexo 8.1.2"></head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/blog/." class="logo">OPQNEXT</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/blog/archives">
+                            
+                            
+                                档案
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/blog/about">
+                            
+                            
+                                关于
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          如何写一个自己的渣渣PHP框架（1）
+        
+      </h1>
+
+      <time class="post-time">
+          Jan 18 2017
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <p>不然，我也写个教程，我其实也比较菜，但是有比我还菜的，比如你。O(∩_∩)O哈！你看就像<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/19793142/answer/141228494">我说的</a>吧:</p>
+<blockquote>
+<p>其实我还是建议初学者（特指已经学完PHP基础语法，并且了解一些开源框架MVC，再加上composer的童鞋们）写一个自己的框架。练练手！</p>
+</blockquote>
+<p>额，那我们就开始吧，嗯呢！不着急呢，先听一首文雀的 <a target="_blank" rel="noopener" href="http://music.163.com/#/song?id=32102402">谁也别管谁</a> 压压惊再说！</p>
+<p>今天就到这里了，我先去准备一下。</p>
+<p>算了，写到哪里算哪里吧。（你猜这是不是一个好习惯呢）</p>
+<p>好，本文最终写作目的只是给大家动力，诱惑大家拿起笔来（不，键盘来），写个框架。有人说，一起阻碍你写框架的主义都是纸老虎，哪怕有人说你重复造轮子，哪怕有人说你写的就是个渣，哪怕有人说你没什么卵用。哪怕有人说你傅文佩，你不是人，你有本事抢男人，你别躲在里面不出声，我知道你在家。</p>
+<p>–前言</p>
+<p>先再听一首不可撤销的 <a target="_blank" rel="noopener" href="http://music.163.com/#/song?id=29747620">女孩儿</a> 压压惊！我原来写过一个小框架，渣的一比，是我奇哥教我的，不是我奇哥教的不好，是我菜的不行，后来每天好好学习，天天向上，终于深得要领，发现了composer这个好东西。就像nodejs的npm包管理，就像python里的pip，还像什么语言里的什么什么，我就不得而知了，因为别的我比较不会..</p>
+<p>我们先来搞明白一个简单小框架的运行流程，index.php -&gt; 定义基础常量 -&gt; 引入配置文件 -&gt; 自动加载（重点）-&gt; 路由解析（重点）-&gt; MVC 大概类似的就是这样一个流程，然后加上composer，或者你需要的各种类库，一个轻量级，基础级的框架就诞生了，你可以取个简单响亮的名字。</p>
+<p>比如我天马行空认认真真想的 momoma 是不是很有几分姿色。（原来是叫 Yin ，后来改名了.）</p>
+<p>[哈哈]</p>
+<p>–开始</p>
+<p>搭建你的本地服务器。</p>
+<p>先从index.php入口文件来写吧。<br>新建一个目录，比如 &#x2F;data&#x2F;momoma ,然后新建一个index.php文件，ok 入口文件建好了，简直是好的开始就是成功的一半啊。</p>
+<ul>
+<li>Composer 中文文档。【<a target="_blank" rel="noopener" href="http://docs.phpcomposer.com/">Composer 中文文档 | Composer 中文网</a>】</li>
+<li>Packagist 是主要的 composer 存储库。它集合了可以使用Composer安装的公共PHP包。【<a target="_blank" rel="noopener" href="https://packagist.org/">Packagist The PHP Package Repository</a>】</li>
+</ul>
+<p>然后新建一个composer.json （如果不了解composer的童鞋可以看 ↑ 先去自行了解）</p>
+<pre><code class="highlight php">&#123;
+  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;php/momoma&quot;</span>,
+  <span class="string">&quot;description&quot;</span>: <span class="string">&quot;php/Momoma The PHP Framework&quot;</span>,
+  <span class="string">&quot;version&quot;</span>: <span class="string">&quot;1.0.0-beta&quot;</span>,
+  <span class="string">&quot;keywords&quot;</span>: [<span class="string">&quot;php&quot;</span>,<span class="string">&quot;php framework&quot;</span>],
+  <span class="string">&quot;require&quot;</span>: &#123;
+    <span class="string">&quot;php&quot;</span>: <span class="string">&quot;&gt;=5.6.28&quot;</span>,
+    <span class="string">&quot;filp/whoops&quot;</span>:<span class="string">&quot;*&quot;</span>,
+    <span class="string">&quot;hassankhan/config&quot;</span>:<span class="string">&quot;0.10.0&quot;</span>
+  &#125;,
+  <span class="string">&quot;repositories&quot;</span>: &#123;
+    <span class="string">&quot;packagist&quot;</span>: &#123;
+      <span class="string">&quot;type&quot;</span>: <span class="string">&quot;composer&quot;</span>,
+      <span class="string">&quot;url&quot;</span>: <span class="string">&quot;https://packagist.phpcomposer.com&quot;</span>
+    &#125;
+  &#125;
+&#125;</code></pre>
+<p>composer.josn的其他参数大家自己了解一下，这里我只说require和repositories。</p>
+<ol>
+<li>require 的key值就是你需要告诉composer你的项目需要哪些包，value是对应包的版本号。比如我上面的，项目需要 php 并且版本应该大于等于 5.6.28 ，需要 “filp&#x2F;whoops” 当前的最高版本（*号表示没有版本限制，默认当前最高版本），”hassankhan&#x2F;config” 的 0.10.0 版本。目前就需要这些，这些包都是可以通过 <a target="_blank" rel="noopener" href="https://packagist.org/">Packagist.org</a> 搜索获取。（这些包的作用后续告诉大家）。</li>
+<li>repositories 我看过一篇帖子，说这样写的话，貌似是换成国内的源，更新下载包的时候速度会比较快一些。</li>
+</ol>
+<p>然后 命令行模式去目录下执行 composer install 目录中会多出一个 vendor 目录和 composer.lock 文件，composer安装（停顿一下）包有两种方法，我每次在require增加新的包，就直接执行 composer update 就OK了。虽然我可能说的比较混乱，但是这不是今天的重点，你先去google、百度，回头再说composer。嗯，就这么愉快的决定了。</p>
+<p>在index.php里引入自动加载文件</p>
+<pre><code class="highlight php"><span class="comment">// Autoload 自动载入</span>
+<span class="keyword">require</span> <span class="string">&#x27;vendor/autoload.php&#x27;</span>;</code></pre>
+
+<p>ps:现在说说上面的那个两个包。</p>
+<ul>
+<li>“filp&#x2F;whoops”</li>
+</ul>
+<p>官网链接：<a target="_blank" rel="noopener" href="https://packagist.org/packages/filp/whoops">“filp&#x2F;whoops”</a> 里详细介绍，并且有运用方法。虽然是英文但是你可以用翻译呀。大概就是，这个包是一个PHP错误处理的包。帮你再调试web程序的时候，描述代码执行过程，准确定位错误的原因及代码的位置。</p>
+<p><em>我们怎么用？</em></p>
+<p>在index.php文件里写</p>
+<pre><code class="highlight php"><span class="comment">// Whoops</span>
+<span class="variable">$whoops</span> = <span class="keyword">new</span> <span class="title class_">\Whoops\Run</span>;
+<span class="variable">$whoops</span>-&gt;<span class="title function_ invoke__">pushHandler</span>(<span class="keyword">new</span> <span class="title class_">\Whoops\Handler\PrettyPageHandler</span>);
+<span class="variable">$whoops</span>-&gt;<span class="title function_ invoke__">register</span>();</code></pre>
+<p>然后我们故意制造一个错误：(用2除以0)</p>
+<pre><code class="highlight php"><span class="keyword">echo</span> <span class="number">2</span>/<span class="number">0</span>;</code></pre>
+<p>访问一下你的 index.php 是不是出现了报错信息：</p>
+<p>[图片走丢了]</p>
+<ul>
+<li>“hassankhan&#x2F;config”</li>
+</ul>
+<p>官网链接：<a target="_blank" rel="noopener" href="https://packagist.org/packages/hassankhan/config">“hassankhan&#x2F;config”</a>里有详细介绍，是一款轻量级配置文件加载器，支持PHP，INI，XML，JSON和YAML文件。</p>
+<p><em>我们怎么用？</em></p>
+<p>在根目录先新建一个 config 目录，&#x2F;data&#x2F;momoma&#x2F;config 下新建 conf.php (或者conf.josn 不是说过了，”hassankhan&#x2F;config”支持php,josn等等文件)</p>
+<p>在conf.php里写：(conf.json直接写json就可以了)</p>
+<pre><code class="highlight php"><span class="keyword">return</span> [
+    <span class="string">&quot;debug&quot;</span>=&gt; <span class="literal">true</span>  <span class="comment">// 是否开启调试模式</span>
+];</code></pre>
+<p>回到index.php，定义项目根目录常量 MOMOMA_PATH，</p>
+<pre><code class="highlight php"><span class="title function_ invoke__">define</span>(<span class="string">&quot;MOMOMA_PATH&quot;</span>, <span class="title function_ invoke__">dirname</span>(<span class="keyword">__FILE__</span>)); <span class="comment">//项目根目录</span>
+
+<span class="comment">// Config</span>
+<span class="variable">$conf</span> = <span class="keyword">new</span> <span class="title class_">\Noodlehaus\Config</span>(MOMOMA_PATH. <span class="string">&#x27;/config/conf.php&#x27;</span>);
+<span class="keyword">echo</span> <span class="variable">$conf</span>-&gt;<span class="title function_ invoke__">get</span>(<span class="string">&#x27;debug&#x27;</span>);
+<span class="comment">//echo $conf[&#x27;debug&#x27;];</span></code></pre>
+<p>访问你的index.php有没有输出 1 不就是你的 debug的值 true 吗！</p>
+<p>如果这样，有了这个两个包，加个if判断，你看，你这不就可以通过配置文件来配置框架是否开启debug调试模式了。简直是厉害啦哇&#x2F;(ㄒoㄒ)&#x2F;~~</p>
+<p>写的好累呀，听一首刺猬乐队的 <a target="_blank" rel="noopener" href="http://music.163.com/#/song?id=348107">24小时摇滚聚会</a> 放松一下也不足为奇呐。</p>
+<p>你还等什么？不然开写吧…（哪怕没有我你长点心吧）</p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/blog/tags/PHP/">PHP</a>
+		  
+			<a href="/blog/tags/composer/">composer</a>
+		  
+		</div>
+		
+
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/blog/posts/e9ca12b3.html">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">如何写一个自己的渣渣PHP框架（2）</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/blog/posts/a52211f4.html">
+        <span class="next-text nav-default">如何评价万青新歌《冀西南林路行》？</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2026
+    <span class="footer-author">opnext.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and <a class="theme-link" target="_blank" rel="noopener" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/blog/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+
+    <script type="text/javascript" src="/blog/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/blog/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="在CentOS7上装Bind建DNS，让局域网用wowo.com解析vm‑dev001等几台机器的IP，省得记地址。"/>
+
+
+
+
+  <meta name="keywords" content="CentOS,DNS," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/default" title="OPQNEXT" >
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://opqnext.com/blog/posts/2b54f944.html"/>
+
+
+<meta name="description" content="在CentOS7上装Bind建DNS，让局域网用wowo.com解析vm‑dev001等几台机器的IP，省得记地址。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CentOS7.9 搭建DNS服务器">
+<meta property="og:url" content="http://opqnext.com/blog/posts/2b54f944.html">
+<meta property="og:site_name" content="OPQNEXT">
+<meta property="og:description" content="在CentOS7上装Bind建DNS，让局域网用wowo.com解析vm‑dev001等几台机器的IP，省得记地址。">
+<meta property="og:locale">
+<meta property="og:image" content="http://opqnext.com/blog/assets/2026-05/26_ada93dec4d99.png">
+<meta property="article:published_time" content="2021-01-04T17:07:46.000Z">
+<meta property="article:modified_time" content="2021-01-04T17:07:46.000Z">
+<meta property="article:author" content="opnext">
+<meta property="article:tag" content="CentOS">
+<meta property="article:tag" content="DNS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://opqnext.com/blog/assets/2026-05/26_ada93dec4d99.png">
+
+
+<link rel="stylesheet" type="text/css" href="/blog/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title> CentOS7.9 搭建DNS服务器 - OPQNEXT </title>
+  <meta name="generator" content="Hexo 8.1.2"></head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/blog/." class="logo">OPQNEXT</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/blog/archives">
+                            
+                            
+                                档案
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/blog/about">
+                            
+                            
+                                关于
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          CentOS7.9 搭建DNS服务器
+        
+      </h1>
+
+      <time class="post-time">
+          Jan 05 2021
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <blockquote>
+<p> CentOS7 搭建DNS服务器，实现局域网域名访问，内网域名解析</p>
+</blockquote>
+<pre><code class="highlight plaintext">dns服务		       192.168.199.170
+vm-dev001.wowo.com 192.168.199.171
+vm-dev002.wowo.com 192.168.199.172
+vm-dev003.wowo.com 192.168.199.173</code></pre>
+<h3 id="安装DNS服务器软件包bind"><a href="#安装DNS服务器软件包bind" class="headerlink" title="安装DNS服务器软件包bind"></a>安装DNS服务器软件包bind</h3><pre><code class="highlight plaintext">yum install bind</code></pre>
+
+<h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>在主配置文件中实现或主配置文件辅助配置文件中实现：&#x2F;etc&#x2F;named.conf或者&#x2F;etc&#x2F;named.rfc1912.zones</p>
+<ul>
+<li>格式</li>
+</ul>
+<pre><code class="highlight plaintext">zone &quot;ZONE_NAME&quot; IN &#123;
+  type &#123;master|slave|hint|forward&#125;;
+  file &quot;ZONE_NAME.zone&quot;;
+&#125;;</code></pre>
+<ul>
+<li>例子</li>
+</ul>
+<pre><code class="highlight plaintext"># 下面添加etc/named.rfc1912.zones
+zone &quot;wowo.com&quot; IN &#123;
+	type master;
+	file &quot;wowo.com.zone&quot;;
+&#125;;</code></pre>
+
+<h3 id="创建区域数据文件"><a href="#创建区域数据文件" class="headerlink" title="创建区域数据文件"></a>创建区域数据文件</h3><p>1.在&#x2F;var&#x2F;named&#x2F;目录下建立区域数据文件；</p>
+<pre><code class="highlight plaintext">[root@vm-wowo-dev0-base named]# pwd
+/var/named
+[root@vm-wowo-dev0-base named]# cat wowo.com.zone
+$TTL 1D
+@   IN SOA  dns.wowo.com admin.wowo.com. (
+                    123 ; serial
+                    1D  ; refresh
+                    1H  ; retry
+                    1W  ; expire
+                    3H )    ; minimum
+@   IN  NS  dns
+@   IN  MX  5   mail
+dns     	IN  A   192.168.199.170
+mail    	IN  A   192.168.199.170
+www 		IN  A   192.168.199.170
+vm-dev001	IN  A   192.168.199.171
+vm-dev002       IN  A   192.168.199.172
+vm-dev003       IN  A   192.168.199.173</code></pre>
+<p>2.修改区域文件的权限及属组</p>
+<pre><code class="highlight plaintext">[root@vm-wowo-dev0-base named]# chown :named wowo.com.zone</code></pre>
+<p>3.检查配置文件和区域文件是否有语法错误</p>
+<pre><code class="highlight plaintext">[root@vm-wowo-dev0-base named]# named-checkconf
+[root@vm-wowo-dev0-base named]# named-checkzone wowo /var/named/wowo.com.zone
+zone enzhi.com/IN: loaded serial 213
+OK</code></pre>
+
+<h3 id="让服务器重载配置文件和区域文件"><a href="#让服务器重载配置文件和区域文件" class="headerlink" title="让服务器重载配置文件和区域文件"></a>让服务器重载配置文件和区域文件</h3><pre><code class="highlight plaintext">rndc restart | reload
+或者
+systemctl reload  named.service</code></pre>
+
+<h3 id="修改配置文件-vim-etc-named-conf"><a href="#修改配置文件-vim-etc-named-conf" class="headerlink" title="修改配置文件 vim &#x2F;etc&#x2F;named.conf"></a>修改配置文件 vim &#x2F;etc&#x2F;named.conf</h3><pre><code class="highlight plaintext">listen-on port 53 &#123; 127.0.0.1; 192.168.199.170;&#125;;
+
+下面这些都注释掉,至于为啥不知道
+//      dump-file       &quot;/var/named/data/cache_dump.db&quot;;
+//      statistics-file &quot;/var/named/data/named_stats.txt&quot;;
+//      memstatistics-file &quot;/var/named/data/named_mem_stats.txt&quot;;
+//      recursing-file  &quot;/var/named/data/named.recursing&quot;;
+//      secroots-file   &quot;/var/named/data/named.secroots&quot;;
+//      allow-query     &#123; localhost; &#125;;
+//      dnssec-enable yes;
+//      dnssec-validation yes;</code></pre>
+
+<h3 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h3><pre><code class="highlight plaintext">#启动DNS服务（说明：DNS服务的守护进程为named）
+[root@vm-wowo-dev0-base named]# systemctl start named.service
+
+#将DNS设为开机自启动
+[root@vm-wowo-dev0-base named]# systemctl enable named.service
+
+#查看DNS服务的状态
+[root@vm-wowo-dev0-base named]# systemctl status named.service
+
+#nslookup一下
+[root@vm-wowo-dev001 ~]# nslookup -qt=ns vm-dev001.wowo.com
+*** Invalid option: qt=ns
+Server:		192.168.199.170
+Address:	192.168.199.170#53
+
+Name:	vm-dev001.wowo.com
+Address: 192.168.199.171</code></pre>
+
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><pre><code class="highlight plaintext">[root@vm-wowo-dev0-base named]# dig -t A www.wowo.com @192.168.199.170
+
+; &lt;&lt;&gt;&gt; DiG 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.3 &lt;&lt;&gt;&gt; -t A www.wowo.com @192.168.199.170
+;; global options: +cmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 9528
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 2
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+//
+;www.wowo.com.			IN	A
+
+;; ANSWER SECTION:
+www.wowo.com.		86400	IN	A	192.168.199.170
+
+;; AUTHORITY SECTION:
+wowo.com.		86400	IN	NS	dns.wowo.com.
+
+;; ADDITIONAL SECTION:
+dns.wowo.com.		86400	IN	A	192.168.199.170
+
+;; Query time: 0 msec
+;; SERVER: 192.168.199.170#53(192.168.199.170)
+;; WHEN: 二 1月 05 00:28:49 CST 2021
+;; MSG SIZE  rcvd: 91</code></pre>
+
+<p><img src="/blog/assets/2026-05/26_ada93dec4d99.png" alt="image"></p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/6relation/p/6992070.html">https://www.cnblogs.com/6relation/p/6992070.html</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/yelllowcong/article/details/78823520">https://blog.csdn.net/yelllowcong/article/details/78823520</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/dyw_666666/article/details/103551865">https://blog.csdn.net/dyw_666666/article/details/103551865</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/wangenzhi/p/6308957.html">https://www.cnblogs.com/wangenzhi/p/6308957.html</a></p>
+<p>2021学习交流Q群号:939627878</p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/blog/tags/CentOS/">CentOS</a>
+		  
+			<a href="/blog/tags/DNS/">DNS</a>
+		  
+		</div>
+		
+
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/blog/posts/4f5f0030.html">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">Cobra简介</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/blog/posts/ad0acbd3.html">
+        <span class="next-text nav-default">在搞 mybatis-plus 遇到的坑</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2026
+    <span class="footer-author">opnext.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and <a class="theme-link" target="_blank" rel="noopener" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/blog/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+
+    <script type="text/javascript" src="/blog/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/blog/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>

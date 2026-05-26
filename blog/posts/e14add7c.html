@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="把MySQL里上万的文章换成迅搜全文检索，安装配置一次搞定，搜索速度立马上升好几倍，体验立刻飞起"/>
+
+
+
+
+  <meta name="keywords" content="迅搜," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/default" title="OPQNEXT" >
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://opqnext.com/blog/posts/e14add7c.html"/>
+
+
+<meta name="description" content="把MySQL里上万的文章换成迅搜全文检索，安装配置一次搞定，搜索速度立马上升好几倍，体验立刻飞起">
+<meta property="og:type" content="article">
+<meta property="og:title" content="迅搜(xunsearch)的安装使用以及操作类分享">
+<meta property="og:url" content="http://opqnext.com/blog/posts/e14add7c.html">
+<meta property="og:site_name" content="OPQNEXT">
+<meta property="og:description" content="把MySQL里上万的文章换成迅搜全文检索，安装配置一次搞定，搜索速度立马上升好几倍，体验立刻飞起">
+<meta property="og:locale">
+<meta property="og:image" content="http://opqnext.com/blog/assets/2026-05/26_becaee273bd6.png">
+<meta property="og:image" content="http://opqnext.com/blog/assets/2026-05/26_a28b0d410bca.png">
+<meta property="og:image" content="http://opqnext.com/blog/assets/2026-05/26_921a5bd02331.png">
+<meta property="article:published_time" content="2021-03-30T06:09:00.000Z">
+<meta property="article:modified_time" content="2021-03-30T06:09:00.000Z">
+<meta property="article:author" content="opnext">
+<meta property="article:tag" content="迅搜">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://opqnext.com/blog/assets/2026-05/26_becaee273bd6.png">
+
+
+<link rel="stylesheet" type="text/css" href="/blog/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title> 迅搜(xunsearch)的安装使用以及操作类分享 - OPQNEXT </title>
+  <meta name="generator" content="Hexo 8.1.2"></head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/blog/." class="logo">OPQNEXT</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/blog/archives">
+                            
+                            
+                                档案
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/blog/about">
+                            
+                            
+                                关于
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          迅搜(xunsearch)的安装使用以及操作类分享
+        
+      </h1>
+
+      <time class="post-time">
+          Mar 30 2021
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <p>搜索到这篇文章的人大多都应该已经知道 <a target="_blank" rel="noopener" href="http://www.xunsearch.com/">迅搜(xunsearch)</a> 是什么。</p>
+<blockquote>
+<p>迅搜(xunsearch)是采用 C&#x2F;C++ 基于 xapian 和 scws 开发的全文搜索引擎解决方案,适用于php全文检索、mysql全文检索和各种站内搜索。</p>
+</blockquote>
+<p>我原来做了一个小站，抓了很多很多文章，放到mysql中进行 like 搜索的效率是很低很低的，所以考虑了用迅搜，搜索引擎中只存了文章id、标题、tag、描述、文章分类、然后根据索引的文章id再到 mysql 读取文章内容。原来用了 RPC ，后来就没有那么多机器了 :cold_sweat::sob::dizzy_face: 那直接来吧。</p>
+<ul>
+<li>安装</li>
+</ul>
+<p>我是在 CentOs 下进行安装的，其实迅搜的教程挺详细的。我只是简化了一下。吧？</p>
+<p>1.运行下面指令下载、解压安装包。</p>
+<pre><code class="highlight plaintext">wget http://www.xunsearch.com/download/xunsearch-full-latest.tar.bz2</code></pre>
+<p><img src="/blog/assets/2026-05/26_becaee273bd6.png" alt="image"></p>
+<p>2.进入xunsearch-full-1.4.9目录，执行setup.sh文件</p>
+<pre><code class="highlight plaintext">./setup.sh		//执行安装命令</code></pre>
+<p>默认安装目录：&#x2F;usr&#x2F;local&#x2F;xunsearch</p>
+<p>3.安装完成：</p>
+<pre><code class="highlight plaintext">vim /etc/rc.d/rc.local     //添加开机启动
+/usr/local/xunsearch/bin/xs-ctl.sh -b inet  restart 	//将此命令写入开机启动</code></pre>
+<p>搜索系统将所有数据保存在 &#x2F;usr&#x2F;local&#x2F;xunsearch&#x2F;data 目录中。如果您希望数据目录另行安排或转移至其它分区，请将 &#x2F;usr&#x2F;local&#x2F;xunsearch&#x2F;data 作为软链接指向真实目录。<br>软连接到：&#x2F;data&#x2F;xunsearch&#x2F;data</p>
+<pre><code class="highlight plaintext">ln -s /data/xunsearch/data	/usr/local/xunsearch/data</code></pre>
+
+<p><img src="/blog/assets/2026-05/26_a28b0d410bca.png" alt="image"></p>
+<p>Info: 出于性能和多数需求考虑 xunsearch 服务端和 SDK API 通讯时没有加密和验证处理， 并且默认情况 xs-ctl.sh 启动的服务程序是绑定并监听在 127.0.0.1 上。</p>
+<p><em>如果您的 SDK 调用和 xunsearch 服务端不在同一服务器，请使用 -b inet 方式启动脚本，</em> 并注意借助类似 iptables 的防火墙来控制 xunsearch 的 8383&#x2F;8384 两个端口的访问权限。 启动脚本用法举例如下，以下均为合法使用方式：</p>
+<ul>
+<li>bin&#x2F;xs-ctl.sh -b local start    &#x2F;&#x2F; 监听在本地回环地址 127.0.0.1 上</li>
+<li>bin&#x2F;xs-ctl.sh -b inet start     &#x2F;&#x2F; 监听在所有本地 IP 地址上</li>
+<li>bin&#x2F;xs-ctl.sh -b a.b.c.d start  &#x2F;&#x2F; 监听在指定 IP 上</li>
+<li>bin&#x2F;xs-ctl.sh -b unix start     &#x2F;&#x2F; 分别监听在 tmp&#x2F;indexd.sock 和 tmp&#x2F;searchd.sock</li>
+</ul>
+<p>4.启动讯搜服务：</p>
+<pre><code class="highlight plaintext">/usr/local/xunsearch/bin/xs-ctl.sh start</code></pre>
+<p><img src="/blog/assets/2026-05/26_921a5bd02331.png" alt="image"></p>
+<p>检测你的服务器是否符合讯搜的最低要求：(PHP执行)</p>
+<pre><code class="highlight plaintext">php /usr/local/xunsearch/sdk/php/util/RequiredCheck.php</code></pre>
+
+<p>5.根据字段配置.ini文件</p>
+<p><a target="_blank" rel="noopener" href="http://www.xunsearch.com/tools/iniconfig">http://www.xunsearch.com/tools/iniconfig</a>参考文档项目配置详解内容。</p>
+<p>ini文件路径：&#x2F;usr&#x2F;local&#x2F;xunsearch&#x2F;sdk&#x2F;php&#x2F;app&#x2F;article.ini</p>
+<pre><code class="highlight plaintext">project.name = article
+project.default_charset = utf-8
+
+[id]
+type = id
+
+[title]
+type = title
+
+[desc]
+type = body
+
+[tags]
+index = both
+weight = 4
+
+[cate]
+index = both
+weight = 3</code></pre>
+<p>6.索引管理工具——Indexer（用PHP去执行sdk）</p>
+<ul>
+<li>*# 清空 demo 项目的索引数据 *<br>util&#x2F;Indexer.php –clean demo</li>
+<li><em># 导入 JSON 数据文件 file.json 到 demo 项目</em><br>util&#x2F;Indexer.php –source&#x3D;json demo file.json</li>
+<li><em># 导入 MySQL 数据库的 dbname.tbl_post 表到 demo 项目中，并且平滑重建</em><br>util&#x2F;Indexer.php –rebuild –source&#x3D;mysql:&#x2F;&#x2F;root:pass@localhost&#x2F;dbname –sql&#x3D;”SELECT * FROM tbl_post” –project&#x3D;demo</li>
+<li><em># 查看 demo 项目在服务端的相关信息</em><br>util&#x2F;Indexer.php –info -p demo</li>
+<li><em># 强制刷新 demo 项目的搜索日志</em><br>util&#x2F;Indexer.php –flush-log –project demo</li>
+<li><em># 强制停止重建</em><br>util&#x2F;Indexer.php –stop-rebuild demo</li>
+</ul>
+<blockquote>
+<p>根据mysql导入数据<br>#util&#x2F;Indexer.php –rebuild –source&#x3D;mysql:&#x2F;&#x2F;root:password@localhost&#x2F;dbname –sql&#x3D;”SELECT id,title,category,tags,description,cate_id,add_time FROM gzy_article” –project&#x3D;article</p>
+</blockquote>
+<p>操作类详见github： <a target="_blank" rel="noopener" href="https://github.com/auto0010/xunsearch">https://github.com/auto0010/xunsearch</a></p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/blog/tags/%E8%BF%85%E6%90%9C/">迅搜</a>
+		  
+		</div>
+		
+
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/blog/posts/8eebebba.html">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">又稀里糊涂的搭建了一个博客</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/blog/posts/4f5f0030.html">
+        <span class="next-text nav-default">Cobra简介</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2026
+    <span class="footer-author">opnext.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and <a class="theme-link" target="_blank" rel="noopener" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/blog/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+
+    <script type="text/javascript" src="/blog/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/blog/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>

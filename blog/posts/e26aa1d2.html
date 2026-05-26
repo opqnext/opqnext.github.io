@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="今天心血来潮写了个 Python 小脚本，把普通图片转成字符画，顺便分享几个小技巧和实用经验，讲讲 Pillow 的安装和灰度值的计算原理。"/>
+
+
+
+
+  <meta name="keywords" content="Python," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/default" title="OPQNEXT" >
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://opqnext.com/blog/posts/e26aa1d2.html"/>
+
+
+<meta name="description" content="今天心血来潮写了个 Python 小脚本，把普通图片转成字符画，顺便分享几个小技巧和实用经验，讲讲 Pillow 的安装和灰度值的计算原理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python 图片转字符画">
+<meta property="og:url" content="http://opqnext.com/blog/posts/e26aa1d2.html">
+<meta property="og:site_name" content="OPQNEXT">
+<meta property="og:description" content="今天心血来潮写了个 Python 小脚本，把普通图片转成字符画，顺便分享几个小技巧和实用经验，讲讲 Pillow 的安装和灰度值的计算原理。">
+<meta property="og:locale">
+<meta property="og:image" content="http://opqnext.com/blog/assets/2026-05/26_aeec1aa7a974.png">
+<meta property="article:published_time" content="2018-12-18T06:19:00.000Z">
+<meta property="article:modified_time" content="2018-12-18T06:19:00.000Z">
+<meta property="article:author" content="opnext">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://opqnext.com/blog/assets/2026-05/26_aeec1aa7a974.png">
+
+
+<link rel="stylesheet" type="text/css" href="/blog/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title> python 图片转字符画 - OPQNEXT </title>
+  <meta name="generator" content="Hexo 8.1.2"></head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/blog/." class="logo">OPQNEXT</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/blog/archives">
+                            
+                            
+                                档案
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/blog/about">
+                            
+                            
+                                关于
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          python 图片转字符画
+        
+      </h1>
+
+      <time class="post-time">
+          Dec 18 2018
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <p>虽然我PHP教程还没写完呢，我昨天试图写来着，后来又没写。:cry:</p>
+<p>我女朋友不知道为啥又生气了，昨天早上还好着呢，中午就生气了，到现在我还不知道为什么。:cry:</p>
+<p>没关系，我长大了，听一首不可撤销的 <a target="_blank" rel="noopener" href="http://music.163.com/#/song?id=29747621">启程</a> 压压惊。 :cry:</p>
+<p>我想我今天应该做点什么？起床洗头发，想啊想啊，做这个 python 图片转字符画。</p>
+<p>简单介绍一部分，后面贴代码和效果图。</p>
+<ul>
+<li>需要 PIL 库</li>
+</ul>
+<p>pip install pil 安装了半天安装不了，但是 pip search pil 确实搜索到了，找了半天，好像 pillow 和 pil 是一个东西。</p>
+<blockquote>
+<p>Pillow 是 PIL的对Python3支持的另外一个分支，当然他对Python2也兼容，由于PIL安装起来比较烦，而使用pip可以很轻松的安装Pillow，所以我选择Pillow使用，但是其核心还是PIL库的。</p>
+</blockquote>
+<ul>
+<li>灰度值</li>
+</ul>
+<blockquote>
+<p>灰度值：指黑白图像中点的颜色深度，范围一般从0到255，白色为255，黑色为0，故黑白图片也称灰度图像</p>
+</blockquote>
+<p>可以使用灰度值公式将像素的 RGB 值映射到灰度值：</p>
+<pre><code class="highlight plaintext">gray = int(0.2126*r+0.7152*g+0.0722*b)</code></pre>
+
+<p>下面是完整的代码：</p>
+<pre><code class="highlight python"><span class="comment"># -*- coding: utf-8 -*-</span>
+<span class="comment"># by opqnext.com, 2017.02.08</span>
+<span class="keyword">from</span> PIL <span class="keyword">import</span> Image
+<span class="keyword">import</span> argparse
+
+<span class="comment"># 接收参数</span>
+parser = argparse.ArgumentParser()
+
+parser.add_argument(<span class="string">&#x27;file&#x27;</span>)
+parser.add_argument(<span class="string">&#x27;-o&#x27;</span>, <span class="string">&#x27;--output&#x27;</span>)
+parser.add_argument(<span class="string">&#x27;--width&#x27;</span>, <span class="built_in">type</span>=<span class="built_in">int</span>, default=<span class="number">80</span>)
+parser.add_argument(<span class="string">&#x27;--height&#x27;</span>, <span class="built_in">type</span>=<span class="built_in">int</span>, default=<span class="number">80</span>)
+
+args = parser.parse_args()
+
+IMG = args.file
+WIDTH = args.width
+HEIGHT = args.height
+OUTPUT = args.output
+
+ascii_char = <span class="built_in">list</span>(<span class="string">&quot;$@B%8&amp;WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1&#123;&#125;[]?-_+~&lt;&gt;i!;:,\&quot;^`&#x27;.&quot;</span>)
+
+<span class="keyword">def</span> <span class="title function_">get_char</span>(<span class="params">r, b, g, alpha=<span class="number">256</span></span>):
+    <span class="keyword">if</span> alpha == <span class="number">0</span>:
+        <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>
+    length = <span class="built_in">len</span>(ascii_char)
+    gray = <span class="built_in">int</span>(<span class="number">0.2126</span>*r+<span class="number">0.7152</span>*g+<span class="number">0.0722</span>*b)
+
+    unit = (<span class="number">256.0</span>+<span class="number">1</span>)/length
+    <span class="keyword">return</span> ascii_char[<span class="built_in">int</span>(gray/unit)]
+
+<span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:
+    im = Image.<span class="built_in">open</span>(IMG)
+    im = im.resize((WIDTH, HEIGHT), Image.NEAREST)
+    txt = <span class="string">&quot;&quot;</span>
+    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(HEIGHT):
+        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(WIDTH):
+            txt += get_char(*im.getpixel((j, i)))
+        txt += <span class="string">&#x27;\n&#x27;</span>
+
+    <span class="built_in">print</span> txt</code></pre>
+<p>然后截取一张效果图，一目了然，你在做的东西是什么？</p>
+<p><img src="/blog/assets/2026-05/26_aeec1aa7a974.png" alt="image"></p>
+<p>魔镜啊，魔镜呐，你说…</p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/blog/tags/Python/">Python</a>
+		  
+		</div>
+		
+
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/blog/posts/ad0acbd3.html">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">在搞 mybatis-plus 遇到的坑</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/blog/posts/39188d38.html">
+        <span class="next-text nav-default">一个基于Swoole的websocket聊天室</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2026
+    <span class="footer-author">opnext.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and <a class="theme-link" target="_blank" rel="noopener" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/blog/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+
+    <script type="text/javascript" src="/blog/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/blog/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>

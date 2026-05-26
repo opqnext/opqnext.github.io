@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="每次push新分支，代码自动部署到对应端口和目录，分支即站点，TP5测试超方便。"/>
+
+
+
+
+  <meta name="keywords" content="Git," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/default" title="OPQNEXT" >
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://opqnext.com/blog/posts/a20e2f73.html"/>
+
+
+<meta name="description" content="每次push新分支，代码自动部署到对应端口和目录，分支即站点，TP5测试超方便。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="git不同分支push之后通过hook自动部署到服务器不同路径">
+<meta property="og:url" content="http://opqnext.com/blog/posts/a20e2f73.html">
+<meta property="og:site_name" content="OPQNEXT">
+<meta property="og:description" content="每次push新分支，代码自动部署到对应端口和目录，分支即站点，TP5测试超方便。">
+<meta property="og:locale">
+<meta property="article:published_time" content="2017-07-19T12:42:00.000Z">
+<meta property="article:modified_time" content="2017-07-19T12:42:00.000Z">
+<meta property="article:author" content="opnext">
+<meta property="article:tag" content="Git">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="stylesheet" type="text/css" href="/blog/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title> git不同分支push之后通过hook自动部署到服务器不同路径 - OPQNEXT </title>
+  <meta name="generator" content="Hexo 8.1.2"></head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/blog/." class="logo">OPQNEXT</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/blog/archives">
+                            
+                            
+                                档案
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/blog/about">
+                            
+                            
+                                关于
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          git不同分支push之后通过hook自动部署到服务器不同路径
+        
+      </h1>
+
+      <time class="post-time">
+          Jul 19 2017
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <p>我想做的是这么一件事：git 每创建一个新分支，push之后自动部署的服务器的不同路径，然后根据不同端口访问不同分支的代码，以方便进行该分支的测试。</p>
+<p>并且我正在学习 thinkphp 5 呢，正好测试一下。</p>
+<p>举个栗子来说就是：当我新建了一个分支为 <code>8081_opqnext_test</code>，然后完成了某个功能。git add、git commit、当 git push 之后，服务器会自动拉取 8081_opqnext_test 分支上的代码到 &#x2F;data&#x2F;tp&#x2F;8081 这个目录里，然后 访问 beta.tp.opqnext.com:8081 就会直接访问到该分支的代码。同理，当我创建看一个 8082_user_list 的分支。完成了用户列表的功能。git push 之后服务器会自动创建目录 &#x2F;data&#x2F;tp&#x2F;8082 并且将代码到 pull 到该目录。当你访问 beta.tp.opqnext.com:8082 的时候，会访问到该分支的代码便于测试。那 master 的代码每次合并之后 都会自动部署到 &#x2F;data&#x2F;tp.opqnext.com&#x2F; 访问 tp.opqnext.com 即线上的代码。</p>
+<p>然后我们分开步骤来说：</p>
+<ol>
+<li>首先完成自动部署功能。</li>
+<li>各个分支自动部署到不同路径。</li>
+<li>访问不同的端口映射到不同的分支代码。</li>
+</ol>
+<h6 id="首先完成自动部署"><a href="#首先完成自动部署" class="headerlink" title="首先完成自动部署"></a>首先完成自动部署</h6><p>这里我用的是 <a target="_blank" rel="noopener" href="http://git.oschina.net/">码云 git@oschina</a> 来做的。</p>
+<p>首先需要配置 <a target="_blank" rel="noopener" href="http://git.mydoc.io/?t=180845">ssh公钥</a>，看这里:</p>
+<p>**特别提醒的是：**你的 nginx 是用哪个用户跑的，那么在生产公钥之前先要切换到该用户下。比如我 nginx 是 ngxuser 用户,假如你在 root 下生产公钥并且配置到码云，你的hook是没有权限 clone 和 pull 代码的&#x2F;(ㄒoㄒ)&#x2F;~~</p>
+<p>你可以按如下命令来生成sshkey:</p>
+<pre><code class="highlight shell">sudo ngxuser  # 你的nginx用户
+ssh-keygen -t rsa -C &quot;xxxxx@xxxxx.com&quot;
+<span class="meta prompt_"></span>
+<span class="meta prompt_"># </span><span class="language-bash">Generating public/private rsa key pair...</span>
+<span class="meta prompt_"># </span><span class="language-bash">三次回车即可生成 ssh key</span></code></pre>
+<p>查看你的 public key，并把他添加到码云（Gitee.com）</p>
+<pre><code class="highlight plaintext">cat ~/.ssh/id_rsa.pub
+# ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC6eNtGpNGwstc....</code></pre>
+<p>添加后，在终端（Terminal）中输入</p>
+<pre><code class="highlight plaintext">ssh -T git@git.oschina.net</code></pre>
+<p>若返回</p>
+<pre><code class="highlight plaintext">Welcome to Git@OSC, yourname!</code></pre>
+<p>则说明添加成功，然后去 <a target="_blank" rel="noopener" href="http://git.oschina.net/profile/sshkeys">码云后台</a> 添加你的 ssh key</p>
+<p>然后去配置 webhook <a target="_blank" rel="noopener" href="http://git.mydoc.io/?t=154711">查看教程</a> 配置完成 webhook 之后，你每次 push 之后就会触发这个钩子。最简单的，你写一个 auto_deploy_code.php 放到网站根目录。内容是：</p>
+<pre><code class="highlight php"><span class="meta">&lt;?php</span>
+<span class="keyword">echo</span> <span class="string">&#x27;&lt;pre&gt;&#x27;</span>;
+<span class="title function_ invoke__">system</span>(<span class="string">&quot;git pull&quot;</span>, <span class="variable">$var</span>);</code></pre>
+<p>不用接收 webhook 给你发过来的数据，你只管 pull ，假如你只有一个分支的话。</p>
+<p>但是我要接收呢，既然有了数据，当然要接收。</p>
+<p>我创建了一个新的分支，这个分支名称可以规定好，比如：8081_opqnext_user （端口-开发者-开发功能）这里怎么约定，那你后面的脚本就怎么写呗。</p>
+<p>自动部署的脚本：</p>
+<pre><code class="highlight php"><span class="meta">&lt;?php</span>
+<span class="comment">/**</span>
+<span class="comment"> * GIT webHook 自动部署</span>
+<span class="comment"> * <span class="doctag">@author</span> 郭贰小姐</span>
+<span class="comment"> * <span class="doctag">@time</span>: 2017/7/13</span>
+<span class="comment"> */</span>
+<span class="variable">$hook</span> = <span class="title function_ invoke__">str_replace</span>(<span class="string">&#x27;\&quot;&#x27;</span>,<span class="string">&#x27;&quot;&#x27;</span>,<span class="variable">$_POST</span>[<span class="string">&#x27;hook&#x27;</span>]);
+<span class="variable">$res</span> = <span class="title function_ invoke__">json_decode</span>(<span class="variable">$hook</span>,<span class="literal">true</span>);
+<span class="variable">$token</span> = <span class="string">&#x27;你配置的token&#x27;</span>;
+<span class="keyword">if</span> (<span class="variable">$res</span>[<span class="string">&#x27;password&#x27;</span>] != <span class="variable">$token</span>) &#123;
+    <span class="title function_ invoke__">error_log</span>(<span class="string">&#x27;auto_git_pull [&#x27;</span>.<span class="title function_ invoke__">date</span>(<span class="string">&#x27;Y-m-d H:i:s&#x27;</span>).<span class="string">&#x27;] token is error]&#x27;</span>);
+&#125; <span class="keyword">else</span> &#123;
+    <span class="variable">$dir</span> = <span class="string">&#x27;/data/tp/&#x27;</span>;
+    <span class="variable">$branch</span>  = <span class="title function_ invoke__">explode</span>(<span class="string">&#x27;/&#x27;</span>,<span class="variable">$res</span>[<span class="string">&#x27;push_data&#x27;</span>][<span class="string">&#x27;ref&#x27;</span>])[<span class="number">2</span>];
+    <span class="variable">$port</span> = <span class="title function_ invoke__">explode</span>(<span class="string">&#x27;_&#x27;</span>,<span class="variable">$branch</span>)[<span class="number">0</span>];
+    <span class="variable">$dir</span> = <span class="string">&#x27;/data/tp/&#x27;</span>.<span class="variable">$port</span>;
+    <span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$res</span>[<span class="string">&#x27;push_data&#x27;</span>][<span class="string">&#x27;commits&#x27;</span>]) &amp;&amp; !<span class="keyword">empty</span>(<span class="variable">$res</span>[<span class="string">&#x27;push_data&#x27;</span>][<span class="string">&#x27;commits&#x27;</span>]))&#123;
+        <span class="keyword">if</span>(<span class="variable">$branch</span> == <span class="string">&#x27;master&#x27;</span>)&#123;
+            <span class="variable">$cmd</span> = <span class="string">&quot;cd /data/tp.opqnext.com; git pull origin master&quot;</span>;
+            <span class="title function_ invoke__">shell_exec</span>(<span class="variable">$cmd</span>);
+            <span class="title function_ invoke__">error_log</span>(<span class="string">&#x27;auto_git_pull &#x27;</span>.<span class="variable">$res</span>[<span class="string">&#x27;push_data&#x27;</span>][<span class="string">&#x27;user_name&#x27;</span>].<span class="string">&#x27; &#x27;</span>.<span class="variable">$branch</span>.<span class="string">&#x27; msg:&#x27;</span>.<span class="variable">$res</span>[<span class="string">&#x27;push_data&#x27;</span>][<span class="string">&#x27;commits&#x27;</span>][<span class="number">0</span>][<span class="string">&#x27;message&#x27;</span>].<span class="string">&#x27; =&gt;&#x27;</span>.<span class="title function_ invoke__">date</span>(<span class="string">&#x27;H:i:s&#x27;</span>));
+        &#125; <span class="keyword">else</span> &#123;
+            <span class="keyword">if</span>(!<span class="title function_ invoke__">is_dir</span>(<span class="variable">$dir</span>))&#123;
+                <span class="title function_ invoke__">mkdir</span>(<span class="variable">$dir</span>,<span class="number">0777</span>,<span class="literal">true</span>);
+                <span class="variable">$cmd</span> = <span class="string">&quot;cd <span class="subst">$dir</span>; git clone -b <span class="subst">$branch</span> git@git.oschina.net:opqnext/thinkphp.git <span class="subst">$dir</span>&quot;</span>;
+            &#125; <span class="keyword">else</span> &#123;
+                <span class="variable">$cmd</span> = <span class="string">&quot;cd <span class="subst">$dir</span>; git pull origin <span class="subst">$branch</span>&quot;</span>;
+            &#125;
+            <span class="title function_ invoke__">shell_exec</span>(<span class="variable">$cmd</span>);
+            <span class="title function_ invoke__">error_log</span>(<span class="string">&#x27;auto_git_pull &#x27;</span>.<span class="variable">$res</span>[<span class="string">&#x27;push_data&#x27;</span>][<span class="string">&#x27;user_name&#x27;</span>].<span class="string">&#x27; &#x27;</span>.<span class="variable">$branch</span>.<span class="string">&#x27; msg:&#x27;</span>.<span class="variable">$res</span>[<span class="string">&#x27;push_data&#x27;</span>][<span class="string">&#x27;commits&#x27;</span>][<span class="number">0</span>][<span class="string">&#x27;message&#x27;</span>].<span class="string">&#x27; =&gt;&#x27;</span>.<span class="title function_ invoke__">date</span>(<span class="string">&#x27;H:i:s&#x27;</span>));
+        &#125;
+    &#125; <span class="keyword">else</span> &#123;
+        <span class="comment">// 删除分支</span>
+        <span class="variable">$cmd</span> = <span class="string">&quot;cd /data/tp; rm -rf <span class="subst">$port</span>&quot;</span>;
+        <span class="title function_ invoke__">shell_exec</span>(<span class="variable">$cmd</span>);
+        <span class="title function_ invoke__">error_log</span>(<span class="string">&#x27;auto_git_del_branch &#x27;</span>.<span class="variable">$res</span>[<span class="string">&#x27;push_data&#x27;</span>][<span class="string">&#x27;user_name&#x27;</span>].<span class="string">&#x27; &#x27;</span>.<span class="variable">$branch</span>.<span class="string">&#x27; =&gt;&#x27;</span>.<span class="title function_ invoke__">date</span>(<span class="string">&#x27;H:i:s&#x27;</span>));
+    &#125;
+&#125;</code></pre>
+
+<p>首先检测 token 是否正确，获取分支名称，截取端口号，填写端口完整路径。<br>如果 commit 信息有内容，说明判断分支是否为 master 如果是就拉线上代码，如果是分支 commit 检测端口路径是否存在，存在即 pull 否则 clone 没了。</p>
+<p>既然各个分支的目录都已经创建好了，代码也可以自动部署了。那再配置 nginx 就可以了，我本来以为可以写一个类似于正则匹配，匹配到哪个端口就去访问对应的路径，但是貌似不行，所以只能写多个 server 监听不同的端口，配置相应的路径。</p>
+<p>比如 8081，8082，8083，8084…</p>
+<p>每个开发者三五个端口，不错了。大概就是这样一个理论。我发现我写代码从来都是道理基本通，但是不能用…如果你要用的话，再修改修改就 beautiful 了。</p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/blog/tags/Git/">Git</a>
+		  
+		</div>
+		
+
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/blog/posts/3dfff433.html">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">如何写一个自己的渣渣composer包</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/blog/posts/82eaa641.html">
+        <span class="next-text nav-default">如何评价痛仰新专《今日青年》?</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2026
+    <span class="footer-author">opnext.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and <a class="theme-link" target="_blank" rel="noopener" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/blog/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+
+    <script type="text/javascript" src="/blog/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/blog/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>

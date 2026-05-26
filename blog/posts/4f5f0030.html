@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="Cobra 是一个 Go 库，用来生成命令行工具，Kubernetes、Hugo、GitHub CLI 等项目都在用。"/>
+
+
+
+
+  <meta name="keywords" content="Cobra," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/default" title="OPQNEXT" >
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://opqnext.com/blog/posts/4f5f0030.html"/>
+
+
+<meta name="description" content="Cobra 是一个 Go 库，用来生成命令行工具，Kubernetes、Hugo、GitHub CLI 等项目都在用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cobra简介">
+<meta property="og:url" content="http://opqnext.com/blog/posts/4f5f0030.html">
+<meta property="og:site_name" content="OPQNEXT">
+<meta property="og:description" content="Cobra 是一个 Go 库，用来生成命令行工具，Kubernetes、Hugo、GitHub CLI 等项目都在用。">
+<meta property="og:locale">
+<meta property="og:image" content="http://opqnext.com/blog/assets/2026-05/26_8f9d35c2728f.png">
+<meta property="article:published_time" content="2021-03-03T10:49:00.000Z">
+<meta property="article:modified_time" content="2021-03-03T10:49:00.000Z">
+<meta property="article:author" content="opnext">
+<meta property="article:tag" content="Cobra">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://opqnext.com/blog/assets/2026-05/26_8f9d35c2728f.png">
+
+
+<link rel="stylesheet" type="text/css" href="/blog/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title> Cobra简介 - OPQNEXT </title>
+  <meta name="generator" content="Hexo 8.1.2"></head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/blog/." class="logo">OPQNEXT</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/blog/archives">
+                            
+                            
+                                档案
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/blog/about">
+                            
+                            
+                                关于
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Cobra简介
+        
+      </h1>
+
+      <time class="post-time">
+          Mar 03 2021
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <p><img src="/blog/assets/2026-05/26_8f9d35c2728f.png" alt="image"></p>
+<p>Cobra既是一个创建强大的现代CLI应用程序的库，也是一个生成应用程序和命令文件的程序。</p>
+<p>Cobra被用于许多Go项目，如Kubernetes、Hugo和Github CLI等等。这个列表包含了一个更广泛的使用Cobra的项目列表。</p>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
+<li>概述</li>
+<li>概念<ul>
+<li>指令</li>
+<li>旗帜</li>
+</ul>
+</li>
+<li>安装</li>
+<li>入门<ul>
+<li>使用Cobra生成器</li>
+<li>使用Cobra库</li>
+<li>使用Flags</li>
+<li>位置和自定义参数</li>
+<li>例子</li>
+<li>帮助命令</li>
+<li>使用说明</li>
+<li>运行前和运行后挂钩</li>
+<li>发生 “未知命令 “时的建议</li>
+<li>为您的命令生成文档</li>
+<li>生成外壳完成</li>
+</ul>
+</li>
+<li>贡献</li>
+<li>许可证</li>
+</ul>
+<h4 id="使用Cobra库"><a href="#使用Cobra库" class="headerlink" title="使用Cobra库"></a>使用Cobra库</h4><p>要手动实现Cobra，你需要创建一个空的main.go文件和一个rootCmd文件。你还可以根据自己的需要提供其他命令。</p>
+<h6 id="创建rootCmd"><a href="#创建rootCmd" class="headerlink" title="创建rootCmd"></a>创建rootCmd</h6><p>Cobra不需要任何特殊的构造函数。只需创建你的命令。</p>
+<p>理想情况下，你可以把它放在<code>app/cmd/root.go</code>中。</p>
+<pre><code class="highlight go"><span class="keyword">var</span> rootCmd = &amp;cobra.Command&#123;
+  Use:   <span class="string">&quot;hugo&quot;</span>,
+  Short: <span class="string">&quot;Hugo is a very fast static site generator&quot;</span>,
+  Long: <span class="string">`A Fast and Flexible Static Site Generator built with</span>
+<span class="string">                love by spf13 and friends in Go.</span>
+<span class="string">                Complete documentation is available at http://hugo.spf13.com`</span>,
+  Run: <span class="function"><span class="keyword">func</span><span class="params">(cmd *cobra.Command, args []<span class="type">string</span>)</span></span> &#123;
+    <span class="comment">// Do Stuff Here</span>
+  &#125;,
+&#125;
+
+<span class="function"><span class="keyword">func</span> <span class="title">Execute</span><span class="params">()</span></span> &#123;
+  <span class="keyword">if</span> err := rootCmd.Execute(); err != <span class="literal">nil</span> &#123;
+    fmt.Fprintln(os.Stderr, err)
+    os.Exit(<span class="number">1</span>)
+  &#125;
+&#125;</code></pre>
+<p>你将在 init()函数中额外定义标志和处理配置。</p>
+<p>例如 cmd&#x2F;root.go:</p>
+<pre><code class="highlight go"><span class="keyword">package</span> cmd
+
+<span class="keyword">import</span> (
+	<span class="string">&quot;fmt&quot;</span>
+	<span class="string">&quot;os&quot;</span>
+
+	homedir <span class="string">&quot;github.com/mitchellh/go-homedir&quot;</span>
+	<span class="string">&quot;github.com/spf13/cobra&quot;</span>
+	<span class="string">&quot;github.com/spf13/viper&quot;</span>
+)
+
+<span class="keyword">var</span> (
+	<span class="comment">// Used for flags.</span>
+	cfgFile     <span class="type">string</span>
+	userLicense <span class="type">string</span>
+
+	rootCmd = &amp;cobra.Command&#123;
+		Use:   <span class="string">&quot;cobra&quot;</span>,
+		Short: <span class="string">&quot;A generator for Cobra based Applications&quot;</span>,
+		Long: <span class="string">`Cobra is a CLI library for Go that empowers applications.</span>
+<span class="string">This application is a tool to generate the needed files</span>
+<span class="string">to quickly create a Cobra application.`</span>,
+	&#125;
+)
+
+<span class="comment">// Execute executes the root command.</span>
+<span class="function"><span class="keyword">func</span> <span class="title">Execute</span><span class="params">()</span></span> <span class="type">error</span> &#123;
+	<span class="keyword">return</span> rootCmd.Execute()
+&#125;
+
+<span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;
+	cobra.OnInitialize(initConfig)
+
+	rootCmd.PersistentFlags().StringVar(&amp;cfgFile, <span class="string">&quot;config&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;config file (default is $HOME/.cobra.yaml)&quot;</span>)
+	rootCmd.PersistentFlags().StringP(<span class="string">&quot;author&quot;</span>, <span class="string">&quot;a&quot;</span>, <span class="string">&quot;YOUR NAME&quot;</span>, <span class="string">&quot;author name for copyright attribution&quot;</span>)
+	rootCmd.PersistentFlags().StringVarP(&amp;userLicense, <span class="string">&quot;license&quot;</span>, <span class="string">&quot;l&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;name of license for the project&quot;</span>)
+	rootCmd.PersistentFlags().Bool(<span class="string">&quot;viper&quot;</span>, <span class="literal">true</span>, <span class="string">&quot;use Viper for configuration&quot;</span>)
+	viper.BindPFlag(<span class="string">&quot;author&quot;</span>, rootCmd.PersistentFlags().Lookup(<span class="string">&quot;author&quot;</span>))
+	viper.BindPFlag(<span class="string">&quot;useViper&quot;</span>, rootCmd.PersistentFlags().Lookup(<span class="string">&quot;viper&quot;</span>))
+	viper.SetDefault(<span class="string">&quot;author&quot;</span>, <span class="string">&quot;NAME HERE &lt;EMAIL ADDRESS&gt;&quot;</span>)
+	viper.SetDefault(<span class="string">&quot;license&quot;</span>, <span class="string">&quot;apache&quot;</span>)
+
+	rootCmd.AddCommand(addCmd)
+	rootCmd.AddCommand(initCmd)
+&#125;
+
+<span class="function"><span class="keyword">func</span> <span class="title">er</span><span class="params">(msg <span class="keyword">interface</span>&#123;&#125;)</span></span> &#123;
+	fmt.Println(<span class="string">&quot;Error:&quot;</span>, msg)
+	os.Exit(<span class="number">1</span>)
+&#125;
+
+<span class="function"><span class="keyword">func</span> <span class="title">initConfig</span><span class="params">()</span></span> &#123;
+	<span class="keyword">if</span> cfgFile != <span class="string">&quot;&quot;</span> &#123;
+		<span class="comment">// Use config file from the flag.</span>
+		viper.SetConfigFile(cfgFile)
+	&#125; <span class="keyword">else</span> &#123;
+		<span class="comment">// Find home directory.</span>
+		home, err := homedir.Dir()
+		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;
+			er(err)
+		&#125;
+
+		<span class="comment">// Search config in home directory with name &quot;.cobra&quot; (without extension).</span>
+		viper.AddConfigPath(home)
+		viper.SetConfigName(<span class="string">&quot;.cobra&quot;</span>)
+	&#125;
+
+	viper.AutomaticEnv()
+
+	<span class="keyword">if</span> err := viper.ReadInConfig(); err == <span class="literal">nil</span> &#123;
+		fmt.Println(<span class="string">&quot;Using config file:&quot;</span>, viper.ConfigFileUsed())
+	&#125;
+&#125;</code></pre>
+<h6 id="创建你的main-go"><a href="#创建你的main-go" class="headerlink" title="创建你的main.go"></a>创建你的main.go</h6><p>有了root命令，你需要让你的main函数来执行它。为了清楚起见，执行应该在根节点上运行，尽管它可以在任何命令上被调用。</p>
+<p>在Cobra应用中，通常main.go文件是非常简单的。它的作用只有一个：初始化Cobra:</p>
+<pre><code class="highlight go"><span class="keyword">package</span> main
+
+<span class="keyword">import</span> (
+  <span class="string">&quot;&#123;pathToYourApp&#125;/cmd&quot;</span>
+)
+
+<span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;
+  cmd.Execute()
+&#125;</code></pre>
+
+<h6 id="创建其他命令"><a href="#创建其他命令" class="headerlink" title="创建其他命令"></a>创建其他命令</h6><p>其他的命令可以被定义，通常每个命令都在 cmd&#x2F;目录下有自己的文件。</p>
+<p>如果你想创建一个版本命令，你可以创建<code>cmd/version.go</code>，并在其中加入以下内容:</p>
+<pre><code class="highlight go"><span class="keyword">package</span> cmd
+
+<span class="keyword">import</span> (
+  <span class="string">&quot;fmt&quot;</span>
+
+  <span class="string">&quot;github.com/spf13/cobra&quot;</span>
+)
+
+<span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;
+  rootCmd.AddCommand(versionCmd)
+&#125;
+
+<span class="keyword">var</span> versionCmd = &amp;cobra.Command&#123;
+  Use:   <span class="string">&quot;version&quot;</span>,
+  Short: <span class="string">&quot;Print the version number of Hugo&quot;</span>,
+  Long:  <span class="string">`All software has versions. This is Hugo&#x27;s`</span>,
+  Run: <span class="function"><span class="keyword">func</span><span class="params">(cmd *cobra.Command, args []<span class="type">string</span>)</span></span> &#123;
+    fmt.Println(<span class="string">&quot;Hugo Static Site Generator v0.9 -- HEAD&quot;</span>)
+  &#125;,
+&#125;</code></pre>
+<h6 id="返回和处理错误"><a href="#返回和处理错误" class="headerlink" title="返回和处理错误"></a>返回和处理错误</h6><p>如果你想向命令的调用者返回一个错误，可以使用RunE。</p>
+<pre><code class="highlight go"><span class="keyword">package</span> cmd
+
+<span class="keyword">import</span> (
+  <span class="string">&quot;fmt&quot;</span>
+
+  <span class="string">&quot;github.com/spf13/cobra&quot;</span>
+)
+
+<span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;
+  rootCmd.AddCommand(tryCmd)
+&#125;
+
+<span class="keyword">var</span> tryCmd = &amp;cobra.Command&#123;
+  Use:   <span class="string">&quot;try&quot;</span>,
+  Short: <span class="string">&quot;Try and possibly fail at something&quot;</span>,
+  RunE: <span class="function"><span class="keyword">func</span><span class="params">(cmd *cobra.Command, args []<span class="type">string</span>)</span></span> <span class="type">error</span> &#123;
+    <span class="keyword">if</span> err := someFunc(); err != <span class="literal">nil</span> &#123;
+	<span class="keyword">return</span> err
+    &#125;
+    <span class="keyword">return</span> <span class="literal">nil</span>
+  &#125;,
+&#125;</code></pre>
+<p>然后可以在执行函数调用时捕捉到错误。</p>
+<h4 id="使用Flags"><a href="#使用Flags" class="headerlink" title="使用Flags"></a>使用Flags</h4><p>Flags提供了修饰符来控制动作命令的操作方式。</p>
+<h6 id="将Flags分配给命令"><a href="#将Flags分配给命令" class="headerlink" title="将Flags分配给命令"></a>将Flags分配给命令</h6><p>由于Flags的定义和使用位置不同，所以我们需要在外面定义一个具有正确范围(类型)的变量来分配给Flags。</p>
+<pre><code class="highlight go"><span class="keyword">var</span> Verbose <span class="type">bool</span>
+<span class="keyword">var</span> Source <span class="type">string</span></code></pre>
+
+<p>有两种不同的方法来分配Flags。</p>
+<h6 id="持久性的-Flags"><a href="#持久性的-Flags" class="headerlink" title="持久性的 Flags"></a>持久性的 Flags</h6><p>一个Flags可以是 “持久化 “的，这意味着这个Flags将对它所分配的命令以及该命令下的每一个命令有效。对于全局Flags，在根目录下将Flags分配为持久性Flags。</p>
+<pre><code class="highlight go">rootCmd.PersistentFlags().BoolVarP(&amp;Verbose, <span class="string">&quot;verbose&quot;</span>, <span class="string">&quot;v&quot;</span>, <span class="literal">false</span>, <span class="string">&quot;verbose output&quot;</span>)</code></pre>
+
+<h6 id="本地标志"><a href="#本地标志" class="headerlink" title="本地标志"></a>本地标志</h6><p>也可以在本地分配一个标志，这个标志只适用于该特定的命令。</p>
+<pre><code class="highlight go">localCmd.Flags().StringVarP(&amp;Source, <span class="string">&quot;source&quot;</span>, <span class="string">&quot;s&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;Source directory to read from&quot;</span>)</code></pre>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/blog/tags/Cobra/">Cobra</a>
+		  
+		</div>
+		
+
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/blog/posts/e14add7c.html">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">迅搜(xunsearch)的安装使用以及操作类分享</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/blog/posts/2b54f944.html">
+        <span class="next-text nav-default">CentOS7.9 搭建DNS服务器</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2026
+    <span class="footer-author">opnext.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and <a class="theme-link" target="_blank" rel="noopener" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/blog/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+
+    <script type="text/javascript" src="/blog/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/blog/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>

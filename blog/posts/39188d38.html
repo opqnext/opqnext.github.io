@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="用Swoole写了个websocket聊天室demo，PHP代码贴出来了，用之前得先装Swoole扩展，在命令行跑，别在浏览器里打开。"/>
+
+
+
+
+  <meta name="keywords" content="PHP,Swoole," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/default" title="OPQNEXT" >
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://opqnext.com/blog/posts/39188d38.html"/>
+
+
+<meta name="description" content="用Swoole写了个websocket聊天室demo，PHP代码贴出来了，用之前得先装Swoole扩展，在命令行跑，别在浏览器里打开。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一个基于Swoole的websocket聊天室">
+<meta property="og:url" content="http://opqnext.com/blog/posts/39188d38.html">
+<meta property="og:site_name" content="OPQNEXT">
+<meta property="og:description" content="用Swoole写了个websocket聊天室demo，PHP代码贴出来了，用之前得先装Swoole扩展，在命令行跑，别在浏览器里打开。">
+<meta property="og:locale">
+<meta property="og:image" content="http://opqnext.com/blog/assets/2026-05/26_8153c014ba0c.png">
+<meta property="article:published_time" content="2018-12-18T06:12:00.000Z">
+<meta property="article:modified_time" content="2018-12-18T06:12:00.000Z">
+<meta property="article:author" content="opnext">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="Swoole">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://opqnext.com/blog/assets/2026-05/26_8153c014ba0c.png">
+
+
+<link rel="stylesheet" type="text/css" href="/blog/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title> 一个基于Swoole的websocket聊天室 - OPQNEXT </title>
+  <meta name="generator" content="Hexo 8.1.2"></head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/blog/." class="logo">OPQNEXT</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/blog/archives">
+                            
+                            
+                                档案
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/blog/about">
+                            
+                            
+                                关于
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          一个基于Swoole的websocket聊天室
+        
+      </h1>
+
+      <time class="post-time">
+          Dec 18 2018
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <p>既然这样，那我就把我写的无与伦比的websocket聊天室拿出来吧。</p>
+<p>虽然只是一个渣的一比的DEMO，但是能聊…</p>
+<p>基于 swoole 做的。 先贴图片再贴代码：</p>
+<p><img src="/blog/assets/2026-05/26_8153c014ba0c.png" alt="image"></p>
+<p>当然你得先装了 Swoole 扩展才可以，并且该PHP文件是在 CLI 模式下执行的。不要在浏览器执行。please</p>
+<p>PHP代码：</p>
+<pre><code class="highlight php"><span class="meta">&lt;?php</span>
+<span class="comment">/**</span>
+<span class="comment"> *  基于Swoole的聊天室系统</span>
+<span class="comment"> */</span>
+
+<span class="variable">$server</span> = <span class="keyword">new</span> <span class="title class_">Swoole\Websocket\Server</span>(<span class="string">&quot;0.0.0.0&quot;</span>, <span class="number">9502</span>);
+
+<span class="variable">$server</span>-&gt;<span class="title function_ invoke__">on</span>(<span class="string">&#x27;open&#x27;</span>, function (swoole_websocket_server <span class="variable">$server</span>, <span class="variable">$frame</span>) &#123;
+    <span class="comment">//每一次客户端连接 最大连接数将增加</span>
+    <span class="variable">$message</span> = <span class="string">&quot;欢迎 连接号<span class="subst">&#123;$frame-&gt;fd&#125;</span>：进入了聊天室&quot;</span>;
+    <span class="keyword">echo</span> <span class="variable">$message</span>.<span class="string">&quot;\n&quot;</span>;
+    <span class="keyword">foreach</span> (<span class="variable">$server</span>-&gt;connections <span class="keyword">as</span> <span class="variable">$key</span> =&gt; <span class="variable">$value</span>) &#123;
+        <span class="keyword">if</span>(<span class="variable">$frame</span>-&gt;fd != <span class="variable">$value</span>)&#123;
+            <span class="variable">$server</span>-&gt;<span class="title function_ invoke__">push</span>(<span class="variable">$value</span>, <span class="variable">$message</span>);
+        &#125;
+    &#125;
+&#125;);
+
+<span class="variable">$server</span>-&gt;<span class="title function_ invoke__">on</span>(<span class="string">&#x27;message&#x27;</span>, function (swoole_websocket_server <span class="variable">$server</span>, <span class="variable">$frame</span>) &#123;
+    <span class="variable">$fd</span>   = <span class="variable">$frame</span>-&gt;fd;
+    <span class="variable">$data</span> = <span class="variable">$frame</span>-&gt;data;
+    <span class="variable">$message</span> = <span class="string">&quot;[连接号<span class="subst">&#123;$fd&#125;</span>]:<span class="subst">&#123;$data&#125;</span>&quot;</span>;
+    <span class="comment">//向所有人广播</span>
+    <span class="keyword">foreach</span> (<span class="variable">$server</span>-&gt;connections <span class="keyword">as</span> <span class="variable">$key</span> =&gt; <span class="variable">$value</span>) &#123;
+        <span class="keyword">if</span>(<span class="variable">$frame</span>-&gt;fd != <span class="variable">$value</span>)&#123;
+            <span class="variable">$server</span>-&gt;<span class="title function_ invoke__">push</span>(<span class="variable">$value</span>, <span class="variable">$message</span>);
+        &#125;
+    &#125;
+&#125;);
+
+<span class="variable">$server</span>-&gt;<span class="title function_ invoke__">on</span>(<span class="string">&#x27;close&#x27;</span>, function (swoole_websocket_server <span class="variable">$server</span>, <span class="variable">$fd</span>) &#123;
+    <span class="comment">//关闭连接 连接减少</span>
+    <span class="variable">$message</span> = <span class="string">&quot;连接号<span class="subst">&#123;$fd&#125;</span>：退出了聊天室&quot;</span>;
+    <span class="keyword">echo</span> <span class="string">&quot;client <span class="subst">&#123;$fd&#125;</span> closed\n&quot;</span>;
+    <span class="keyword">foreach</span> (<span class="variable">$server</span>-&gt;connections <span class="keyword">as</span> <span class="variable">$key</span> =&gt; <span class="variable">$value</span>) &#123;
+        <span class="keyword">if</span>(<span class="variable">$fd</span> != <span class="variable">$value</span>)&#123;
+            <span class="variable">$server</span>-&gt;<span class="title function_ invoke__">push</span>(<span class="variable">$value</span>, <span class="variable">$message</span>);
+        &#125;
+    &#125;
+&#125;);
+
+<span class="variable">$server</span>-&gt;<span class="title function_ invoke__">start</span>();</code></pre>
+
+<p>在处理消息的时候一定要注意安全防护，假如你要存库或者干什么，不然很容易被注入之类的…</p>
+<p>html代码：（javascript的websocket，bootstrap）</p>
+<pre><code class="highlight html"><span class="meta">&lt;!DOCTYPE <span class="keyword">html</span>&gt;</span>
+<span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span>&gt;</span>
+<span class="tag">&lt;<span class="name">head</span>&gt;</span>
+    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>&gt;</span>
+    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">&quot;viewport&quot;</span> <span class="attr">content</span>=<span class="string">&quot;width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no&quot;</span>&gt;</span>
+    <span class="tag">&lt;<span class="name">title</span>&gt;</span>聊天室-opqnext.com<span class="tag">&lt;/<span class="name">title</span>&gt;</span>
+    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;js/libs/jquery-2.1.1.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span>
+    <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">href</span>=<span class="string">&quot;https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css&quot;</span>&gt;</span>
+    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span>
+    <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text/css&quot;</span> <span class="attr">media</span>=<span class="string">&quot;screen&quot;</span> <span class="attr">href</span>=<span class="string">&quot;css/jquery.toastmessage.css&quot;</span>&gt;</span>
+    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;js/jquery.toastmessage.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span>
+    <span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span>
+<span class="language-css"></span>
+<span class="language-css">        <span class="selector-tag">body</span> &#123;</span>
+<span class="language-css">            <span class="attribute">width</span>: <span class="number">600px</span>;</span>
+<span class="language-css">            <span class="attribute">margin</span>: <span class="number">40px</span> auto;</span>
+<span class="language-css">            <span class="attribute">font-family</span>: <span class="string">&#x27;trebuchet MS&#x27;</span>, <span class="string">&#x27;Lucida sans&#x27;</span>, Arial;</span>
+<span class="language-css">            <span class="attribute">font-size</span>: <span class="number">14px</span>;</span>
+<span class="language-css">            <span class="attribute">color</span>: <span class="number">#444</span>;</span>
+<span class="language-css">        &#125;</span>
+<span class="language-css"></span>
+<span class="language-css">    </span><span class="tag">&lt;/<span class="name">style</span>&gt;</span>
+<span class="tag">&lt;/<span class="name">head</span>&gt;</span>
+<span class="tag">&lt;<span class="name">body</span>&gt;</span>
+<span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;myCarousel&quot;</span> <span class="attr">class</span>=<span class="string">&quot;carousel slide&quot;</span>&gt;</span>
+    <span class="comment">&lt;!-- 轮播（Carousel）指标 --&gt;</span>
+    <span class="tag">&lt;<span class="name">ol</span> <span class="attr">class</span>=<span class="string">&quot;carousel-indicators&quot;</span>&gt;</span>
+        <span class="tag">&lt;<span class="name">li</span> <span class="attr">data-target</span>=<span class="string">&quot;#myCarousel&quot;</span> <span class="attr">data-slide-to</span>=<span class="string">&quot;0&quot;</span> <span class="attr">class</span>=<span class="string">&quot;active&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span>
+        <span class="tag">&lt;<span class="name">li</span> <span class="attr">data-target</span>=<span class="string">&quot;#myCarousel&quot;</span> <span class="attr">data-slide-to</span>=<span class="string">&quot;1&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span>
+        <span class="tag">&lt;<span class="name">li</span> <span class="attr">data-target</span>=<span class="string">&quot;#myCarousel&quot;</span> <span class="attr">data-slide-to</span>=<span class="string">&quot;2&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span>
+    <span class="tag">&lt;/<span class="name">ol</span>&gt;</span>
+    <span class="comment">&lt;!-- 轮播（Carousel）项目 --&gt;</span>
+    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;carousel-inner&quot;</span>&gt;</span>
+        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;item active&quot;</span>&gt;</span>
+            <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;../img/1.jpg&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;First slide&quot;</span>&gt;</span>
+        <span class="tag">&lt;/<span class="name">div</span>&gt;</span>
+        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;item&quot;</span>&gt;</span>
+            <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;../img/2.jpg&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;Second slide&quot;</span>&gt;</span>
+        <span class="tag">&lt;/<span class="name">div</span>&gt;</span>
+        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;item&quot;</span>&gt;</span>
+            <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;../img/3.jpg&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;Third slide&quot;</span>&gt;</span>
+        <span class="tag">&lt;/<span class="name">div</span>&gt;</span>
+    <span class="tag">&lt;/<span class="name">div</span>&gt;</span>
+    <span class="comment">&lt;!-- 轮播（Carousel）导航 --&gt;</span>
+    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;carousel-control left&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#myCarousel&quot;</span></span>
+<span class="tag">       <span class="attr">data-slide</span>=<span class="string">&quot;prev&quot;</span>&gt;</span><span class="symbol">&amp;lsaquo;</span><span class="tag">&lt;/<span class="name">a</span>&gt;</span>
+    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;carousel-control right&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#myCarousel&quot;</span></span>
+<span class="tag">       <span class="attr">data-slide</span>=<span class="string">&quot;next&quot;</span>&gt;</span><span class="symbol">&amp;rsaquo;</span><span class="tag">&lt;/<span class="name">a</span>&gt;</span>
+<span class="tag">&lt;/<span class="name">div</span>&gt;</span>
+<span class="tag">&lt;<span class="name">h2</span>&gt;</span>聊天室（CHAT ROOM）<span class="tag">&lt;/<span class="name">h2</span>&gt;</span>
+
+<span class="tag">&lt;<span class="name">br</span>&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span>
+<span class="tag">&lt;<span class="name">br</span>&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span>
+<span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;msg&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span>
+<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span>&gt;</span>
+    <span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span>  <span class="attr">style</span>=<span class="string">&quot;width: 50%;float: left&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">id</span>=<span class="string">&quot;text&quot;</span>&gt;</span>
+    <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-primary&quot;</span> <span class="attr">data-loading-text</span>=<span class="string">&quot;Loading...&quot;</span>  <span class="attr">value</span>=<span class="string">&quot;&quot;</span> <span class="attr">style</span>=<span class="string">&quot;float: left;margin-left: 10px;&quot;</span> <span class="attr">onclick</span>=<span class="string">&quot;song()&quot;</span>&gt;</span>发送数据<span class="tag">&lt;/<span class="name">button</span>&gt;</span>
+<span class="tag">&lt;/<span class="name">div</span>&gt;</span>
+<span class="tag">&lt;<span class="name">audio</span> <span class="attr">id</span>=<span class="string">&quot;audio1&quot;</span> <span class="attr">width</span>=<span class="string">&quot;420&quot;</span> &gt;</span>
+    <span class="tag">&lt;<span class="name">source</span> <span class="attr">src</span>=<span class="string">&quot;img/6571.wav&quot;</span> <span class="attr">type</span>=<span class="string">&quot;audio/wav&quot;</span> /&gt;</span>
+    <span class="tag">&lt;<span class="name">source</span> <span class="attr">src</span>=<span class="string">&quot;img/17.ogg&quot;</span> <span class="attr">type</span>=<span class="string">&quot;audio/ogg&quot;</span> /&gt;</span>
+<span class="tag">&lt;/<span class="name">audio</span>&gt;</span>
+<span class="tag">&lt;/<span class="name">body</span>&gt;</span>
+<span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span>
+<span class="language-javascript">    <span class="title class_">Date</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">Format</span> = <span class="keyword">function</span> (<span class="params">fmt</span>) &#123; <span class="comment">//author: meizz</span></span>
+<span class="language-javascript">        <span class="keyword">var</span> o = &#123;</span>
+<span class="language-javascript">            <span class="string">&quot;M+&quot;</span>: <span class="variable language_">this</span>.<span class="title function_">getMonth</span>() + <span class="number">1</span>, <span class="comment">//月份</span></span>
+<span class="language-javascript">            <span class="string">&quot;d+&quot;</span>: <span class="variable language_">this</span>.<span class="title function_">getDate</span>(), <span class="comment">//日</span></span>
+<span class="language-javascript">            <span class="string">&quot;h+&quot;</span>: <span class="variable language_">this</span>.<span class="title function_">getHours</span>(), <span class="comment">//小时</span></span>
+<span class="language-javascript">            <span class="string">&quot;m+&quot;</span>: <span class="variable language_">this</span>.<span class="title function_">getMinutes</span>(), <span class="comment">//分</span></span>
+<span class="language-javascript">            <span class="string">&quot;s+&quot;</span>: <span class="variable language_">this</span>.<span class="title function_">getSeconds</span>(), <span class="comment">//秒</span></span>
+<span class="language-javascript">            <span class="string">&quot;q+&quot;</span>: <span class="title class_">Math</span>.<span class="title function_">floor</span>((<span class="variable language_">this</span>.<span class="title function_">getMonth</span>() + <span class="number">3</span>) / <span class="number">3</span>), <span class="comment">//季度</span></span>
+<span class="language-javascript">            <span class="string">&quot;S&quot;</span>: <span class="variable language_">this</span>.<span class="title function_">getMilliseconds</span>() <span class="comment">//毫秒</span></span>
+<span class="language-javascript">        &#125;;</span>
+<span class="language-javascript">        <span class="keyword">if</span> (<span class="regexp">/(y+)/</span>.<span class="title function_">test</span>(fmt)) fmt = fmt.<span class="title function_">replace</span>(<span class="title class_">RegExp</span>.<span class="property">$1</span>, (<span class="variable language_">this</span>.<span class="title function_">getFullYear</span>() + <span class="string">&quot;&quot;</span>).<span class="title function_">substr</span>(<span class="number">4</span> - <span class="title class_">RegExp</span>.<span class="property">$1</span>.<span class="property">length</span>));</span>
+<span class="language-javascript">        <span class="keyword">for</span> (<span class="keyword">var</span> k <span class="keyword">in</span> o)</span>
+<span class="language-javascript">            <span class="keyword">if</span> (<span class="keyword">new</span> <span class="title class_">RegExp</span>(<span class="string">&quot;(&quot;</span> + k + <span class="string">&quot;)&quot;</span>).<span class="title function_">test</span>(fmt)) fmt = fmt.<span class="title function_">replace</span>(<span class="title class_">RegExp</span>.<span class="property">$1</span>, (<span class="title class_">RegExp</span>.<span class="property">$1</span>.<span class="property">length</span> == <span class="number">1</span>) ? (o[k]) : ((<span class="string">&quot;00&quot;</span> + o[k]).<span class="title function_">substr</span>((<span class="string">&quot;&quot;</span> + o[k]).<span class="property">length</span>)));</span>
+<span class="language-javascript">        <span class="keyword">return</span> fmt;</span>
+<span class="language-javascript">    &#125;</span>
+<span class="language-javascript">    <span class="keyword">var</span> msg = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;msg&quot;</span>);</span>
+<span class="language-javascript">    <span class="keyword">var</span> wsServer = <span class="string">&#x27;ws://192.168.221.110:9502&#x27;</span>;</span>
+<span class="language-javascript">    <span class="comment">//调用websocket对象建立连接：</span></span>
+<span class="language-javascript">    <span class="comment">//参数：ws/wss(加密)：//ip:port （字符串）</span></span>
+<span class="language-javascript">    <span class="keyword">var</span> websocket = <span class="keyword">new</span> <span class="title class_">WebSocket</span>(wsServer);</span>
+<span class="language-javascript">    <span class="comment">//onopen监听连接打开</span></span>
+<span class="language-javascript">    websocket.<span class="property">onopen</span> = <span class="keyword">function</span> (<span class="params">evt</span>) &#123;</span>
+<span class="language-javascript">        msg.<span class="property">innerHTML</span> = websocket.<span class="property">readyState</span>;</span>
+<span class="language-javascript">    &#125;;</span>
+<span class="language-javascript"></span>
+<span class="language-javascript">    <span class="keyword">function</span> <span class="title function_">song</span>(<span class="params"></span>)&#123;</span>
+<span class="language-javascript">        <span class="keyword">var</span> text = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;text&#x27;</span>).<span class="property">value</span>;</span>
+<span class="language-javascript">        <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;text&#x27;</span>).<span class="property">value</span> = <span class="string">&#x27;&#x27;</span>;</span>
+<span class="language-javascript">        <span class="keyword">var</span> date = <span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title class_">Format</span>(<span class="string">&quot;MM-dd hh:mm:ss&quot;</span>);</span>
+<span class="language-javascript">        msg.<span class="property">innerHTML</span> += <span class="string">&#x27;&lt;p class=&quot;text-center&quot;&gt;&lt;span class=&quot;badge&quot; style=&quot;background-color:#E0E0E0&quot;&gt;&#x27;</span>+date+<span class="string">&#x27;&lt;/span&gt;&lt;/p&gt;&#x27;</span>;</span>
+<span class="language-javascript">        msg.<span class="property">innerHTML</span> += <span class="string">&#x27;&lt;p class=&quot;text-right&quot;&gt;[我]: &#x27;</span>+ text+<span class="string">&#x27;&lt;/p&gt;&#x27;</span>;</span>
+<span class="language-javascript">        <span class="comment">//向服务器发送数据</span></span>
+<span class="language-javascript">        websocket.<span class="title function_">send</span>(text);</span>
+<span class="language-javascript">    &#125;</span>
+<span class="language-javascript">    <span class="comment">//监听连接关闭</span></span>
+<span class="language-javascript">    <span class="comment">//    websocket.onclose = function (evt) &#123;</span></span>
+<span class="language-javascript">    <span class="comment">//        console.log(&quot;Disconnected&quot;);</span></span>
+<span class="language-javascript">    <span class="comment">//    &#125;;</span></span>
+<span class="language-javascript"></span>
+<span class="language-javascript">    <span class="comment">//onmessage 监听服务器数据推送</span></span>
+<span class="language-javascript">    websocket.<span class="property">onmessage</span> = <span class="keyword">function</span> (<span class="params">evt</span>) &#123;</span>
+<span class="language-javascript">        $().<span class="title function_">toastmessage</span>(<span class="string">&#x27;showSuccessToast&#x27;</span>, <span class="string">&quot;您有新消息啦！&quot;</span>);</span>
+<span class="language-javascript">        <span class="keyword">var</span> audio = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;audio1&quot;</span>);</span>
+<span class="language-javascript">        audio.<span class="title function_">play</span>();</span>
+<span class="language-javascript">        <span class="keyword">var</span> date = <span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title class_">Format</span>(<span class="string">&quot;MM-dd hh:mm:ss&quot;</span>);</span>
+<span class="language-javascript">        msg.<span class="property">innerHTML</span> += <span class="string">&#x27;&lt;p class=&quot;text-center&quot;&gt;&lt;span class=&quot;badge&quot; style=&quot;background-color:#E0E0E0&quot;&gt;&#x27;</span>+date+<span class="string">&#x27;&lt;/span&gt;&lt;/p&gt;&#x27;</span>;</span>
+<span class="language-javascript">        msg.<span class="property">innerHTML</span> += <span class="string">&#x27;&lt;p class=&quot;text-left&quot;&gt;&#x27;</span>+evt.<span class="property">data</span> +<span class="string">&#x27;&lt;/p&gt;&#x27;</span>;</span>
+<span class="language-javascript">    &#125;;</span>
+<span class="language-javascript">    <span class="comment">//监听连接错误信息</span></span>
+<span class="language-javascript">    <span class="comment">//    websocket.onerror = function (evt, e) &#123;</span></span>
+<span class="language-javascript">    <span class="comment">//        console.log(&#x27;Error occured: &#x27; + evt.data);</span></span>
+<span class="language-javascript">    <span class="comment">//    &#125;;</span></span>
+<span class="language-javascript"></span>
+<span class="language-javascript"></span>
+<span class="language-javascript">    $(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span>
+<span class="language-javascript">        $(<span class="string">&quot;#myCarousel&quot;</span>).<span class="title function_">carousel</span>(<span class="string">&#x27;cycle&#x27;</span>);</span>
+<span class="language-javascript"><span class="comment">//         $().toastmessage(&#x27;showSuccessToast&#x27;, &quot;您有新消息啦！&quot;);</span></span>
+<span class="language-javascript"><span class="comment">//         var audio = document.getElementById(&quot;audio1&quot;);</span></span>
+<span class="language-javascript"><span class="comment">//         audio.play();</span></span>
+<span class="language-javascript">    &#125;);</span>
+<span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span>
+<span class="tag">&lt;/<span class="name">html</span>&gt;</span></code></pre>
+<p>你看我这个聊天室就神奇的很呐，几乎没做什么安全过滤，你输入什么html，javascript的代码之类的呢，都能执行，真是开心呐。</p>
+<p>我也就是写个例子，来大概跑一下，swoole的websocket的聊天室是怎么聊天的。</p>
+<p>有了这个聊天室，真是又能写篇博客了呀。</p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/blog/tags/PHP/">PHP</a>
+		  
+			<a href="/blog/tags/Swoole/">Swoole</a>
+		  
+		</div>
+		
+
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/blog/posts/e26aa1d2.html">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">python 图片转字符画</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/blog/posts/3dfff433.html">
+        <span class="next-text nav-default">如何写一个自己的渣渣composer包</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2026
+    <span class="footer-author">opnext.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and <a class="theme-link" target="_blank" rel="noopener" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/blog/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+
+    <script type="text/javascript" src="/blog/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/blog/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>

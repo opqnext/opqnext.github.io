@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="想写个高级PHP框架结果写成渣渣框架，配置文件方案想了很久没头绪，倒是把二狗子扩展的hello world跑通了，继续摸索中。"/>
+
+
+
+
+  <meta name="keywords" content="PHP,composer," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/default" title="OPQNEXT" >
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://opqnext.com/blog/posts/517675d6.html"/>
+
+
+<meta name="description" content="想写个高级PHP框架结果写成渣渣框架，配置文件方案想了很久没头绪，倒是把二狗子扩展的hello world跑通了，继续摸索中。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何写一个自己的渣渣PHP框架（3）">
+<meta property="og:url" content="http://opqnext.com/blog/posts/517675d6.html">
+<meta property="og:site_name" content="OPQNEXT">
+<meta property="og:description" content="想写个高级PHP框架结果写成渣渣框架，配置文件方案想了很久没头绪，倒是把二狗子扩展的hello world跑通了，继续摸索中。">
+<meta property="og:locale">
+<meta property="article:published_time" content="2017-03-28T11:09:00.000Z">
+<meta property="article:modified_time" content="2017-03-28T11:09:00.000Z">
+<meta property="article:author" content="opnext">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="composer">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="stylesheet" type="text/css" href="/blog/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title> 如何写一个自己的渣渣PHP框架（3） - OPQNEXT </title>
+  <meta name="generator" content="Hexo 8.1.2"></head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/blog/." class="logo">OPQNEXT</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/blog/archives">
+                            
+                            
+                                档案
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/blog/about">
+                            
+                            
+                                关于
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          如何写一个自己的渣渣PHP框架（3）
+        
+      </h1>
+
+      <time class="post-time">
+          Mar 28 2017
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <p>我想写个高级框架，却写了个渣渣框架。渣渣框架还能不能称得上是框架？</p>
+<p>看来只能听一首之前淘的Tom Day的 <a target="_blank" rel="noopener" href="http://music.163.com/#/song?id=28702321">Flemington</a> 压压惊了Q!</p>
+<p>上一篇的时候大概说了自动加载，然后我这几天就想啊想啊，想配置文件和路由。想了很多种方式，还是没有想好，没事。然而值得开心的是我终于写了我的二狗子say: “hello world” PHP扩展，并且成功编译安装！</p>
+<ul>
+<li>配置文件</li>
+</ul>
+<p>就说想了很久还是没想好嘛，所以我就在每一个类里建立一个成员变量，在构造函数里初始化他，先这样，我感觉好像是不好，这样的话相当于每个类里面都要实例化这个配置类了，搞一个单例模式，但是我还没想好。</p>
+<p>就像这样：</p>
+<pre><code class="highlight php"><span class="meta">&lt;?php</span>
+<span class="comment">/**</span>
+<span class="comment"> * 框架核心类</span>
+<span class="comment"> * User: momoma</span>
+<span class="comment"> * Date: 2017/1/19</span>
+<span class="comment"> * Time: 上午10:52</span>
+<span class="comment"> */</span>
+
+<span class="keyword">namespace</span> <span class="title class_">core</span>\<span class="title class_">momoma</span>;
+<span class="keyword">use</span> <span class="title">core</span>\<span class="title">lib</span>\<span class="title">Route</span>;
+<span class="keyword">use</span> <span class="title">Noodlehaus</span>\<span class="title">Config</span>;
+
+<span class="class"><span class="keyword">class</span> <span class="title">Momoma</span> </span>&#123;
+
+    <span class="keyword">private</span> <span class="variable">$controller</span>;    <span class="comment">//默认控制器</span>
+    <span class="keyword">private</span> <span class="variable">$action</span>;        <span class="comment">//默认方法</span>
+    <span class="keyword">private</span> <span class="variable">$conf</span>;          <span class="comment">//配置文件</span>
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>) </span>&#123;
+        <span class="variable language_">$this</span>-&gt;conf = <span class="keyword">new</span> <span class="title class_">Config</span>(MOMOMA_PATH. <span class="string">&#x27;/config/conf.php&#x27;</span>);
+    &#125;
+&#125;</code></pre>
+<p>你再想一个好办法。</p>
+<ul>
+<li>路由</li>
+</ul>
+<p>看了很多关于路由的内容，我们可以在框架里写自己的路由类，也可以直接去 nginx 里配置 rewrite 呀。你看，这样配置不是也挺好的。</p>
+<p>[图片走丢了]</p>
+<p>然后在 nginx 里配置：</p>
+<pre><code class="highlight php">rewrite ^/index.html$    /index.php last;
+rewrite ^/index.html$    /index.php?c=index&amp;a=index last;
+rewrite ^/product/([<span class="number">0</span>-<span class="number">9</span>]+).html$    /index.php?c=goods&amp;a=detail&amp;id=$<span class="number">1</span> last;
+rewrite ^/article/([<span class="number">0</span>-<span class="number">9</span>]+).html$    /index.php?c=special&amp;a=detail&amp;id=$<span class="number">1</span> last;
+rewrite ^/info/([<span class="number">0</span>-<span class="number">9</span>]+).html$    /index.php?c=article&amp;a=detail&amp;id=$<span class="number">1</span> last;</code></pre>
+<p>无论如何，路由就是如何根据 url 找到你所要访问的类和方法。</p>
+<p>框架里的路由，首先 <a target="_blank" rel="noopener" href="https://packagist.org/">packagist</a> 有很多关于路由的包，也有的有很详细的介绍说明。</p>
+<ol>
+<li>比如 <a target="_blank" rel="noopener" href="https://lvwenhan.com/php/406.html">岁寒</a> 用的 <a target="_blank" rel="noopener" href="https://packagist.org/packages/noahbuscher/macaw">“noahbuscher&#x2F;macaw”</a> 这个路由包，他博客里做了详细介绍。</li>
+<li>比如我 二狗子哥 用的 <a target="_blank" rel="noopener" href="https://packagist.org/packages/nikic/fast-route">“nikic&#x2F;fast-route”</a> 这个路由包，我二狗子哥的博客写了两年了还没上线，:joy: 不然我狗子哥必定大显身手，介绍一番。</li>
+<li>还有我原来看的一个开源框架，initPHP框架的 <a target="_blank" rel="noopener" href="http://www.initphp.com/3_3.htm">路由说明</a> 和 <a target="_blank" rel="noopener" href="https://github.com/zhuli/initphp/blob/master/initphp/init/dispatcher.init.php">源码</a>。</li>
+</ol>
+<p>其实我还是喜欢去 nginx 里做 rewrite 配置，喜欢我的原始状态 <em>“index.php?c&#x3D;index&amp;a&#x3D;run&amp;id&#x3D;1”</em> 多好看呐。（主要简单(&#x3D;@__@&#x3D;)呀！）</p>
+<p>也倒是哦，不然就先不说那么多的路由方式了，继续往下走。</p>
+<p>首先建立目录 &#x2F;data&#x2F;momoma&#x2F;core&#x2F;lib 在 lib 目录里建立 Route.php 类：(其实这个路由类在这里并没有什么卵用，因为我继续往下走了，下面我获取控制器和方法的时候已经跳过他了，你也可以暂时先跳过，或者不)</p>
+<pre><code class="highlight php"><span class="meta">&lt;?php</span>
+<span class="comment">/**</span>
+<span class="comment"> * 路由类</span>
+<span class="comment"> * User: momoma</span>
+<span class="comment"> * Date: 2017/1/23</span>
+<span class="comment"> * Time: 上午11:03</span>
+<span class="comment"> */</span>
+
+<span class="keyword">namespace</span> <span class="title class_">core</span>\<span class="title class_">lib</span>;
+<span class="keyword">use</span> <span class="title">Noodlehaus</span>\<span class="title">Config</span>;
+
+<span class="class"><span class="keyword">class</span> <span class="title">Route</span> </span>&#123;
+
+    <span class="keyword">private</span> <span class="variable">$conf</span>;          <span class="comment">//配置文件</span>
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>) </span>&#123;
+        <span class="variable language_">$this</span>-&gt;conf = <span class="keyword">new</span> <span class="title class_">Config</span>(MOMOMA_PATH. <span class="string">&#x27;/config/conf.php&#x27;</span>);
+    &#125;
+
+    <span class="comment">/**</span>
+<span class="comment">     * 路由的分发</span>
+<span class="comment">     */</span>
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">dispatcher</span>(<span class="params"></span>) </span>&#123;
+        <span class="keyword">switch</span> (<span class="variable language_">$this</span>-&gt;conf-&gt;<span class="title function_ invoke__">get</span>(<span class="string">&#x27;route&#x27;</span>)) &#123;
+            <span class="keyword">case</span> <span class="string">&#x27;path&#x27;</span> :
+                <span class="variable">$request</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">getRequest</span>();
+                <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">parsePathUri</span>(<span class="variable">$request</span>);
+                <span class="keyword">break</span>;
+
+            <span class="keyword">default</span> :
+                <span class="keyword">return</span> <span class="literal">false</span>;
+                <span class="keyword">break</span>;
+        &#125;
+        <span class="keyword">return</span> <span class="literal">true</span>;
+    &#125;
+
+    <span class="comment">/**</span>
+<span class="comment">     * <span class="doctag">@return</span> mixed</span>
+<span class="comment">     */</span>
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getRequest</span>(<span class="params"></span>) </span>&#123;
+        <span class="keyword">return</span> <span class="literal">true</span>;
+    &#125;
+
+    <span class="comment">/**</span>
+<span class="comment">     * <span class="doctag">@param</span> $request</span>
+<span class="comment">     */</span>
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">parsePathUri</span>(<span class="params"><span class="variable">$request</span></span>)</span>&#123;
+
+    &#125;
+
+&#125;</code></pre>
+<p>这个路由类就是参考 initPHP框架的 <a target="_blank" rel="noopener" href="https://github.com/zhuli/initphp/blob/master/initphp/init/dispatcher.init.php">路由类 - github.com</a> 你可以看一下，也不用看懂，理解他大概是在干什么，他在框架是什么作用。大概这样？</p>
+<p>马上就要用到控制器了，有了路由（其实本篇完全没具体说路由）根据 url 就能找到控制器了，我们先建立一个控制器，然后再接着说如何找到他。</p>
+<p>建立目录 &#x2F;data&#x2F;momoma&#x2F;controller 然后在 controller 里建立 IndexController.php 类:</p>
+<pre><code class="highlight php"><span class="meta">&lt;?php</span>
+
+<span class="comment">/**</span>
+<span class="comment"> * Index控制器</span>
+<span class="comment"> * User: momoma</span>
+<span class="comment"> * Date: 2017/1/23</span>
+<span class="comment"> * Time: 下午3:44</span>
+<span class="comment"> */</span>
+<span class="keyword">namespace</span> <span class="title class_">controller</span>;
+
+<span class="class"><span class="keyword">class</span> <span class="title">IndexController</span> </span>&#123;
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">run</span>(<span class="params"></span>)</span>&#123;
+        <span class="keyword">echo</span> <span class="string">&quot;我是 Index 制器的 run 方法&quot;</span>;
+    &#125;
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">demo</span>(<span class="params"></span>)</span>&#123;
+        <span class="keyword">echo</span> <span class="string">&quot;我是 Index 制器的 demo 方法&quot;</span>;
+    &#125;
+&#125;</code></pre>
+<p>并且在 &#x2F;data&#x2F;config&#x2F;conf.php 里加上默认控制器和方法配置：</p>
+<pre><code class="highlight php"><span class="keyword">return</span> [
+    <span class="string">&quot;debug&quot;</span>=&gt; <span class="literal">true</span>,
+    <span class="string">&#x27;controller&#x27;</span> =&gt; <span class="string">&#x27;Index&#x27;</span>,    <span class="comment">// 默认控制器</span>
+    <span class="string">&#x27;action&#x27;</span> =&gt; <span class="string">&#x27;run&#x27;</span>,          <span class="comment">// 默认方法</span>
+];
+
+</code></pre>
+<p>在类 Momoma 里，我们原来建立了核心入口 run 方法：</p>
+<pre><code class="highlight php"><span class="comment">/**</span>
+<span class="comment"> * 框架核心入口</span>
+<span class="comment"> */</span>
+<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">run</span>(<span class="params"></span>)</span>&#123;
+    <span class="comment">// 路由分发功能</span>
+    <span class="variable">$route</span> = <span class="keyword">new</span> <span class="title class_">Route</span>();
+    <span class="comment">// 根据一些列的路由方法目的也是找到$_GET[&#x27;c&#x27;]和$_GET[&#x27;a&#x27;]</span>
+    <span class="comment">// 只不过方法更严谨，从 $_SERVER 里获取相应的内容</span>
+    <span class="variable">$route</span>-&gt;<span class="title function_ invoke__">dispatcher</span>();
+    <span class="comment">// 这里我们直接获取</span>
+    <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">getRequest</span>();
+    <span class="variable">$class</span> = <span class="string">&quot;\\controller\\&quot;</span>.<span class="title function_ invoke__">ucfirst</span>(<span class="variable">$this</span>-&gt;controller).<span class="string">&quot;Controller&quot;</span>;
+    <span class="variable">$obj</span> = <span class="keyword">new</span> <span class="variable">$class</span>();
+    <span class="variable">$action</span> = <span class="variable language_">$this</span>-&gt;action;
+    <span class="variable">$obj</span>-&gt;<span class="variable">$action</span>();
+&#125;
+
+<span class="comment">/**</span>
+<span class="comment"> * 获取controller和action</span>
+<span class="comment"> */</span>
+<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getRequest</span>(<span class="params"></span>)</span>&#123;
+    <span class="variable language_">$this</span>-&gt;controller = <span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;c&#x27;</span>]) ? <span class="variable">$_GET</span>[<span class="string">&#x27;c&#x27;</span>] : <span class="variable language_">$this</span>-&gt;conf-&gt;<span class="title function_ invoke__">get</span>(<span class="string">&#x27;controller&#x27;</span>);
+    <span class="variable language_">$this</span>-&gt;action = <span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;a&#x27;</span>]) ? <span class="variable">$_GET</span>[<span class="string">&#x27;a&#x27;</span>] : <span class="variable language_">$this</span>-&gt;conf-&gt;<span class="title function_ invoke__">get</span>(<span class="string">&#x27;action&#x27;</span>);
+&#125;</code></pre>
+
+<p>就像 :point_up: 注释里我说的其实我用了最直接的方法获取了$_GET[‘c’]和$_GET[‘a’]，（貌似跳过了路由类的具体实现方式，没事，主要表达中心思想。）然后根据路径拼接出 IndexController ，建立控制器的时候，就约定了使用驼峰式命名规则。你不用 include IndexController 因为他会自动加载的。</p>
+<p>这时候你访问 index.php 屏幕上就会出现:(如果你的自动加载打印路径还没注释的话)，因为配置文件里写了，默认访问 Index 控制器 里的 run 方法。</p>
+<p>[图片走丢了]</p>
+<p>访问 index.php?c&#x3D;index&amp;a&#x3D;demo 这个地址，当然就会出现:</p>
+<blockquote>
+<p>我是 Index 制器的 demo 方法</p>
+</blockquote>
+<p>再来一首Glow Curve发光曲线的 <a target="_blank" rel="noopener" href="http://music.163.com/#/song?id=356752">小雷音之歌</a> 表示本篇结束！</p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/blog/tags/PHP/">PHP</a>
+		  
+			<a href="/blog/tags/composer/">composer</a>
+		  
+		</div>
+		
+
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/blog/posts/cca14d6f.html">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">如何写一个自己的渣渣PHP框架（4）</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/blog/posts/e9ca12b3.html">
+        <span class="next-text nav-default">如何写一个自己的渣渣PHP框架（2）</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2026
+    <span class="footer-author">opnext.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and <a class="theme-link" target="_blank" rel="noopener" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/blog/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+
+    <script type="text/javascript" src="/blog/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/blog/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>

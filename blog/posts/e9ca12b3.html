@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="看看框架怎么通过URL的c、a参数自动加载对应控制器类并执行，顺便吐槽配置文件的引入"/>
+
+
+
+
+  <meta name="keywords" content="PHP,composer," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/default" title="OPQNEXT" >
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://opqnext.com/blog/posts/e9ca12b3.html"/>
+
+
+<meta name="description" content="看看框架怎么通过URL的c、a参数自动加载对应控制器类并执行，顺便吐槽配置文件的引入">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何写一个自己的渣渣PHP框架（2）">
+<meta property="og:url" content="http://opqnext.com/blog/posts/e9ca12b3.html">
+<meta property="og:site_name" content="OPQNEXT">
+<meta property="og:description" content="看看框架怎么通过URL的c、a参数自动加载对应控制器类并执行，顺便吐槽配置文件的引入">
+<meta property="og:locale">
+<meta property="article:published_time" content="2017-01-22T02:28:00.000Z">
+<meta property="article:modified_time" content="2017-01-22T02:28:00.000Z">
+<meta property="article:author" content="opnext">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="composer">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="stylesheet" type="text/css" href="/blog/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
+</script>
+
+
+
+
+  
+
+
+
+    <title> 如何写一个自己的渣渣PHP框架（2） - OPQNEXT </title>
+  <meta name="generator" content="Hexo 8.1.2"></head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/blog/." class="logo">OPQNEXT</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/blog/archives">
+                            
+                            
+                                档案
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/blog/about">
+                            
+                            
+                                关于
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          如何写一个自己的渣渣PHP框架（2）
+        
+      </h1>
+
+      <time class="post-time">
+          Jan 22 2017
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <p>果然菜的不行啊，我想半天这个配置文件应该到底怎么引入了。</p>
+<p>先听一首空中狂欢节的 <a target="_blank" rel="noopener" href="http://music.163.com/#/song?id=25923413">川</a> 压压惊，想想 <a target="_blank" rel="noopener" href="http://music.163.com/#/user/home?id=6451563">SEA_THAW</a> 说：“我去了日本她去了比利时 山也辽阔 海也辽阔 再见也说的容易”。我就…，我走过这么多的路，见过这么多的人，看过那么多颗或纯洁或无良的心，我听过那么多句：“我是如此的爱你”。唯有从你嘴里发出的，最让我有想哭的冲动。就像刘子芙的 <a target="_blank" rel="noopener" href="http://music.163.com/#/song?id=410715806">多爱你一天</a>，不止如此。</p>
+<p>既然如此，就先把自动加载说一下。</p>
+<p>框架来说，简单点，就是根据你的ur地址，比如 index.php?c&#x3D;index&amp;a&#x3D;run 大多数应该都是这样吧，那么框架是如何根据 index 和 run 去找到 index 控制器，然后调用其中的 run 方法。当然后面还可以加很多的参数暂且先不说。确切的来讲你的 index 控制器也是一个类，你什么时候 new 的这个类呢？你什么时候调用的 run 方法？这就是框架要做的事情，就是我理解的 <em>路由</em> 和 <em>自动加载</em> 。</p>
+<p>接着来，建立框架核心目录 &#x2F;data&#x2F;momoma&#x2F;core 在core目录建立 init.php 文件作为框架核心入口文件。 建立目录 &#x2F;data&#x2F;momoma&#x2F;core&#x2F;momoma 在 momoma 里建立 AutoLoad.php 文件，（文字表述写框架的过程简直是好无力呀）：</p>
+<pre><code class="highlight php"><span class="comment">/**</span>
+<span class="comment"> * 自动加载类</span>
+<span class="comment"> * User: momoma</span>
+<span class="comment"> * Date: 2017/1/19</span>
+<span class="comment"> * Time: 上午10:41</span>
+<span class="comment"> */</span>
+<span class="keyword">namespace</span> <span class="title class_">core</span>\<span class="title class_">momoma</span>;
+
+<span class="class"><span class="keyword">class</span> <span class="title">AutoLoad</span> </span>&#123;
+
+    <span class="keyword">public</span> <span class="built_in">static</span> <span class="function"><span class="keyword">function</span> <span class="title">loadprint</span>(<span class="params"><span class="variable">$class</span></span>)</span>&#123;
+        <span class="variable">$file</span> = MOMOMA_PATH.<span class="string">&quot;/&quot;</span>.<span class="variable">$class</span>.<span class="string">&quot;.php&quot;</span>;
+        <span class="comment">// &quot;Linux需要转义斜杠&quot;;</span>
+        <span class="variable">$file</span> = <span class="title function_ invoke__">str_replace</span>(<span class="string">&#x27;\\&#x27;</span>,<span class="string">&#x27;/&#x27;</span>,<span class="variable">$file</span>);
+        <span class="keyword">echo</span> <span class="variable">$file</span>.<span class="string">&quot;&lt;br&gt;&quot;</span>;    <span class="comment">//这句话是为了调试使用</span>
+        <span class="keyword">if</span> (<span class="title function_ invoke__">is_file</span>(<span class="variable">$file</span>)) &#123;
+            <span class="keyword">include</span>(<span class="variable">$file</span>);
+        &#125;
+    &#125;
+&#125;</code></pre>
+<p>使用命名空间，你使用过命名空间吗？没有的话一定要用上。你说这么小的项目完全不需要使用命名空间啊，小项目正好用熟悉一下，不然大项目更不会用。(命名空间一定要根据目录来定义，这样为自动加载做准备)</p>
+<p>然后在 momoma 里建立 Momoma.php 文件，作为框架核心类。</p>
+<pre><code class="highlight php"><span class="comment">/**</span>
+<span class="comment"> * 框架核心类</span>
+<span class="comment"> * User: momoma</span>
+<span class="comment"> * Date: 2017/1/19</span>
+<span class="comment"> * Time: 上午10:52</span>
+<span class="comment"> */</span>
+
+<span class="keyword">namespace</span> <span class="title class_">core</span>\<span class="title class_">momoma</span>;
+
+<span class="class"><span class="keyword">class</span> <span class="title">Momoma</span> </span>&#123;
+
+    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">run</span>(<span class="params"></span>)</span>&#123;
+        <span class="keyword">echo</span> <span class="string">&quot;框架核心入口&quot;</span>;
+    &#125;
+&#125;</code></pre>
+
+<p>这个时候来看 init.php :</p>
+<pre><code class="highlight php"><span class="comment">/**</span>
+<span class="comment"> * 框架核心入口文件</span>
+<span class="comment"> * User: momoma</span>
+<span class="comment"> * Date: 2017/1/19</span>
+<span class="comment"> * Time: 上午10:39</span>
+<span class="comment"> */</span>
+
+<span class="keyword">require_once</span> MOMOMA_PATH.<span class="string">&#x27;/core/momoma/AutoLoad.php&#x27;</span>;
+
+<span class="keyword">use</span> \<span class="title">core</span>\<span class="title">momoma</span>\<span class="title">AutoLoad</span>;
+<span class="keyword">use</span> \<span class="title">core</span>\<span class="title">momoma</span>\<span class="title">Momoma</span>;
+
+<span class="comment">// 自动加载</span>
+<span class="title function_ invoke__">spl_autoload_register</span>([<span class="keyword">new</span> <span class="title class_">AutoLoad</span>(),<span class="string">&#x27;loadprint&#x27;</span>]);
+
+<span class="comment">// 框架核心入口</span>
+<span class="variable">$momoma</span> = <span class="keyword">new</span> <span class="title class_">Momoma</span>();
+<span class="variable">$momoma</span>-&gt;<span class="title function_ invoke__">run</span>();</code></pre>
+
+<p><a target="_blank" rel="noopener" href="http://php.net/manual/zh/function.spl-autoload-register.php">spl_autoload_register</a> 是今天的重点。</p>
+<p>看了半天php官方文档，说实话我还是没有理解其中的意思。我自己的理解就是，当你要在代码中 new 一个 Route 类的时候，你肯定得先 include 这个类文件。不然会直接报错告诉你 <em>“Class ‘Route’ not found”</em> 的。比如我在上面 new 了 Momoma 这个类，我没有 include ，这个时候 spl_autoload_register 就会发生作用，当我要 new 一个不存在的类的时候，程序就会自动触发 spl_autoload_register 自动注册的方法，也就是 AutoLoad 类里面的 loadprint 方法。loadprint 方法会接收到你要 new 的这个类，包含命名空间。然后，定义这个文件，<em>$file &#x3D; MOMOMA_PATH.”&#x2F;“.$class.”.php”;</em> 转义，然后判断它是否是一个文件，是就 include 。</p>
+<ul>
+<li>这里我们做一个调试，也就是上面 AutoLoad 里的这句话，<em>echo $file.”<br>“;    &#x2F;&#x2F;这句话是为了调试使用</em> 我们把自动加载的文件路径打印出来。</li>
+</ul>
+<p>我在下面 new Momoma，并且调用 run 方法。</p>
+<p>去框架的入口文件 index.php 的最下面引入 核心文件 init.php ：（一定要在*”filp&#x2F;whoops”<em>之后引入，不然错误信息没法提示了。因为如果你在之前引入，程序出了问题，程序执行不到</em>“filp&#x2F;whoops”*了）</p>
+<pre><code class="highlight plaintext">require_once MOMOMA_PATH . &#x27;/core/init.php&#x27;; //引入框架核心文件</code></pre>
+<p>这时候你打开浏览器，访问 index.php 屏幕上会出现：</p>
+<pre><code class="highlight plaintext">/data/momoma/core/momoma/Momoma.php
+框架核心入口</code></pre>
+<p>说明 程序执行了 <em>include(“&#x2F;data&#x2F;momoma&#x2F;core&#x2F;momoma&#x2F;Momoma.php”);</em> 并且成功调用了 <em>$momoma-&gt;run();</em> 方法，打印出了“框架核心入口”。</p>
+<p>文字叙述好无力呀，来张图表述一下当前目录结构：</p>
+<p>[图片丢了]</p>
+<p>还是图片来的直观明了…</p>
+<p>突然听到一阵呐喊，还是在激动的诉说什么？是Childs的 <a target="_blank" rel="noopener" href="http://music.163.com/#/song?id=25731499">Ian P</a> 大约6分钟左右用了EVA裏面asuka的台词：妈妈 妈妈我被选上了 我被选为担任操作保护人类的eva驾驶员 是世界第一哦 这件事我还没告诉别人 不过我只告诉妈妈 那的人对我都很好 所以 我一点也不寂寞 因此 即使没有爸爸也没关系 我一点也不寂寞 所以妈妈 看看我吧</p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/blog/tags/PHP/">PHP</a>
+		  
+			<a href="/blog/tags/composer/">composer</a>
+		  
+		</div>
+		
+
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/blog/posts/517675d6.html">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">如何写一个自己的渣渣PHP框架（3）</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/blog/posts/fb7fbd5d.html">
+        <span class="next-text nav-default">如何写一个自己的渣渣PHP框架（1）</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2026
+    <span class="footer-author">opnext.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and <a class="theme-link" target="_blank" rel="noopener" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/blog/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+
+    <script type="text/javascript" src="/blog/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/blog/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>
