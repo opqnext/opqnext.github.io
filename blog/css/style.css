@@ -1019,6 +1019,8 @@ h6 {
 }
 
 #secondary {
+  position: sticky;
+  top: 40px;
   width: 19%;
   float: right;
   padding-top: 40px;
