@@ -284,6 +284,8 @@
         
   <div class="comments" id="comments">
     
+      <div id="waline"></div>
+    
   </div>
 
 
@@ -315,6 +317,19 @@
       </div>
     </div>
     
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
+<script type="module">
+  import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  init({
+    el: '#waline',
+    serverURL: 'https://waline.opqnext.com',
+    path: window.location.pathname,
+    lang: 'zh-CN',
+  });
+</script>
 
 
     

@@ -554,6 +554,8 @@ POST /api/video/publish  → 回调：更新发布状态</code></pre>
         
   <div class="comments" id="comments">
     
+      <div id="waline"></div>
+    
   </div>
 
 
@@ -585,6 +587,19 @@ POST /api/video/publish  → 回调：更新发布状态</code></pre>
       </div>
     </div>
     
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
+<script type="module">
+  import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  init({
+    el: '#waline',
+    serverURL: 'https://waline.opqnext.com',
+    path: window.location.pathname,
+    lang: 'zh-CN',
+  });
+</script>
 
 
     
