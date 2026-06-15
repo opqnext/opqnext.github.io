@@ -12,12 +12,12 @@
 
 
 
-  <meta name="description" content="注册后拿到JWT令牌，再运行训练脚本，调了100轮次和8的batch大小，用GPU训练模型。"/>
+  <meta name="description" content="作者用爬虫抓取搞笑图片，人工筛选出对话记录图片，再配上音乐用ffmpeg合成视频。从第一版纯人工到第二版借助服务器在手机上打标，迭代提升效率。"/>
 
 
 
 
-  <meta name="keywords" content="训练,API," />
+  <meta name="keywords" content="爬虫,自动化," />
 
 
 
@@ -35,30 +35,33 @@
 <link rel="canonical" href="http://opqnext.com/blog/posts/9e43ce0.html"/>
 
 
-<meta name="description" content="注册后拿到JWT令牌，再运行训练脚本，调了100轮次和8的batch大小，用GPU训练模型。">
+<meta name="description" content="作者用爬虫抓取搞笑图片，人工筛选出对话记录图片，再配上音乐用ffmpeg合成视频。从第一版纯人工到第二版借助服务器在手机上打标，迭代提升效率。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="打标系统">
 <meta property="og:url" content="http://opqnext.com/blog/posts/9e43ce0.html">
 <meta property="og:site_name" content="OPQNEXT">
-<meta property="og:description" content="注册后拿到JWT令牌，再运行训练脚本，调了100轮次和8的batch大小，用GPU训练模型。">
+<meta property="og:description" content="作者用爬虫抓取搞笑图片，人工筛选出对话记录图片，再配上音乐用ffmpeg合成视频。从第一版纯人工到第二版借助服务器在手机上打标，迭代提升效率。">
 <meta property="og:locale">
-<meta property="og:image" content="http://opqnext.com/blog/assets/2026-05/26_7a62bef34833.png">
-<meta property="og:image" content="http://opqnext.com/blog/assets/2026-05/26_f3a8a02787aa.png">
 <meta property="og:image" content="http://opqnext.com/blog/assets/2026-05/26_a603d032da7a.png">
 <meta property="og:image" content="http://opqnext.com/blog/assets/2026-05/27_884dc4256da2.png">
 <meta property="og:image" content="http://opqnext.com/blog/assets/2026-05/27_560f11646e29.png">
 <meta property="og:image" content="http://opqnext.com/blog/assets/2026-05/27_56f91b6c2fe1.png">
 <meta property="og:image" content="http://opqnext.com/blog/assets/2026-05/27_cf1485a77e8f.png">
 <meta property="og:image" content="http://opqnext.com/blog/assets/2026-05/27_10888cc17f57.png">
-<meta property="og:image" content="http://opqnext.com/blog/assets/2026-05/27_164756c50168.jpeg">
 <meta property="og:image" content="http://opqnext.com/blog/assets/2026-05/27_b82719d6f96f.png">
+<meta property="og:image" content="http://opqnext.com/blog/assets/2026-06/15_6be19b5d36d6.png">
+<meta property="og:image" content="http://opqnext.com/blog/assets/2026-06/15_4aa7f6985c0c.png">
+<meta property="og:image" content="http://opqnext.com/blog/assets/2026-06/15_3a879732306b.png">
+<meta property="og:image" content="http://opqnext.com/blog/assets/2026-06/15_7254aa339a3d.png">
+<meta property="og:image" content="http://opqnext.com/blog/assets/2026-06/15_a7285ac82438.png">
+<meta property="og:image" content="http://opqnext.com/blog/assets/2026-06/15_23b1c8523a0a.png">
 <meta property="article:published_time" content="2026-05-26T10:09:28.000Z">
-<meta property="article:modified_time" content="2026-05-27T07:09:39.000Z">
+<meta property="article:modified_time" content="2026-06-15T10:10:30.000Z">
 <meta property="article:author" content="opnext">
-<meta property="article:tag" content="API">
-<meta property="article:tag" content="训练">
+<meta property="article:tag" content="爬虫">
+<meta property="article:tag" content="自动化">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://opqnext.com/blog/assets/2026-05/26_7a62bef34833.png">
+<meta name="twitter:image" content="http://opqnext.com/blog/assets/2026-05/26_a603d032da7a.png">
 
 
 <link rel="stylesheet" type="text/css" href="/blog/css/style.css?v=1.1" />
@@ -150,13 +153,41 @@
 
     
             <div class="post-content">
-            <p><img src="/blog/assets/2026-05/26_7a62bef34833.png" alt="image"></p>
-<p>注册之后</p>
-<p><img src="/blog/assets/2026-05/26_f3a8a02787aa.png" alt="image"></p>
-<pre><code class="highlight plaintext">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6ODA4Njk4ODYwNywiaWF0IjoxNzc5Nzg4NjA3LCJqdGkiOiJiNzFjMzg2YWViZGQ0OTQ2YWQyMTUwMTI2YzUxMDc2NCIsInVzZXJfaWQiOiIxIn0.GaIs15D3KOo7ObJLUx5B1n49d4Er4iEFW5EW3iXgTiM</code></pre>
+            <p>事情的起因是这样，之前一直刷微信视频号，看到有人发那种搞笑的微信对话记录，于是我自己写了一个爬虫，找了一批搞笑的图片，但是里面除了搞笑的对话记录图片，还有各种其他的搞笑图片，我需要把他们择出来，然后找到背景音乐、使用ffmpeg合成一段视频。</p>
+<blockquote>
+<p>以下是一段持续迭代升级的过程，并且后续还可能会继续升级。当然这取决于ai技术的发展和消耗token的花费，总之要算一下ROI吧…</p>
+</blockquote>
+<h3 id="很早之前的第一版"><a href="#很早之前的第一版" class="headerlink" title="很早之前的第一版"></a>很早之前的第一版</h3><p>写了一个web页面，自己人工筛选，把所有对话记录筛选出来，一屏9张图批量打标；费眼睛费手；再从素材网站上找一些高效的背景音乐素材；然后将打标好的图片+音乐，使用程序合成视频，人工发布到视频号；根据爬虫拿到的对图片的描述自己再改写视频描述、标签、短标题，纯纯体力活。</p>
+<p>纯人工打标，使用的自己的大脑🧠，不消耗<code>token</code>，只消耗两个馒头！</p>
+<h3 id="大幅提效的第二版"><a href="#大幅提效的第二版" class="headerlink" title="大幅提效的第二版"></a>大幅提效的第二版</h3><p>我们是搞技术的，怎么可能只消耗馒头不消耗算力呢？这一版主要更新了什么？</p>
+<ul>
+<li><strong>打标</strong>：打标还是纯纯人工打标，一页9张图，这次我把服务放到了阿里云的机器上，适配了手机端，躺着床上也可以打标。</li>
+<li><strong>背景音乐</strong>：那会 <code>minimax</code> 发布了 <code>M2.7</code>，我买了 <code>token plan</code>，可以通过自然语言生成欢快轻松的背景音乐（纯音乐），也可以使用歌词唱出来，但是我不需要；</li>
+<li><strong>合成视频</strong>：合成视频还是使用 <code>ffmpeg</code>，视频描述、标签、短标题 这三项也使用 mmx 来自动生成，还是根据爬虫拿到的图片描述；</li>
+<li><strong>发布脚本</strong>：之前在 <code>github</code> 上找了很久，没找到合适的自动发布的脚本或者工具；然后自己使用 <code>opus4.6</code> 写了一个，放在自己本地；发布流程相当于是 本地启动脚本，从服务器拉视频拉描述标签短标题（我特意写了一个api接口），然后本地手机扫码登录，自动化发布；这个cookie有效期很短，过一会儿就得重新扫码，也还行。</li>
+</ul>
+<p>本以为这样就完美了，结果突然有一天，平台发来一条私信，说我的短视频非原创，我当时就tm想，确实，我这个的确是非原创…</p>
+<p>但是我音乐是原创，排序是原创，视频描述、标签、短标题都是原创，AI创也是原创。我申诉了，结果可想而知…</p>
+<p>于是我痛定思痛，再搞第三版，<code>AI</code> 已经发展到如此地步，我一定要让 <code>AI</code> 帮我想一个什么方案，能彻底不需要人工。</p>
+<p>盗版可耻…</p>
+<h3 id="过渡的第三版"><a href="#过渡的第三版" class="headerlink" title="过渡的第三版"></a>过渡的第三版</h3><p>为什么平台会判定我为非原创，我认为最根本的原因就是平台的OCR，识别出来我的内容和其他用户的内容完全一致，因为我的图片就是盗版的图片，和人家的完全一模一样，不仅仅是文字，背景图、头像，系统消息（时间、撤回、拒收等等）都一样。所以我需要做的就是：</p>
+<pre><code class="highlight text">提取文字 --&gt; AI润色 --&gt; 填回原图（填回是不可能了，只能用程序重新绘制一张图吧）</code></pre>
 
+<p>第三版其实也是一个过渡版本，没有使用只是技术实验，最终被否定了。</p>
+<p>这一版使用的是 <code>minimax</code> 的视觉模型，最初为了省钱，我把9张图片拼到一起，拼成一张9宫格的大图，然后让模型一次性识别9组json格式的对话记录，格式如下：</p>
+<pre><code class="highlight json"><span class="punctuation">&#123;</span><span class="attr">&quot;summary&quot;</span><span class="punctuation">:</span><span class="string">&quot;兄弟会错意，把女友叫来了&quot;</span><span class="punctuation">,</span><span class="attr">&quot;messages&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;from&quot;</span><span class="punctuation">:</span><span class="string">&quot;A&quot;</span><span class="punctuation">,</span><span class="attr">&quot;type&quot;</span><span class="punctuation">:</span><span class="string">&quot;text&quot;</span><span class="punctuation">,</span><span class="attr">&quot;content&quot;</span><span class="punctuation">:</span><span class="string">&quot;哥们，心情不太好&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="punctuation">&#123;</span><span class="attr">&quot;from&quot;</span><span class="punctuation">:</span><span class="string">&quot;A&quot;</span><span class="punctuation">,</span><span class="attr">&quot;type&quot;</span><span class="punctuation">:</span><span class="string">&quot;text&quot;</span><span class="punctuation">,</span><span class="attr">&quot;content&quot;</span><span class="punctuation">:</span><span class="string">&quot;跟你女朋友说一声，晚上陪我喝点去咋样&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="punctuation">&#123;</span><span class="attr">&quot;from&quot;</span><span class="punctuation">:</span><span class="string">&quot;B&quot;</span><span class="punctuation">,</span><span class="attr">&quot;type&quot;</span><span class="punctuation">:</span><span class="string">&quot;text&quot;</span><span class="punctuation">,</span><span class="attr">&quot;content&quot;</span><span class="punctuation">:</span><span class="string">&quot;好，我和她说一下&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="punctuation">&#123;</span><span class="attr">&quot;from&quot;</span><span class="punctuation">:</span><span class="string">&quot;A&quot;</span><span class="punctuation">,</span><span class="attr">&quot;type&quot;</span><span class="punctuation">:</span><span class="string">&quot;text&quot;</span><span class="punctuation">,</span><span class="attr">&quot;content&quot;</span><span class="punctuation">:</span><span class="string">&quot;想吃啥？我来点&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="punctuation">&#123;</span><span class="attr">&quot;from&quot;</span><span class="punctuation">:</span><span class="string">&quot;B&quot;</span><span class="punctuation">,</span><span class="attr">&quot;type&quot;</span><span class="punctuation">:</span><span class="string">&quot;text&quot;</span><span class="punctuation">,</span><span class="attr">&quot;content&quot;</span><span class="punctuation">:</span><span class="string">&quot;你们俩商量吧，我已经让她过去了&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="punctuation">&#123;</span><span class="attr">&quot;from&quot;</span><span class="punctuation">:</span><span class="string">&quot;A&quot;</span><span class="punctuation">,</span><span class="attr">&quot;type&quot;</span><span class="punctuation">:</span><span class="string">&quot;text&quot;</span><span class="punctuation">,</span><span class="attr">&quot;content&quot;</span><span class="punctuation">:</span><span class="string">&quot;？？？？？&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="punctuation">&#123;</span><span class="attr">&quot;from&quot;</span><span class="punctuation">:</span><span class="string">&quot;A&quot;</span><span class="punctuation">,</span><span class="attr">&quot;type&quot;</span><span class="punctuation">:</span><span class="string">&quot;text&quot;</span><span class="punctuation">,</span><span class="attr">&quot;content&quot;</span><span class="punctuation">:</span><span class="string">&quot;我是让你过来，只是跟她说一声&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="attr">&quot;contactName&quot;</span><span class="punctuation">:</span><span class="string">&quot;大林&quot;</span><span class="punctuation">,</span><span class="attr">&quot;participants&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;A&quot;</span><span class="punctuation">,</span><span class="attr">&quot;name&quot;</span><span class="punctuation">:</span><span class="string">&quot;我&quot;</span><span class="punctuation">,</span><span class="attr">&quot;side&quot;</span><span class="punctuation">:</span><span class="string">&quot;right&quot;</span><span class="punctuation">,</span><span class="attr">&quot;gender&quot;</span><span class="punctuation">:</span><span class="string">&quot;male&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span><span class="punctuation">&#123;</span><span class="attr">&quot;id&quot;</span><span class="punctuation">:</span><span class="string">&quot;B&quot;</span><span class="punctuation">,</span><span class="attr">&quot;name&quot;</span><span class="punctuation">:</span><span class="string">&quot;大林&quot;</span><span class="punctuation">,</span><span class="attr">&quot;side&quot;</span><span class="punctuation">:</span><span class="string">&quot;left&quot;</span><span class="punctuation">,</span><span class="attr">&quot;gender&quot;</span><span class="punctuation">:</span><span class="string">&quot;male&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">]</span><span class="punctuation">&#125;</span></code></pre>
+
+<p>这里面就有两个问题：</p>
+<ol>
+<li>虽然一次识别9组对话记录，9次调用合为1次调用，是省钱，但是增加了视觉模型的难度，本来视觉模型就不聪明，我还给她上难度，导致识别出来的内容，基本上不太行，我把这个视频发出去还用户被骂了…haha😁</li>
+<li>视觉模型只识别出来了文字，但是很多对话记录元素复杂，有表情、图片、转账、红包、语音、系统消息（撤回、拍一拍、拒收等等），这些根本识别不出来，导致我程序绘制的结果更加的不行，啥都没有</li>
+</ol>
+<p>然后我就找 <code>AI</code> 帮忙，有没有什么方案能够解决这一问题。</p>
+<h3 id="基本可行的第四版"><a href="#基本可行的第四版" class="headerlink" title="基本可行的第四版"></a>基本可行的第四版</h3><p><a target="_blank" rel="noopener" href="https://docs.ultralytics.com/zh/models/yolov8">https://docs.ultralytics.com/zh/models/yolov8</a></p>
+<p>AI推荐我使用👆🏻这个目标检测模型，在本地训练一下来完成这个任务，然后我按步骤搭建了这个模型以及打标平台：</p>
 <p><img src="/blog/assets/2026-05/26_a603d032da7a.png" alt="image"></p>
 <p><img src="/blog/assets/2026-05/27_884dc4256da2.png" alt="image"></p>
+<p>如果我打标100张图片，就可以训练出一个可用的模型，那完全可以尝试一下。</p>
 <pre><code class="highlight plaintext">python3 scripts/04_train.py --epochs 100 --batch 8 --device mps</code></pre>
 <p>第一次训练100轮：<br>好消息：</p>
 <ul>
@@ -189,8 +220,56 @@
 <p><img src="/blog/assets/2026-05/27_56f91b6c2fe1.png" alt="image"></p>
 <p><img src="/blog/assets/2026-05/27_cf1485a77e8f.png" alt="image"></p>
 <p><img src="/blog/assets/2026-05/27_10888cc17f57.png" alt="image"></p>
-<p><img src="/blog/assets/2026-05/27_164756c50168.jpeg" alt="image"></p>
 <p>测试一下：<br><img src="/blog/assets/2026-05/27_b82719d6f96f.png" alt="image"></p>
+<h3 id="优化系统功能"><a href="#优化系统功能" class="headerlink" title="优化系统功能"></a>优化系统功能</h3><h4 id="一、打标系统"><a href="#一、打标系统" class="headerlink" title="一、打标系统"></a>一、打标系统</h4><p>模型训练完成，开始改自己的系统；原本人工手动打标一页9张图的功能彻底删掉。现在使用模型完全可以自主根据特征判断该图片是否为聊天对话图片。前期误判的增加一个状态，后续继续放到打标平台重新打标签，优化模型，持续迭代。</p>
+<p><img src="/blog/assets/2026-06/15_6be19b5d36d6.png" alt="image"></p>
+<h4 id="二、聊天生成"><a href="#二、聊天生成" class="headerlink" title="二、聊天生成"></a>二、聊天生成</h4><p>经过打标系统初筛的结果，作为聊天json生成的数据源，同样还是使用模型来识别，我把标签简化了一下，对话，图片（表情、图片、转账、红包）、系统消息、未发出的消息，等等，总之就是简化了标签；</p>
+<p>这次最大的突破就是 <code>deepseek-v4-pro</code> 带来的，我写一个调优的定时任务，我理解我的调优任务一上线，所有对话记录全部重写，应该不会再被平台判定为非原创了吧。（洗稿可耻…凭技术洗稿还好吧，可以说是参考并重新创作。）</p>
+<pre><code class="highlight text">你是一个微信聊天记录校对专家。用户会给你一段从截图中 OCR 提取的聊天 JSON，
+你的任务是检查并修正其中的问题，然后返回修正后的完整 JSON。
+
+请检查以下几类问题：
+
+1. OCR 错别字：
+   - 形近字误识别（如&quot;已&quot;→&quot;己&quot;，&quot;未&quot;→&quot;末&quot;，&quot;人&quot;→&quot;入&quot;）
+   - 但要注意区分：故意的网络用语不算错别字（如&quot;酱紫&quot;&quot;8错&quot;&quot;yyds&quot;）
+
+2. 角色分配错误（A/B 颠倒）：
+   - 检查对话逻辑是否通顺，是否有&quot;自问自答&quot;或&quot;答非所问&quot;的情况
+   - 如果发现 A 和 B 的消息应该互换 from，请修正
+   - side 为 right 的是&quot;我&quot;，side 为 left 的是对方
+
+3. 语义不通顺：
+   - 漏字、多字导致句子读不通
+   - 上下文明显矛盾（但要保留原意，不要过度改写）
+
+4. 结构问题：
+   - time 类型消息不应有 from 字段
+   - voice/redpacket/transfer 类型应有正确的 params
+   - 检查 participants 的 side 和 gender 是否合理
+
+返回格式要求：
+严格返回以下 JSON 格式，不要加 markdown 标记或任何说明：
+&#123;
+  &quot;issues&quot;: [
+    &#123;&quot;type&quot;: &quot;typo|role|semantic|structure&quot;, &quot;location&quot;: &quot;第N条消息&quot;, &quot;original&quot;: &quot;原文&quot;, &quot;fixed&quot;: &quot;修正后&quot;, &quot;reason&quot;: &quot;修正原因&quot;&#125;
+  ],
+  &quot;fixed_dsl&quot;: &#123; ... 修正后的完整 chat_dsl JSON ... &#125;,
+  &quot;summary&quot;: &quot;修正后的一句话摘要&quot;
+&#125;
+
+如果没有发现问题，issues 为空数组，fixed_dsl 返回原样。 把上述内容返回 markdown原文可复制的格式</code></pre>
+
+<blockquote>
+<p>有一个问题：<code>minimax</code>涨价了，原本29一个月，现在涨到49了，当然模型也升级到 <code>M3</code> 了，这就涉及到一个心理问题，原本按月买，敞开用，不用就亏，但是现在我买了 <code>deepseek</code>的按量付费，同样我充 30 块钱，其实用不了那么多，但是总是要去关注账单，关注使用量，哈哈哈哈，这是什么心理小实验❓</p>
+</blockquote>
+<p><img src="/blog/assets/2026-06/15_4aa7f6985c0c.png" alt="image"></p>
+<p><img src="/blog/assets/2026-06/15_3a879732306b.png" alt="image"></p>
+<p><img src="/blog/assets/2026-06/15_7254aa339a3d.png" alt="image"></p>
+<h4 id="三、视频管理"><a href="#三、视频管理" class="headerlink" title="三、视频管理"></a>三、视频管理</h4><p>视频管理当然没有什么技术可言，就是图片+音乐合成视频，生成视频描述、短标题、标签，然后同样的使用脚本自动发布。</p>
+<p><img src="/blog/assets/2026-06/15_a7285ac82438.png" alt="image"></p>
+<p><img src="/blog/assets/2026-06/15_23b1c8523a0a.png" alt="image"></p>
+<h3 id="结束"><a href="#结束" class="headerlink" title="结束"></a>结束</h3><p>最近差不多一个多月就在断断续续搞这个，事情太多了，不管是工作还是生活，跑一段时间看看吧，想想后面再搞点什么呢</p>
 
             </div>
           
@@ -200,9 +279,9 @@
 		
 		<div class="post-tags">
 		  
-			<a href="/blog/tags/%E8%AE%AD%E7%BB%83/">训练</a>
+			<a href="/blog/tags/%E7%88%AC%E8%99%AB/">爬虫</a>
 		  
-			<a href="/blog/tags/API/">API</a>
+			<a href="/blog/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/">自动化</a>
 		  
 		</div>
 		
