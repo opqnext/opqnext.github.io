@@ -1,3 +1,21 @@
+@keyframes titleBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-5px);
+  }
+  60% {
+    transform: translateY(0);
+  }
+  80% {
+    transform: translateY(-2px);
+  }
+}
+.site-title .logo .bounce-letter {
+  display: inline-block;
+}
+
 /*! normalize.css v3.0.2 | MIT License | git.io/normalize */
 /**
  * 1. Set default font family to sans-serif.
@@ -415,6 +433,7 @@ img {
   height: auto;
   display: inline-block;
   vertical-align: middle;
+  border-radius: 9px;
 }
 
 a {
@@ -488,9 +507,14 @@ h6 {
   max-width: 1000px;
 }
 
+#content:has(#secondary) {
+  display: flex;
+  align-items: flex-start;
+  gap: 8%;
+}
+
 #primary.home {
   width: 73%;
-  float: left;
 }
 
 #primary {
@@ -735,7 +759,7 @@ h6 {
 }
 .post .post-content img {
   max-width: 100%;
-  border-radius: 4px;
+  border-radius: 9px;
   margin: 8px 0;
 }
 .post .post-content ul, .post .post-content ol {
@@ -1022,7 +1046,6 @@ h6 {
   position: sticky;
   top: 40px;
   width: 19%;
-  float: right;
   padding-top: 40px;
   color: rgba(0, 0, 0, 0.6);
 }
