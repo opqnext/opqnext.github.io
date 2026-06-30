@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="想做个自动化工具，上传视频自动提取声纹、克隆声音、合成语音，加字幕剪辑一条龙，全跑在MacBook Pro M2上，用MLX框架省掉GPU费用，技术选型是mlx-whisper和Qwen系列。"/>
+
+
+
+
+  <meta name="keywords" content="自动化,声音克隆," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/default" title="OPQNEXT" >
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://opqnext.com/blog/posts/c86d21cd.html"/>
+
+
+<meta name="description" content="想做个自动化工具，上传视频自动提取声纹、克隆声音、合成语音，加字幕剪辑一条龙，全跑在MacBook Pro M2上，用MLX框架省掉GPU费用，技术选型是mlx-whisper和Qwen系列。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="视频二次配音系统">
+<meta property="og:url" content="http://opqnext.com/blog/posts/c86d21cd.html">
+<meta property="og:site_name" content="OPQNEXT">
+<meta property="og:description" content="想做个自动化工具，上传视频自动提取声纹、克隆声音、合成语音，加字幕剪辑一条龙，全跑在MacBook Pro M2上，用MLX框架省掉GPU费用，技术选型是mlx-whisper和Qwen系列。">
+<meta property="og:locale">
+<meta property="og:image" content="http://opqnext.com/blog/assets/2026-06/30_998ecc28fe80.png">
+<meta property="og:image" content="http://opqnext.com/blog/assets/2026-06/30_42cee8711162.png">
+<meta property="og:image" content="http://opqnext.com/blog/assets/2026-06/30_f42ec944844e.png">
+<meta property="og:image" content="http://opqnext.com/blog/assets/2026-06/30_01263b66904a.png">
+<meta property="article:published_time" content="2026-06-30T08:50:44.000Z">
+<meta property="article:modified_time" content="2026-06-30T08:54:59.000Z">
+<meta property="article:author" content="opnext">
+<meta property="article:tag" content="声音克隆">
+<meta property="article:tag" content="自动化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://opqnext.com/blog/assets/2026-06/30_998ecc28fe80.png">
+
+
+<link rel="stylesheet" type="text/css" href="/blog/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
+</script>
+
+
+
+
+  <script id="baidu_analytics">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?652095343f2e7ca02a08c05c2e9ec3b7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+    <title> 视频二次配音系统 - OPQNEXT </title>
+  <meta name="generator" content="Hexo 8.1.2"></head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/blog/." class="logo">OPQNEXT</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/blog/archives">
+                            
+                            
+                                归档
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/blog/about">
+                            
+                            
+                                关于
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          视频二次配音系统
+        
+      </h1>
+
+      <time class="post-time">
+          Jun 30 2026
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>刷短视频的时候经常能看到那种”二次配音”的搞笑视频——拿一段影视剧片段，配上完全不相干的沙雕文案，声音还挺像原角色的。这种视频制作门槛其实不低：要找素材、去字幕、克隆声音、合成语音、加字幕、剪辑……全手工做一条少说半小时。</p>
+<p>我就想：这整个流程能不能全自动化？</p>
+<p>上传原始视频，系统自动提取声纹；写好文案，一键合成成品视频，甚至自动发到视频号。整套东西全部跑在我的 MacBook Pro M2 上，不花一分钱 GPU 费用。</p>
+<h2 id="技术选型：在-M2-上跑-AI-的正确姿势"><a href="#技术选型：在-M2-上跑-AI-的正确姿势" class="headerlink" title="技术选型：在 M2 上跑 AI 的正确姿势"></a>技术选型：在 M2 上跑 AI 的正确姿势</h2><p>M2 的 16GB 统一内存意味着 CPU 和 GPU 共享内存，这是跑本地 AI 模型的天然优势。关键是选对框架——不是 PyTorch，而是 Apple 的 <strong>MLX</strong>。</p>
+<p>最终的技术栈：</p>
+<table>
+<thead>
+<tr>
+<th>环节</th>
+<th>方案</th>
+<th>为什么选它</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>语音转文字</td>
+<td>mlx-whisper + whisper-large-v3-turbo</td>
+<td>MLX 原生优化，M2 上转录速度是实时的 10 倍以上</td>
+</tr>
+<tr>
+<td>声音克隆</td>
+<td>mlx-audio + Qwen3-TTS (8bit)</td>
+<td>目前开源方案中音质最好的，支持 zero-shot 声音克隆</td>
+</tr>
+<tr>
+<td>人声分离</td>
+<td>demucs-mlx</td>
+<td>从有背景音乐的视频中提取纯净人声，大幅提升克隆质量</td>
+</tr>
+<tr>
+<td>字幕去除</td>
+<td>video-subtitle-remover (STTN)</td>
+<td>AI 画面修复，把字幕区域”抹掉”</td>
+</tr>
+<tr>
+<td>音视频处理</td>
+<td>FFmpeg</td>
+<td>没什么好说的，音视频处理的瑞士军刀</td>
+</tr>
+<tr>
+<td>后端</td>
+<td>FastAPI + MySQL</td>
+<td>异步任务支持好，ORM 省事</td>
+</tr>
+<tr>
+<td>前端</td>
+<td>React + TypeScript + Tailwind</td>
+<td>快速出活</td>
+</tr>
+<tr>
+<td>自动发布</td>
+<td>Playwright</td>
+<td>操控微信视频号后台的 Shadow DOM</td>
+</tr>
+<tr>
+<td>视频元数据</td>
+<td>DeepSeek API</td>
+<td>根据文案自动生成标题、描述、话题标签</td>
+</tr>
+</tbody></table>
+<p>全部本地推理，除了 DeepSeek 的元数据生成需要网络，其他环节零 API 费用。</p>
+<h2 id="开发过程中踩的坑"><a href="#开发过程中踩的坑" class="headerlink" title="开发过程中踩的坑"></a>开发过程中踩的坑</h2><h3 id="坑-1：声纹被背景音乐污染"><a href="#坑-1：声纹被背景音乐污染" class="headerlink" title="坑 1：声纹被背景音乐污染"></a>坑 1：声纹被背景音乐污染</h3><p>第一版做出来，声音克隆效果很差——合成出来的声音像机器人。排查后发现，原视频不仅有人声还有背景音乐，直接拿混合音频作为参考，声纹就被污染了。</p>
+<p><strong>解决方案</strong>：在创建角色时加了一步 demucs 人声分离。上传视频 → 提取音频 → demucs 分离出纯人声 → 用纯人声作为参考音频。效果立竿见影。</p>
+<p><img src="/blog/assets/2026-06/30_998ecc28fe80.png" alt="image"></p>
+<h3 id="坑-2：字幕没去掉"><a href="#坑-2：字幕没去掉" class="headerlink" title="坑 2：字幕没去掉"></a>坑 2：字幕没去掉</h3><p>video-subtitle-remover 的默认模式（全画面检测）效果很差，基本就是原封不动。翻了半天文档发现要用 <code>sttn-det</code> 模式，并且需要精确指定字幕区域坐标。</p>
+<p><strong>解决方案</strong>：前端做了一个视频播放器 + 可视化拖拽框，用户播放视频找到字幕位置后，拖拽圈定字幕区域，系统按这个区域做 AI 修复。</p>
+<h3 id="坑-3：FFmpeg-中文字幕变方块"><a href="#坑-3：FFmpeg-中文字幕变方块" class="headerlink" title="坑 3：FFmpeg 中文字幕变方块"></a>坑 3：FFmpeg 中文字幕变方块</h3><p>烧录字幕时，所有中文变成了小方块。</p>
+<p><strong>解决方案</strong>：FFmpeg 的 ASS 字幕滤镜需要显式指定中文字体。macOS 自带 “Heiti SC”（黑体），加上 <code>FontName=Heiti SC</code> 就好了。另外还有一个隐蔽的坑——macOS 路径里的冒号（<code>:</code>）需要转义成 <code>\:</code>，否则 FFmpeg 的 subtitle filter 会解析失败。</p>
+<p><img src="/blog/assets/2026-06/30_42cee8711162.png" alt="image"></p>
+<h3 id="坑-4：视频时长匹配"><a href="#坑-4：视频时长匹配" class="headerlink" title="坑 4：视频时长匹配"></a>坑 4：视频时长匹配</h3><p>文案合成出来的音频可能 30 秒，但角色的视频素材有 3 分钟的、有 10 秒的。需要一套智能匹配算法：</p>
+<ul>
+<li>如果有足够长的单段视频 → 裁剪</li>
+<li>如果单段不够 → 多段拼接</li>
+<li>如果所有素材加起来还不够 → 循环</li>
+</ul>
+<p>实现起来不难，但边界情况很多，比如避免在同一个视频的同一位置反复裁剪。</p>
+<p><img src="/blog/assets/2026-06/30_f42ec944844e.png" alt="image"></p>
+<h3 id="坑-5：微信视频号后台是-Shadow-DOM"><a href="#坑-5：微信视频号后台是-Shadow-DOM" class="headerlink" title="坑 5：微信视频号后台是 Shadow DOM"></a>坑 5：微信视频号后台是 Shadow DOM</h3><p>视频号创作者后台用了 <code>wujie-app</code> 微前端框架，表单元素都在 Shadow DOM 里。Playwright 的标准选择器根本找不到。</p>
+<p><strong>解决方案</strong>：通过 <code>evaluate()</code> 注入 JS，先拿到 Shadow Root，再在里面查询元素。上传文件更麻烦——Shadow DOM 里的 <code>&lt;input type=&quot;file&quot;&gt;</code> 无法直接操作，最后用了一个 hack：把 input 克隆到主 DOM 中，设置文件后再把 FileList 同步回原始 input。</p>
+<h3 id="坑-6：数据库迁移"><a href="#坑-6：数据库迁移" class="headerlink" title="坑 6：数据库迁移"></a>坑 6：数据库迁移</h3><p>没用 Alembic 这种专业迁移工具（因为项目初期，表结构变动太频繁）。每次加新字段，<code>CREATE_ALL</code> 不会给已有表加列，导致 500 错误。</p>
+<p><strong>解决方案</strong>：在 <code>init_db()</code> 里写了一个自动迁移函数，启动时用 <code>inspect</code> 检查每个表的现有列，对比 ORM 模型定义，自动执行 <code>ALTER TABLE ADD COLUMN</code>。简单粗暴但好用。</p>
+<p><img src="/blog/assets/2026-06/30_01263b66904a.png" alt="image"></p>
+<h2 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h2><p>完整的合成流程大约 40-60 秒（取决于文案长度），包含 9 个步骤：</p>
+<ol>
+<li>Qwen3-TTS 声音克隆合成语音</li>
+<li>混入背景音乐（音量自动降低）</li>
+<li>根据音频时长智能匹配视频片段</li>
+<li>添加固定水印”二次配音 仅供娱乐”</li>
+<li>烧录字幕到视频画面内</li>
+<li>缩放到 1080x1920 竖屏 + 黑边填充</li>
+<li>添加飘动水印</li>
+<li>合并音频</li>
+<li>DeepSeek 生成短标题、描述、话题标签</li>
+</ol>
+<p>一条命令自动发布到微信视频号：</p>
+<pre><code class="highlight bash"><span class="built_in">cd</span> publisher &amp;&amp; .venv/bin/python main.py auto --collection <span class="string">&quot;搞笑&quot;</span></code></pre>
+
+<h2 id="项目架构"><a href="#项目架构" class="headerlink" title="项目架构"></a>项目架构</h2><pre><code class="highlight plaintext">React 前端 (Vite :3000)
+    │
+    │ API Proxy
+    ▼
+FastAPI 后端 (:8000)
+    ├── 角色管理 (创建/上传视频/去字幕/BGM)
+    ├── 文案库 (CRUD)
+    ├── 合成中心 (异步任务)
+    └── 工具箱 (视频裁剪/音频裁剪)
+    │
+    ├── mlx-whisper (语音转文字)
+    ├── mlx-audio/Qwen3-TTS (声音克隆)
+    ├── demucs-mlx (人声分离)
+    ├── video-subtitle-remover (字幕去除)
+    ├── FFmpeg (音视频处理)
+    └── DeepSeek API (元数据生成)
+    │
+    ▼
+MySQL (角色/文案/任务元数据)
+本地文件系统 (视频/音频/字幕)</code></pre>
+
+<h2 id="一些感悟"><a href="#一些感悟" class="headerlink" title="一些感悟"></a>一些感悟</h2><p><strong>Apple Silicon 跑 AI 真的能打</strong>。MLX 框架让 M2 16GB 能同时跑 Whisper + TTS + Demucs，不用买 GPU 云服务器，电费都省了。</p>
+<p><strong>AI 编码助手改变了开发节奏</strong>。这个项目从 0 到完整可用，核心开发时间大约一周。很多重复性的代码（FFmpeg 命令封装、CRUD 接口、前端表单）都是 AI 辅助完成的，我主要在做架构决策和调试。</p>
+<p><strong>声音克隆的质量取决于参考音频的质量</strong>。最重要的不是模型多强，而是参考音频有多干净。加了 demucs 人声分离后，同一个模型的效果提升了一个档次。</p>
+<p><strong>短视频领域的工程化空间很大</strong>。从素材管理、内容生成、到自动发布，每个环节都有优化空间。这套系统目前是单用户本地运行的，但稍作改造就能变成一个 SaaS 产品。</p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/blog/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/">自动化</a>
+		  
+			<a href="/blog/tags/%E5%A3%B0%E9%9F%B3%E5%85%8B%E9%9A%86/">声音克隆</a>
+		  
+		</div>
+		
+
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/blog/posts/11306239.html">
+        <span class="next-text nav-default">使用waline给博客搭建一套评论系统</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+      <div id="waline"></div>
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2026
+    <span class="footer-author">opnext.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and <a class="theme-link" target="_blank" rel="noopener" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
+<script type="module">
+  import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  init({
+    el: '#waline',
+    serverURL: 'https://waline.opqnext.com',
+    path: window.location.pathname,
+    lang: 'zh-CN',
+  });
+</script>
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/blog/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+
+    <script type="text/javascript" src="/blog/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/blog/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>
