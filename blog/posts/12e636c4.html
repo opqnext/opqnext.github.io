@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="为了省下网盘年费，打算把1.5TB监控视频从百度网盘搬到夸克网盘，结果发现没有一键迁移工具，本地硬盘也塞不下，只能分批慢慢折腾。"/>
+
+
+
+
+  <meta name="keywords" content="数据迁移,网盘," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/default" title="OPQNEXT" >
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://opqnext.com/blog/posts/12e636c4.html"/>
+
+
+<meta name="description" content="为了省下网盘年费，打算把1.5TB监控视频从百度网盘搬到夸克网盘，结果发现没有一键迁移工具，本地硬盘也塞不下，只能分批慢慢折腾。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="1.5TB监控视频大迁移：从百度网盘到夸克网盘的自动化之旅">
+<meta property="og:url" content="http://opqnext.com/blog/posts/12e636c4.html">
+<meta property="og:site_name" content="OPQNEXT">
+<meta property="og:description" content="为了省下网盘年费，打算把1.5TB监控视频从百度网盘搬到夸克网盘，结果发现没有一键迁移工具，本地硬盘也塞不下，只能分批慢慢折腾。">
+<meta property="og:locale">
+<meta property="article:published_time" content="2026-07-01T11:22:18.000Z">
+<meta property="article:modified_time" content="2026-07-01T11:22:18.000Z">
+<meta property="article:author" content="opnext">
+<meta property="article:tag" content="数据迁移">
+<meta property="article:tag" content="网盘">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="stylesheet" type="text/css" href="/blog/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
+</script>
+
+
+
+
+  <script id="baidu_analytics">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?652095343f2e7ca02a08c05c2e9ec3b7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+    <title> 1.5TB监控视频大迁移：从百度网盘到夸克网盘的自动化之旅 - OPQNEXT </title>
+  <meta name="generator" content="Hexo 8.1.2"></head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/blog/." class="logo">OPQNEXT</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/blog/archives">
+                            
+                            
+                                归档
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/blog/about">
+                            
+                            
+                                关于
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          1.5TB监控视频大迁移：从百度网盘到夸克网盘的自动化之旅
+        
+      </h1>
+
+      <time class="post-time">
+          Jul 01 2026
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>我装了海康威视的监控摄像头，视频会自动同步到海康的 NAS 上。NAS 自带云存储同步功能，但问题来了——<strong>海康只支持同步到百度网盘</strong>，没有夸克网盘的插件。</p>
+<p>这在数据量小的时候不是问题，但当监控视频积累到 <strong>1.5TB</strong> 之后，存储成本就成了一个不得不面对的现实：</p>
+<table>
+<thead>
+<tr>
+<th>网盘</th>
+<th>容量</th>
+<th>年费（大约）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>百度网盘</td>
+<td>6TB (免费2TB)</td>
+<td>178</td>
+</tr>
+<tr>
+<td>夸克网盘</td>
+<td>6TB</td>
+<td>88vip</td>
+</tr>
+</tbody></table>
+<p>夸克的性价比太高了，6TB 容量的会员价格只有百度的零头。所以我决定：<strong>把百度网盘里的监控视频全部迁移到夸克网盘</strong>。</p>
+<h2 id="痛点"><a href="#痛点" class="headerlink" title="痛点"></a>痛点</h2><p>看似简单的「搬家」，实际操作起来发现坑不少：</p>
+<h3 id="1-没有直接迁移工具"><a href="#1-没有直接迁移工具" class="headerlink" title="1. 没有直接迁移工具"></a>1. 没有直接迁移工具</h3><p>市面上没有「百度网盘 → 夸克网盘」的一键迁移工具。两个平台之间没有互通的 API，只能走「下载到本地 → 再上传」的笨办法。</p>
+<h3 id="2-本地硬盘空间有限"><a href="#2-本地硬盘空间有限" class="headerlink" title="2. 本地硬盘空间有限"></a>2. 本地硬盘空间有限</h3><p>MacBook 的硬盘剩余空间只有几十 GB，而要迁移的数据有 1.5TB。不可能一次性全部下载，只能分批处理。</p>
+<h3 id="3-视频文件碎片化严重"><a href="#3-视频文件碎片化严重" class="headerlink" title="3. 视频文件碎片化严重"></a>3. 视频文件碎片化严重</h3><p>监控摄像头的录像策略是按时间段自动分割的，一天的视频可能被切成几十个甚至上百个小片段。直接搬过去的话，夸克网盘里会充斥着数万个几 MB 的碎片文件，根本没法管理。</p>
+<h3 id="4-数据安全"><a href="#4-数据安全" class="headerlink" title="4. 数据安全"></a>4. 数据安全</h3><p>监控视频属于隐私数据，上传到云端还是希望有一层加密保护。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>最终我用 Python 写了一套自动化脚本，整个流程如下：</p>
+<pre><code class="highlight plaintext">百度网盘 API 下载 → 按天合并 → 加密压缩 → 手动上传夸克</code></pre>
+
+<h3 id="架构设计"><a href="#架构设计" class="headerlink" title="架构设计"></a>架构设计</h3><pre><code class="highlight plaintext">┌─────────────────┐     API      ┌──────────────┐
+│  百度网盘        │ ──────────→  │  本地 Mac     │
+│  (海康NAS同步)   │   下载视频    │              │
+└─────────────────┘              │  ffmpeg 合并  │
+                                 │  7z 加密压缩  │
+                                 └──────┬───────┘
+                                        │ 手动上传
+                                        ▼
+                                 ┌──────────────┐
+                                 │  夸克网盘     │
+                                 │  (6TB 大空间)  │
+                                 └──────────────┘</code></pre>
+
+<h3 id="核心设计思路"><a href="#核心设计思路" class="headerlink" title="核心设计思路"></a>核心设计思路</h3><h4 id="按天合并，告别碎片"><a href="#按天合并，告别碎片" class="headerlink" title="按天合并，告别碎片"></a>按天合并，告别碎片</h4><p>监控视频的目录结构是按月份和小时组织的，一天可能有几十个文件。脚本会自动：</p>
+<ol>
+<li>按天分组（跨目录聚合）</li>
+<li>按时间戳排序</li>
+<li>用 ffmpeg 的 concat demuxer 无损拼接</li>
+</ol>
+<p>关键参数：<code>ffmpeg -f concat -safe 0 -i filelist.txt -c copy output.mkv</code></p>
+<p><code>-c copy</code> 意味着只做数据复制，不重新编码。一天几百个文件的合并只需要几秒钟，而且视频质量零损耗。</p>
+<blockquote>
+<p>这里有个小坑：监控摄像头使用了 pcm_alaw 音频编码，这个编码不被 MP4 容器支持。最终改用了 MKV 容器，它能兼容几乎所有编解码器。</p>
+</blockquote>
+<h4 id="加密压缩"><a href="#加密压缩" class="headerlink" title="加密压缩"></a>加密压缩</h4><p>使用 7z 的 AES-256 加密，存储模式（不压缩）：</p>
+<pre><code class="highlight plaintext">7z a -p&#x27;密码&#x27; -mhe=on -mx0 output.7z input.mkv</code></pre>
+
+<ul>
+<li><code>-mhe=on</code>：加密文件名（攻击者连文件名都看不到）</li>
+<li><code>-mx0</code>：存储模式，不再压缩（视频本身已经是压缩格式，再压缩只会浪费时间，体积几乎不变）</li>
+</ul>
+<h4 id="磁盘空间精算"><a href="#磁盘空间精算" class="headerlink" title="磁盘空间精算"></a>磁盘空间精算</h4><p>由于本地硬盘空间有限，脚本在处理每一天之前会精确计算：</p>
+<ul>
+<li>通过百度网盘 API 获取每个文件的精确大小</li>
+<li>计算峰值磁盘占用（下载 + 合并的瞬间约为原始大小的 2 倍）</li>
+<li>空间不足时直接报错，显示缺少多少 GB，手动清理后重跑</li>
+</ul>
+<h4 id="断点续传-状态记录"><a href="#断点续传-状态记录" class="headerlink" title="断点续传 + 状态记录"></a>断点续传 + 状态记录</h4><ul>
+<li>下载支持 HTTP Range 断点续传，网络中断后重跑不需要从头开始</li>
+<li>每处理完一天就写入状态文件，下次运行自动跳过已完成的日期</li>
+<li>处理完一天后暂停，等手动上传到夸克后按回车继续</li>
+</ul>
+<h3 id="两种视频的差异处理"><a href="#两种视频的差异处理" class="headerlink" title="两种视频的差异处理"></a>两种视频的差异处理</h3><p>家里的监控分室内和室外两组摄像头，目录结构完全不同，所以写了两个独立的脚本：</p>
+<p><strong>室内视频</strong>：按月&#x2F;小时目录组织，文件名包含时间戳</p>
+<pre><code class="highlight plaintext">室内视频/202605/2026053123/25M54S_1780241154.mp4</code></pre>
+<p>→ 合并输出：<code>室内/2026/05/20260531.mkv</code></p>
+<p><strong>室外视频</strong>：按月份直接放文件，文件名包含摄像头编号和起止时间</p>
+<pre><code class="highlight plaintext">室外视频/202605/00_20260516143213_20260516154752.mp4</code></pre>
+<p>→ 合并输出：<code>室外/2026/05/00_20260516.mkv</code></p>
+<p>室外视频还有个特殊点：有两组摄像头（00 和 10），合并时按摄像头分别处理，输出文件名保留前缀。</p>
+<h2 id="踩过的坑"><a href="#踩过的坑" class="headerlink" title="踩过的坑"></a>踩过的坑</h2><h3 id="1-百度网盘-API-的-folder-only-模式"><a href="#1-百度网盘-API-的-folder-only-模式" class="headerlink" title="1. 百度网盘 API 的 folder_only 模式"></a>1. 百度网盘 API 的 folder_only 模式</h3><p>API 有个 <code>folder=1</code> 参数号称「只返回文件夹」，但实际上在这个模式下<strong>只返回 path 字段</strong>，其他所有属性（包括文件名、大小、isdir）都不返回。排查了好一会儿才发现这个坑。</p>
+<h3 id="2-目录命名混乱"><a href="#2-目录命名混乱" class="headerlink" title="2. 目录命名混乱"></a>2. 目录命名混乱</h3><p>由于历史原因，部分月份目录的命名不规范（比如同样是 2025 年 12 月的数据，分散在 <code>201512</code> 和 <code>202512</code> 两个目录中）。脚本需要跨目录聚合并按文件名去重。</p>
+<h3 id="3-pcm-alaw-音频编码"><a href="#3-pcm-alaw-音频编码" class="headerlink" title="3. pcm_alaw 音频编码"></a>3. pcm_alaw 音频编码</h3><p>海康摄像头的视频使用了 pcm_alaw 音频编码，这是电话系统常用的编码格式。MP4 容器不支持这个编码，ffmpeg 会报错。改用 MKV 容器后解决。</p>
+<h3 id="4-dlink-有效期只有-8-小时"><a href="#4-dlink-有效期只有-8-小时" class="headerlink" title="4. dlink 有效期只有 8 小时"></a>4. dlink 有效期只有 8 小时</h3><p>百度网盘的下载链接（dlink）有效期只有 8 小时。如果一天的视频量很大，下载到后面时前面获取的链接可能已经过期。目前没有遇到这个问题，但代码中预留了 token 刷新机制。</p>
+<h2 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h2><ul>
+<li><strong>碎片整理</strong>：几万个碎片文件 → 每天一个完整视频</li>
+<li><strong>加密保护</strong>：AES-256 加密，即使网盘被入侵也无法查看内容</li>
+<li><strong>存储成本</strong>：从百度网盘的高价空间迁移到夸克 6TB 大空间</li>
+<li><strong>自动化</strong>：一行命令开始处理，处理完一天暂停等上传，全程无需盯着</li>
+</ul>
+<p>整个 1.5TB 的迁移大概需要几天时间（主要瓶颈在下载和上传的网速），但好在脚本是幂等的——随时可以中断，随时可以继续。</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>这个需求说到底就是一个「中转站」的问题。海康的 NAS 只支持百度网盘，而百度网盘的存储成本太高。如果海康能直接支持夸克网盘的同步，这一切都不需要。</p>
+<p>不过换个角度想，这次折腾也不完全是坏事。经过按天合并和加密压缩后，视频的管理变得更加整洁有序了，比原来几万个碎片文件强多了。</p>
+<blockquote>
+<p>总之数据先存下来，万一将来可以弄点什么呢，也许世界都是虚拟的，都是数据也不一定…</p>
+</blockquote>
+<p>技术栈总结：</p>
+<ul>
+<li><strong>Python</strong>：脚本主体</li>
+<li><strong>百度网盘开放平台 API</strong>：OAuth2.0 设备码授权 + 文件列表 + 下载 <a target="_blank" rel="noopener" href="https://pan.baidu.com/union/doc/">百度网盘开放平台简介</a></li>
+<li><strong>ffmpeg</strong>：concat demuxer 无损拼接</li>
+<li><strong>7z</strong>：AES-256 加密压缩</li>
+</ul>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/blog/tags/%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB/">数据迁移</a>
+		  
+			<a href="/blog/tags/%E7%BD%91%E7%9B%98/">网盘</a>
+		  
+		</div>
+		
+
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/blog/posts/c86d21cd.html">
+        <span class="next-text nav-default">视频二次配音系统</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+      <div id="waline"></div>
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2026
+    <span class="footer-author">opnext.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and <a class="theme-link" target="_blank" rel="noopener" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
+<script type="module">
+  import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  init({
+    el: '#waline',
+    serverURL: 'https://waline.opqnext.com',
+    path: window.location.pathname,
+    lang: 'zh-CN',
+  });
+</script>
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/blog/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+
+    <script type="text/javascript" src="/blog/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/blog/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>
