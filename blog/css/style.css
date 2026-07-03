@@ -758,9 +758,14 @@ h6 {
   font-weight: 500;
 }
 .post .post-content img {
+  display: block;
   max-width: 100%;
   border-radius: 9px;
-  margin: 8px 0;
+  margin: 8px auto;
+}
+.post .post-content a.fancybox {
+  display: block;
+  border: 0;
 }
 .post .post-content ul, .post .post-content ol {
   padding-left: 20px;
