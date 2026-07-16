@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>涿鹿方言数字博物馆</title>
+<meta name="description" content="涿鹿方言数字档案 — 晋语张呼片，收录2000+词条、800+惯用俗语，含学术背景资料与语音标注系统">
+<meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1117" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2310b981'/><text x='16' y='22' text-anchor='middle' font-size='16' font-weight='bold' fill='white'>涿</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- 导航栏 -->
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" onclick="location.hash='/'">
+      <span class="seal">涿</span>
+      <span class="brand-text">涿鹿方言数字博物馆</span>
+    </a>
+    <div class="nav-links">
+      <a data-route="/" onclick="location.hash='/'">首页</a>
+      <a data-route="/academic" onclick="location.hash='/academic'">学术档案</a>
+      <a data-route="/dict" onclick="location.hash='/dict'">方言词典</a>
+      <a data-route="/idioms" onclick="location.hash='/idioms'">惯用俗语</a>
+      <a data-route="/daily" onclick="location.hash='/daily'">今日方言</a>
+      <a data-route="/categories" onclick="location.hash='/categories'">分类汇编</a>
+      <a data-route="/about" onclick="location.hash='/about'">关于</a>
+    </div>
+    <div class="nav-actions">
+      <button id="theme-toggle" onclick="App.toggleTheme()" title="切换暗色模式">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+      <button class="nav-hamburger" id="nav-hamburger" onclick="App.toggleMobileMenu()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- 移动端弹出菜单 -->
+<div class="mobile-menu" id="mobile-menu">
+  <a data-route="/" onclick="location.hash='/'">首页</a>
+  <a data-route="/academic" onclick="location.hash='/academic'">学术档案</a>
+  <a data-route="/dict" onclick="location.hash='/dict'">方言词典</a>
+  <a data-route="/idioms" onclick="location.hash='/idioms'">惯用俗语</a>
+  <a data-route="/daily" onclick="location.hash='/daily'">今日方言</a>
+  <a data-route="/categories" onclick="location.hash='/categories'">分类汇编</a>
+  <a data-route="/about" onclick="location.hash='/about'">关于</a>
+</div>
+
+<!-- ========== 首页 ========== -->
+<div id="page-home" class="page visible">
+  <div class="page-container">
+    <div class="hero">
+      <h1 class="hero-title">涿鹿方言数字博物馆<span class="unofficial-badge">BETA</span></h1>
+      <p class="hero-subtitle">民间整理 · 晋语张呼片 · 涿鹿方言数字档案 · 为方言留档，挽救濒危古语</p>
+      <div class="search-box">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="hero-search" placeholder="搜索方言词条或释义...">
+      </div>
+    </div>
+
+    <!-- 统计 -->
+    <div class="stats-row reveal">
+      <div class="stat-card">
+        <div class="stat-number" id="stat-vocab">—</div>
+        <div class="stat-label">方言词条</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="stat-idioms">—</div>
+        <div class="stat-label">惯用俗语</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="stat-academic">—</div>
+        <div class="stat-label">学术章节</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="stat-volumes">—</div>
+        <div class="stat-label">词汇分卷</div>
+      </div>
+    </div>
+
+    <!-- 模块入口 -->
+    <div class="section-title">探索</div>
+    <div class="module-grid reveal">
+      <a class="module-card" onclick="location.hash='/academic'">
+        <div class="mc-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        </div>
+        <div class="mc-title">学术档案</div>
+        <div class="mc-desc">方言归属、语音语调规则、涿鹿概况、行政村名录、晋语分布图等学术背景资料。源自2012年第一版序言七篇。</div>
+        <div class="mc-count">7个章节 · 序言七篇</div>
+      </a>
+      <a class="module-card" onclick="location.hash='/dict'">
+        <div class="mc-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+        </div>
+        <div class="mc-title">方言词典</div>
+        <div class="mc-desc">收录2012版与2014版共计2000+条方言词条，支持搜索、按卷册浏览，带音调标注渲染。</div>
+        <div class="mc-count">17卷 · 2000+词条</div>
+      </a>
+      <a class="module-card" onclick="location.hash='/idioms'">
+        <div class="mc-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        </div>
+        <div class="mc-title">惯用俗语</div>
+        <div class="mc-desc">涿鹿方言惯用俗语集锦，按拼音首字母A-Z排列，多为三字格、四字格等固定表达。</div>
+        <div class="mc-count">22个字母分组 · 790+条</div>
+      </a>
+      <a class="module-card" onclick="location.hash='/categories'">
+        <div class="mc-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </div>
+        <div class="mc-title">分类汇编</div>
+        <div class="mc-desc">普通话与涿鹿方言的对照表，按语义分类（自然、人事等），方便对照学习。</div>
+        <div class="mc-count">自然类 · 15条对照</div>
+      </a>
+    </div>
+
+    <!-- 今日方言 -->
+    <div class="daily-section reveal">
+      <div class="section-title">今日方言</div>
+      <div class="daily-cards" id="daily-words"></div>
+    </div>
+
+    <!-- 音调图例 -->
+    <div class="reveal">
+      <div class="section-title">音调标注说明</div>
+      <div class="tone-legend" style="margin-bottom:12px">
+        <div class="tl-item"><span class="tl-dot" style="background:var(--tone1)"></span> 1 一声</div>
+        <div class="tl-item"><span class="tl-dot" style="background:var(--tone2)"></span> 2 二声</div>
+        <div class="tl-item"><span class="tl-dot" style="background:var(--tone3)"></span> 3 三声</div>
+        <div class="tl-item"><span class="tl-dot" style="background:var(--tone4)"></span> 4 四声</div>
+        <div class="tl-item"><span class="tl-dot" style="background:var(--rusheng)"></span> k 入声</div>
+        <div class="tl-item"><span style="color:var(--long-color);font-weight:600">～</span> 长音</div>
+        <div class="tl-item"><span style="color:var(--erhua);font-style:italic;font-weight:600">儿</span> 儿化</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <p style="font-size:13px;color:var(--text3)">涿鹿方言属晋语张呼片，保留入声是其最显著的语音特征。数字1234分别标注四声调类，k标入声短促发音。</p>
+        <div class="tone-toggle">
+          <span>显示模式:</span>
+          <button class="tone-mode-btn active" data-mode="badge">徽章</button>
+          <button class="tone-mode-btn" data-mode="dots">圆点</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 学术档案 ========== -->
+<div id="page-academic" class="page">
+  <div class="page-container">
+    <h1 class="page-title">学术档案</h1>
+    <p class="page-subtitle">源自《涿鹿方言汇编·2012年第一版》序言七篇</p>
+
+    <div class="academic-nav" id="academic-nav"></div>
+    <div id="academic-content"></div>
+  </div>
+</div>
+
+<!-- ========== 方言词典 ========== -->
+<div id="page-dict" class="page">
+  <div class="page-container">
+    <h1 class="page-title">方言词典</h1>
+    <p class="page-subtitle">收录2012版与2014版词汇汇编</p>
+
+    <div class="dict-header">
+      <div class="dict-search">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="dict-search" placeholder="搜索词条或释义..." oninput="App.currentPage=1;App.renderDict()">
+      </div>
+      <div class="tone-toggle">
+        <button class="tone-mode-btn active" data-mode="badge">徽章</button>
+        <button class="tone-mode-btn" data-mode="dots">圆点</button>
+      </div>
+    </div>
+
+    <div class="tone-legend">
+      <div class="tl-item"><span class="tl-dot" style="background:var(--tone1)"></span> 一声</div>
+      <div class="tl-item"><span class="tl-dot" style="background:var(--tone2)"></span> 二声</div>
+      <div class="tl-item"><span class="tl-dot" style="background:var(--tone3)"></span> 三声</div>
+      <div class="tl-item"><span class="tl-dot" style="background:var(--tone4)"></span> 四声</div>
+      <div class="tl-item"><span class="tl-dot" style="background:var(--rusheng)"></span> 入声</div>
+      <div class="tl-item"><span style="color:var(--long-color)">～</span> 长音</div>
+      <div class="tl-item"><span style="color:var(--erhua);font-style:italic">儿</span> 儿化</div>
+    </div>
+
+    <div class="volume-tabs" id="volume-tabs"></div>
+    <div class="search-results-header" id="dict-result-header"></div>
+    <div class="entry-list" id="dict-entries"></div>
+    <div class="pagination" id="dict-pagination"></div>
+  </div>
+</div>
+
+<!-- ========== 惯用俗语 ========== -->
+<div id="page-idioms" class="page">
+  <div class="page-container">
+    <h1 class="page-title">惯用俗语</h1>
+    <p class="page-subtitle">涿鹿方言惯用俗语集锦 · 按拼音首字母排列</p>
+
+    <div class="dict-header">
+      <div class="dict-search">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="idiom-search" placeholder="搜索俗语或释义..." oninput="App.renderIdioms()">
+      </div>
+      <div class="tone-toggle">
+        <button class="tone-mode-btn active" data-mode="badge">徽章</button>
+        <button class="tone-mode-btn" data-mode="dots">圆点</button>
+      </div>
+    </div>
+
+    <div class="letter-nav" id="letter-nav"></div>
+    <div class="search-results-header" id="idiom-result-header"></div>
+    <div id="idiom-entries"></div>
+  </div>
+</div>
+
+<!-- ========== 今日方言 ========== -->
+<div id="page-daily" class="page">
+  <div class="page-container">
+    <div class="daily-page-header">
+      <div>
+        <h1 class="page-title">今日方言</h1>
+        <p class="page-subtitle">随机词条卡片 · 每次点击都有新发现</p>
+      </div>
+      <button class="daily-refresh-btn" onclick="App.renderDailyPage()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        换一批
+      </button>
+    </div>
+    <div id="daily-page-cards" class="daily-page-grid"></div>
+  </div>
+</div>
+
+<!-- ========== 分类汇编 ========== -->
+<div id="page-categories" class="page">
+  <div class="page-container">
+    <h1 class="page-title">分类汇编</h1>
+    <p class="page-subtitle">普通话与涿鹿方言对照表 · 按语义分类</p>
+    <div id="category-content"></div>
+  </div>
+</div>
+
+<!-- ========== 关于 ========== -->
+<div id="page-about" class="page">
+  <div class="page-container">
+    <h1 class="page-title">关于本项目</h1>
+    <p class="page-subtitle">涿鹿方言数字博物馆 · 项目说明</p>
+
+    <div class="about-content">
+      <!-- 项目缘起 -->
+      <section class="about-section">
+        <h2>项目缘起</h2>
+        <blockquote class="about-quote">
+          方言是不可多得的语言样品、不可恢复的历史记忆、不能再生的文化基因。方言失传意味着文化链的缺失。30年后，地方语言或将大幅消失；二三百年后，或将不复存在。为方言留档，挽救濒危古语刻不容缓。
+        </blockquote>
+        <p>本项目基于《涿鹿方言汇编》两个版本的内容，将纸质方言资料数字化、结构化，以网页形式呈现，旨在为涿鹿方言留下一份可检索、可浏览的数字档案。</p>
+      </section>
+
+      <!-- 数据来源 -->
+      <section class="about-section">
+        <h2>数据来源</h2>
+        <div class="about-cards">
+          <div class="about-card">
+            <div class="about-card-year">2012</div>
+            <div class="about-card-title">涿鹿方言汇编 · 第一版</div>
+            <p>包含前言、序言七篇（学术背景资料）、词汇汇编七卷。保留了大量方言归属、语音语调规则、涿鹿概况、行政村名录、晋语分布图等学术研究资料。</p>
+          </div>
+          <div class="about-card">
+            <div class="about-card-year">2014</div>
+            <div class="about-card-title">涿鹿方言汇编再续 · 第三版</div>
+            <p>词汇量大幅扩充至十卷，新增《惯用俗语》《分类汇编》《短文汇编》等栏目。更像一部"实用词典"。</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 数据说明 -->
+      <section class="about-section">
+        <h2>数据说明</h2>
+        <div class="about-info-grid">
+          <div class="about-info-item">
+            <span class="about-info-num" id="about-vocab">2,111</span>
+            <span class="about-info-label">方言词条</span>
+          </div>
+          <div class="about-info-item">
+            <span class="about-info-num" id="about-idioms">792</span>
+            <span class="about-info-label">惯用俗语</span>
+          </div>
+          <div class="about-info-item">
+            <span class="about-info-num">7</span>
+            <span class="about-info-label">学术章节</span>
+          </div>
+          <div class="about-info-item">
+            <span class="about-info-num">17</span>
+            <span class="about-info-label">词汇分卷</span>
+          </div>
+        </div>
+        <div class="about-notice">
+          <strong>数据完整性声明：</strong>当前数据来源于百度文库公开版本，原始文档存在截断，部分卷册和分类汇编内容不完整。若您持有完整版原始资料，欢迎联系补充。
+        </div>
+      </section>
+
+      <!-- 音调标注系统 -->
+      <section class="about-section">
+        <h2>音调标注系统</h2>
+        <p>涿鹿方言属<strong>晋语张呼片</strong>，保留入声是其最显著的语音特征。本站使用以下标注体系：</p>
+        <table class="about-tone-table">
+          <thead><tr><th>标记</th><th>含义</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tone-badge t1">1</span></td><td>一声（阴平）</td><td>平呼，无转折</td></tr>
+            <tr><td><span class="tone-badge t2">2</span></td><td>二声（阳平）</td><td>前提呼</td></tr>
+            <tr><td><span class="tone-badge t3">3</span></td><td>三声（上声）</td><td>后提呼</td></tr>
+            <tr><td><span class="tone-badge t4">4</span></td><td>四声（去声）</td><td>降呼</td></tr>
+            <tr><td><span class="tone-badge rusheng">k</span></td><td>入声</td><td>短促爆破音，晋语特有</td></tr>
+            <tr><td><span class="tone-badge long">~</span></td><td>长音</td><td>尾音拉长</td></tr>
+            <tr><td><span class="tone-badge erhua">儿</span></td><td>儿化音</td><td>儿化韵</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 方言归属 -->
+      <section class="about-section">
+        <h2>方言归属</h2>
+        <p>涿鹿地处八达岭西居庸关外，历代长期受山西移民影响，民俗文化方言均亲缘于山西。明景泰三年山西大规模移民屯镇建村，后期又有晋商为主长期贸易活动，方言几经变迁，形成如今既与整个晋语区保持高度一致性又具有地方特色的涿鹿方言。</p>
+        <p>涿鹿方言属于<strong>晋语 → 张呼片 → 东路坝下区 → 涿鹿北部盆地次方言小片</strong>。全县范围内可分为七大方言片区：涿鹿区、矾山区、大堡区、赵家蓬南区、赵家蓬北区、武家沟区、石门区。</p>
+      </section>
+
+      <!-- 技术与致谢 -->
+      <section class="about-section">
+        <h2>技术与致谢</h2>
+        <div class="about-tech">
+          <p><strong>原始编著：</strong>涿鹿县地方语言研究编委会</p>
+          <p><strong>特别鸣谢：</strong>李·七堡</p>
+          <p><strong>数字化整理：</strong>民间个人项目，非官方出品</p>
+          <p><strong>技术栈：</strong>HTML5 + CSS3 + Vanilla JavaScript，无框架依赖，部署于 GitHub Pages</p>
+          <p><strong>数据处理：</strong>Python docx 解析 → JSON 结构化存储</p>
+          <p><strong>开源地址：</strong><a href="https://github.com/opqnext/opqnext.github.io/tree/main/dialect" target="_blank" rel="noopener">GitHub</a></p>
+        </div>
+      </section>
+
+      <!-- 免责声明 -->
+      <section class="about-section">
+        <h2>免责声明</h2>
+        <p class="about-disclaimer">本项目为民间个人整理，与涿鹿县政府、教育部门及任何官方机构无关。内容基于公开资料整理，仅供方言学习与文化传承参考。如有侵权或错误，请联系删除或更正。</p>
+        <p class="about-disclaimer">原文声明："本汇编由于资料匮乏排版混乱创作水平有限难免有错误和遗漏望读者给予批评指正和补充。"</p>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <p>涿鹿方言数字博物馆 · 基于《涿鹿方言汇编》2012年第一版 &amp; 2014年第三版</p>
+  <p>民间整理 · 涿鹿县地方语言研究编委会<a href="../">&larr; 返回 opqnext</a></p>
+</footer>
+
+<script src="js/tone.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

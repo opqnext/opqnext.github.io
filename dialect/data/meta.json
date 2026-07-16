@@ -1,0 +1,32 @@
+{
+  "site_title": "涿鹿方言数字博物馆",
+  "subtitle": "晋语张呼片 · 涿鹿方言数字档案",
+  "stats": {
+    "total_vocab": 2111,
+    "total_idioms": 792,
+    "total_categories": 15,
+    "academic_chapters": 7,
+    "vocab_2012_volumes": 7,
+    "vocab_2014_volumes": 10
+  },
+  "sources": [
+    {
+      "version": "2012",
+      "title": "涿鹿方言汇编·2012年第一版"
+    },
+    {
+      "version": "2014",
+      "title": "涿鹿方言汇编再续·2014年第三版"
+    }
+  ],
+  "editors": "涿鹿县地方语言研究编委会",
+  "tone_system": {
+    "1": "一声（阴平）",
+    "2": "二声（阳平）",
+    "3": "三声（上声）",
+    "4": "四声（去声）",
+    "k": "入声（短促）",
+    "~": "长音（尾音拉长）",
+    "儿": "儿化音"
+  }
+}
