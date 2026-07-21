@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="用ESP32-S3做了个桌面小摆件，结果掉进坑里好几天——LVGL版本迁移、显示旋转、中文字体、公司WiFi认证、音频频谱全踩了一遍，总算跑起来了。"/>
+
+
+
+
+  <meta name="keywords" content="嵌入式开发,DIY," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/default" title="OPQNEXT" >
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://opqnext.com/blog/posts/37aaad54.html"/>
+
+
+<meta name="description" content="用ESP32-S3做了个桌面小摆件，结果掉进坑里好几天——LVGL版本迁移、显示旋转、中文字体、公司WiFi认证、音频频谱全踩了一遍，总算跑起来了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用 ESP32-S3 + AI Agent 打造桌面智能仪表盘">
+<meta property="og:url" content="http://opqnext.com/blog/posts/37aaad54.html">
+<meta property="og:site_name" content="OPQNEXT">
+<meta property="og:description" content="用ESP32-S3做了个桌面小摆件，结果掉进坑里好几天——LVGL版本迁移、显示旋转、中文字体、公司WiFi认证、音频频谱全踩了一遍，总算跑起来了。">
+<meta property="og:locale">
+<meta property="og:image" content="http://opqnext.com/blog/assets/2026-07/21_9670a7a1ec53.png">
+<meta property="og:image" content="http://opqnext.com/blog/assets/2026-07/21_fd641494f267.png">
+<meta property="og:image" content="http://opqnext.com/blog/assets/2026-07/21_ff1c5ee0a1b4.png">
+<meta property="article:published_time" content="2026-07-21T02:56:42.000Z">
+<meta property="article:modified_time" content="2026-07-21T03:09:10.000Z">
+<meta property="article:author" content="opnext">
+<meta property="article:tag" content="DIY">
+<meta property="article:tag" content="嵌入式开发">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://opqnext.com/blog/assets/2026-07/21_9670a7a1ec53.png">
+
+
+<link rel="stylesheet" type="text/css" href="/blog/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
+</script>
+
+
+
+
+  <script id="baidu_analytics">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?652095343f2e7ca02a08c05c2e9ec3b7";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+    <title> 用 ESP32-S3 + AI Agent 打造桌面智能仪表盘 - OPQNEXT </title>
+  <meta name="generator" content="Hexo 8.1.2"></head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/blog/." class="logo">OPQNEXT</a>
+    </h1>
+
+    <nav id="nav-top">
+        
+            <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/blog/archives">
+                            
+                            
+                                归档
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/blog/about">
+                            
+                            
+                                关于
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
+
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          用 ESP32-S3 + AI Agent 打造桌面智能仪表盘
+        
+      </h1>
+
+      <time class="post-time">
+          Jul 21 2026
+      </time>
+    </header>
+
+
+
+    
+            <div class="post-content">
+            <blockquote>
+<p>起因是在公众号看到有人用 Waveshare ESP32-S3-Touch-LCD-3.49 做了一个桌面小摆件，觉得挺酷的，于是自己也搞了一个。没想到这一搞就是好几天，期间踩了无数的坑——LVGL 版本迁移、显示旋转、中文字体、WiFi 认证、音频频谱……每一个都够写一篇文章的。这篇博客完整记录了整个过程。</p>
+</blockquote>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
+<li><a href="#%E4%B8%80%E7%A1%AC%E4%BB%B6%E9%80%89%E5%9E%8B%E4%B8%8E%E9%A1%B9%E7%9B%AE%E8%A7%84%E5%88%92">一、硬件选型与项目规划</a></li>
+<li><a href="#%E4%BA%8C%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1">二、项目架构设计</a></li>
+<li><a href="#%E4%B8%89lvgl-ui-%E5%BC%80%E5%8F%91%E4%BB%8E%E6%A8%A1%E6%8B%9F%E5%99%A8%E5%88%B0%E7%9C%9F%E6%9C%BA">三、LVGL UI 开发：从模拟器到真机</a></li>
+<li><a href="#%E5%9B%9B%E6%98%BE%E7%A4%BA%E6%97%8B%E8%BD%AC%E6%9C%80%E8%B4%B9%E5%8A%B2%E7%9A%84%E4%B8%80%E5%85%B3">四、显示旋转：最费劲的一关</a></li>
+<li><a href="#%E4%BA%94%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8-wifiwpa2-enterprise">五、连接公司 WiFi（WPA2-Enterprise）</a></li>
+<li><a href="#%E5%85%ADmac-server%E6%9C%AC%E5%9C%B0%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83">六、Mac-Server：本地数据中心</a></li>
+<li><a href="#%E4%B8%83%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA%E4%B8%8E%E5%86%9C%E5%8E%86">七、中文显示与农历</a></li>
+<li><a href="#%E5%85%AB%E5%A4%A9%E6%B0%94%E5%9B%BE%E6%A0%87qweather-icon-font">八、天气图标：QWeather Icon Font</a></li>
+<li><a href="#%E4%B9%9D%E9%9F%B3%E9%A2%91%E9%A2%91%E8%B0%B1%E5%8F%AF%E8%A7%86%E5%8C%96">九、音频频谱可视化</a></li>
+<li><a href="#%E5%8D%81%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98%E4%B9%8B%E8%B7%AF">十、性能调优之路</a></li>
+<li><a href="#%E5%8D%81%E4%B8%80web-%E7%AE%A1%E7%90%86%E9%9D%A2%E6%9D%BF">十一、Web 管理面板</a></li>
+<li><a href="#%E5%8D%81%E4%BA%8C%E6%9C%80%E7%BB%88%E6%95%88%E6%9E%9C%E4%B8%8E%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84">十二、最终效果与项目结构</a></li>
+<li><a href="#%E5%8D%81%E4%B8%89%E8%B8%A9%E5%9D%91%E6%80%BB%E7%BB%93%E4%B8%8E%E7%BB%8F%E9%AA%8C">十三、踩坑总结与经验</a></li>
+</ul>
+<hr>
+<h2 id="一、硬件选型与项目规划"><a href="#一、硬件选型与项目规划" class="headerlink" title="一、硬件选型与项目规划"></a>一、硬件选型与项目规划</h2><h3 id="硬件：Waveshare-ESP32-S3-Touch-LCD-3-49"><a href="#硬件：Waveshare-ESP32-S3-Touch-LCD-3-49" class="headerlink" title="硬件：Waveshare ESP32-S3-Touch-LCD-3.49"></a>硬件：Waveshare ESP32-S3-Touch-LCD-3.49</h3><p><a target="_blank" rel="noopener" href="https://docs.waveshare.net/ESP32-S3-Touch-LCD-3.49/">👉🏻 官网链接</a></p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>规格</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主控</td>
+<td>ESP32-S3（双核 Xtensa LX7，最高 240MHz）</td>
+</tr>
+<tr>
+<td>内存</td>
+<td>512KB SRAM + 8MB PSRAM（Octal）</td>
+</tr>
+<tr>
+<td>Flash</td>
+<td>16MB</td>
+</tr>
+<tr>
+<td>屏幕</td>
+<td>3.49 英寸 IPS，172×640，电容触摸</td>
+</tr>
+<tr>
+<td>屏幕驱动</td>
+<td>AXS15231B，QSPI 接口</td>
+</tr>
+<tr>
+<td>触摸 IC</td>
+<td>I2C（地址 0x3B）</td>
+</tr>
+<tr>
+<td>背光</td>
+<td>GPIO 8，PWM 可调</td>
+</tr>
+<tr>
+<td>供电</td>
+<td>USB-C</td>
+</tr>
+</tbody></table>
+<p>选这块板子的原因很简单——3.49 英寸的长条屏幕很适合做桌面摆件，172×640 的分辨率虽然窄但足够显示信息，加上触摸屏可以做翻页交互。</p>
+<h3 id="想做什么？"><a href="#想做什么？" class="headerlink" title="想做什么？"></a>想做什么？</h3><p>一个桌面智能仪表盘，可以显示：</p>
+<ol>
+<li><strong>翻页时钟</strong> — 大字体显示当前时间，带日期、星期（中文）、农历</li>
+<li><strong>天气信息</strong> — 当前天气 + 5 日预报，使用 QWeather API</li>
+<li><strong>音频频谱</strong> — 实时显示 Mac 正在播放的音乐频谱</li>
+<li><strong>AI 用量</strong> — Cursor 和 DeepSeek 的 API 用量监控</li>
+<li><strong>Web 管理面板</strong> — 在浏览器上查看设备状态和配置</li>
+</ol>
+<p>整体思路：ESP32 负责显示和触控交互，Mac 上跑一个本地服务端（FastAPI），负责获取天气、AI 用量、音频频谱等数据，通过 HTTP 和 WebSocket 推送给 ESP32。</p>
+<p><img src="/blog/assets/2026-07/21_9670a7a1ec53.png" alt="image"></p>
+<hr>
+<h2 id="二、项目架构设计"><a href="#二、项目架构设计" class="headerlink" title="二、项目架构设计"></a>二、项目架构设计</h2><pre><code class="highlight plaintext">┌─────────────────────┐         ┌──────────────────────┐
+│   ESP32-S3 (固件)    │◄──WiFi──►│   Mac-Server (Python) │
+│                     │         │                      │
+│  ┌───────────────┐  │  HTTP   │  ┌────────────────┐  │
+│  │ LVGL UI Pages │  │◄────────│  │ Weather Client │  │
+│  │ - Clock       │  │         │  │ (QWeather API) │  │
+│  │ - Weather     │  │         │  └────────────────┘  │
+│  │ - Forecast    │  │         │  ┌────────────────┐  │
+│  │ - Spectrum    │  │  WS     │  │ Audio Capture  │  │
+│  │ - Dashboard   │  │◄────────│  │ (catap + FFT)  │  │
+│  └───────────────┘  │         │  └────────────────┘  │
+│  ┌───────────────┐  │         │  ┌────────────────┐  │
+│  │ WiFi Manager  │  │         │  │ Cursor Client  │  │
+│  │ (WPA2-ENT)    │  │         │  │ DeepSeek Client│  │
+│  └───────────────┘  │         │  └────────────────┘  │
+│  ┌───────────────┐  │         │  ┌────────────────┐  │
+│  │ Data Client   │  │         │  │ Web Dashboard  │  │
+│  │ WS Client     │  │         │  │ (HTML/JS)      │  │
+│  └───────────────┘  │         │  └────────────────┘  │
+└─────────────────────┘         └──────────────────────┘</code></pre>
+
+<p>关键技术栈：</p>
+<ul>
+<li><strong>固件</strong>：ESP-IDF v5.5.3 + LVGL v9.5.0 + FreeRTOS</li>
+<li><strong>服务端</strong>：Python 3.13 + FastAPI + catap（macOS 音频捕获）</li>
+<li><strong>通信</strong>：HTTP REST + WebSocket（二进制协议）</li>
+<li><strong>字体</strong>：Noto Sans SC（中文）+ QWeather Icons（天气图标）+ Montserrat（英文&#x2F;数字）</li>
+</ul>
+<hr>
+<h2 id="三、LVGL-UI-开发：从模拟器到真机"><a href="#三、LVGL-UI-开发：从模拟器到真机" class="headerlink" title="三、LVGL UI 开发：从模拟器到真机"></a>三、LVGL UI 开发：从模拟器到真机</h2><h3 id="3-1-模拟器先行"><a href="#3-1-模拟器先行" class="headerlink" title="3.1 模拟器先行"></a>3.1 模拟器先行</h3><p>在真机烧录之前，因为机器还没到货，我先在桌面模拟器（<code>lvgl-simulator/</code>）上把 5 个页面的 UI 全部调好：</p>
+<ul>
+<li><strong>Clock 页</strong> — 翻页时钟风格，时&#x2F;分&#x2F;秒分别在黑色卡片上用大号白字显示</li>
+<li><strong>Weather 页</strong> — 左侧天气图标 + 温度，右侧日期&#x2F;时间</li>
+<li><strong>Forecast 页</strong> — 5 日天气预报，横向排列</li>
+<li><strong>Spectrum 页</strong> — 32 条彩虹色柱状频谱</li>
+<li><strong>Dashboard 页</strong> — Cursor 和 DeepSeek 用量环形图</li>
+</ul>
+<p>模拟器的好处是可以快速迭代 UI 布局，不用每次都烧录到设备上。</p>
+<h3 id="3-2-LVGL-v8-→-v9-迁移"><a href="#3-2-LVGL-v8-→-v9-迁移" class="headerlink" title="3.2 LVGL v8 → v9 迁移"></a>3.2 LVGL v8 → v9 迁移</h3><p>模拟器用的是 LVGL v8，但 ESP-IDF 管理的组件里拉下来的是 LVGL v9.5.0。两个大版本之间有大量 API 变更：</p>
+<table>
+<thead>
+<tr>
+<th>v8 API</th>
+<th>v9 API</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>lv_obj_clear_flag(obj, LV_OBJ_FLAG_SCROLLABLE)</code></td>
+<td>相同，但参数类型变了</td>
+</tr>
+<tr>
+<td><code>lv_style_set_shadow_width(style, w)</code></td>
+<td>仍支持但性能代价大</td>
+</tr>
+<tr>
+<td><code>lv_disp_drv_t</code></td>
+<td><code>lv_display_t *lv_display_create()</code></td>
+</tr>
+<tr>
+<td><code>lv_disp_draw_buf_init</code></td>
+<td><code>lv_display_set_buffers()</code></td>
+</tr>
+<tr>
+<td><code>lv_canvas_set_buffer(...)</code> 参数</td>
+<td>格式参数从枚举改为 <code>LV_COLOR_FORMAT_*</code></td>
+</tr>
+<tr>
+<td><code>lv_timer_handler()</code></td>
+<td>返回值含义变了</td>
+</tr>
+</tbody></table>
+<p>这部分的迁移工作虽然繁琐，但有规律可循。最大的坑不是 API 变更本身，而是某些 v8 写法在 v9 下会触发隐藏的性能问题。</p>
+<h3 id="3-3-烧录与首次点亮"><a href="#3-3-烧录与首次点亮" class="headerlink" title="3.3 烧录与首次点亮"></a>3.3 烧录与首次点亮</h3><p>使用 ESP-IDF 工具链编译烧录：</p>
+<pre><code class="highlight bash"><span class="built_in">cd</span> firmware
+idf.py set-target esp32s3
+idf.py build
+idf.py -p /dev/cu.usbmodem1101 flash</code></pre>
+
+<p>首次烧录后 —— <strong>白屏</strong>。</p>
+<p>开始了漫长的调试之旅。</p>
+<h2 id=""><a href="#" class="headerlink" title=""></a><img src="/blog/assets/2026-07/21_fd641494f267.png" alt="image"></h2><h2 id="四、显示旋转：最费劲的一关"><a href="#四、显示旋转：最费劲的一关" class="headerlink" title="四、显示旋转：最费劲的一关"></a>四、显示旋转：最费劲的一关</h2><p>这块 3.49 英寸的屏幕物理分辨率是 <strong>172×640（竖屏）</strong>，但我的 UI 设计是 <strong>640×172（横屏）</strong>。这意味着需要把画面旋转 90°。</p>
+<p>听起来简单？这个问题折腾了我整整一天多。</p>
+<h3 id="4-1-方案一：LVGL-软件旋转（可行但慢）"><a href="#4-1-方案一：LVGL-软件旋转（可行但慢）" class="headerlink" title="4.1 方案一：LVGL 软件旋转（可行但慢）"></a>4.1 方案一：LVGL 软件旋转（可行但慢）</h3><p>LVGL v9 提供了 <code>lv_display_set_rotation()</code> API：</p>
+<pre><code class="highlight c">lv_display_set_rotation(disp, LV_DISPLAY_ROTATION_270);</code></pre>
+
+<p>这个方案能工作，但有代价——LVGL 需要在内部额外分配一个全屏缓冲区（172×640×2 &#x3D; 220KB）做像素转置，每一帧都要做一次全屏 memcpy + 坐标变换。在 ESP32-S3 上，这直接把帧率拉到了 20fps 左右，页面切换也明显卡顿。</p>
+<p>但至少能显示了。先用这个方案跑通其他功能。</p>
+<h3 id="4-2-方案二：硬件旋转（尝试失败）"><a href="#4-2-方案二：硬件旋转（尝试失败）" class="headerlink" title="4.2 方案二：硬件旋转（尝试失败）"></a>4.2 方案二：硬件旋转（尝试失败）</h3><p>为了提升帧率，我尝试了硬件旋转方案：</p>
+<pre><code class="highlight c">esp_lcd_panel_swap_xy(panel, <span class="literal">true</span>);
+esp_lcd_panel_mirror(panel, <span class="literal">true</span>, <span class="literal">false</span>);</code></pre>
+
+<p>理论上，LCD 控制器可以通过 MADCTL 寄存器的 MV（行&#x2F;列交换）位来实现硬件旋转，零 CPU 开销。</p>
+<p>但现实很残酷：<strong>AXS15231B 在 QSPI 模式下不支持 swap_xy</strong>。</p>
+<p>尝试的结果是各种花屏：</p>
+<ul>
+<li>4 块重复的画面拼在一起</li>
+<li>左白右花</li>
+<li>全白屏</li>
+<li>竖屏 + 花屏</li>
+</ul>
+<p>花屏的根本原因是 QSPI 模式下，<code>draw_bitmap</code> 发送的行列地址和实际像素数据的对应关系在 <code>swap_xy</code> 后完全错位。驱动层的 <code>panel_axs15231b_draw_bitmap</code> 没有针对 <code>swap_xy</code> 做坐标变换。</p>
+<h3 id="4-3-方案三：自定义转置（最终方案）"><a href="#4-3-方案三：自定义转置（最终方案）" class="headerlink" title="4.3 方案三：自定义转置（最终方案）"></a>4.3 方案三：自定义转置（最终方案）</h3><p>既然硬件旋转不行，LVGL 内置旋转又慢，最终采用了折中方案：<strong>在 flush 回调中手动转置像素</strong>。</p>
+<p>核心思路：</p>
+<ol>
+<li>LVGL 以 640×172（横屏）的逻辑分辨率工作，不设置旋转</li>
+<li>在 <code>flush_cb</code> 中，把 LVGL 输出的 640×172 像素数据手动转置为 172×640</li>
+<li>转置后的数据分块通过 DMA 发送到 LCD</li>
+</ol>
+<pre><code class="highlight c"><span class="type">static</span> <span class="type">void</span> <span class="title function_">example_lvgl_flush_cb</span><span class="params">(<span class="type">lv_display_t</span> *disp, <span class="type">const</span> <span class="type">lv_area_t</span> *area,</span>
+<span class="params">                                   <span class="type">uint8_t</span> *px_map)</span>
+&#123;
+    <span class="type">const</span> <span class="type">int</span> src_w = area-&gt;x2 - area-&gt;x1 + <span class="number">1</span>;  <span class="comment">// LVGL 横屏宽度方向</span>
+    <span class="type">const</span> <span class="type">int</span> src_h = area-&gt;y2 - area-&gt;y1 + <span class="number">1</span>;   <span class="comment">// LVGL 横屏高度方向</span>
+    <span class="type">const</span> <span class="type">uint16_t</span> *src = (<span class="type">const</span> <span class="type">uint16_t</span> *)px_map;
+
+    <span class="comment">// 按 DMA 块大小分批处理（每块 64 行 × 172 像素）</span>
+    <span class="keyword">for</span> (<span class="type">int</span> chunk_start = <span class="number">0</span>; chunk_start &lt; src_w; chunk_start += LINES_PER_DMA_CHUNK) &#123;
+        <span class="type">int</span> chunk_lines = <span class="comment">/* 计算本块行数 */</span>;
+        
+        <span class="comment">// 转置：src[r * src_w + c] → dst[c * chunk_lines + (chunk_lines - 1 - r_offset)]</span>
+        <span class="keyword">for</span> (<span class="type">int</span> r = <span class="number">0</span>; r &lt; src_h; r++) &#123;
+            <span class="keyword">for</span> (<span class="type">int</span> c = chunk_start; c &lt; chunk_start + chunk_lines; c++) &#123;
+                trans_buf_1[<span class="comment">/* 转置后坐标 */</span>] = src[r * src_w + c];
+            &#125;
+        &#125;
+        
+        <span class="comment">// DMA 发送</span>
+        xSemaphoreTake(flush_done_semaphore, portMAX_DELAY);
+        esp_lcd_panel_draw_bitmap(panel, <span class="comment">/* 坐标 */</span>);
+    &#125;
+    lv_display_flush_ready(disp);
+&#125;</code></pre>
+
+<p>最后还需要用 <code>esp_lcd_panel_mirror(panel, false, true)</code> 修正左右镜像。</p>
+<p>这个方案的帧率大约在 30fps，虽然不如硬件旋转的理论 60fps，但在 ESP32-S3 上已经足够流畅了。</p>
+<h3 id="4-4-DMA-同步：一个隐蔽的死锁"><a href="#4-4-DMA-同步：一个隐蔽的死锁" class="headerlink" title="4.4 DMA 同步：一个隐蔽的死锁"></a>4.4 DMA 同步：一个隐蔽的死锁</h3><p>在调试转置方案时遇到了一个极其隐蔽的 bug：<strong>全白屏</strong>。</p>
+<p>原因是 <code>flush_cb</code> 中的信号量（semaphore）使用不当。DMA 传输完成后会触发中断释放信号量，但我在循环末尾多做了一次 <code>xSemaphoreTake</code>，导致下一帧开始时信号量已经被消耗，<code>flush_cb</code> 永远阻塞。</p>
+<p>修复很简单——删掉那行多余的 <code>xSemaphoreTake</code>。但定位这个 bug 花了不少时间。</p>
+<hr>
+<h2 id="五、连接公司-WiFi（WPA2-Enterprise）"><a href="#五、连接公司-WiFi（WPA2-Enterprise）" class="headerlink" title="五、连接公司 WiFi（WPA2-Enterprise）"></a>五、连接公司 WiFi（WPA2-Enterprise）</h2><p>公司的 WiFi 使用 WPA2-Enterprise 认证（EAP-PEAP），不是普通的密码认证，需要用户名和密码。</p>
+<h3 id="5-1-WiFi-Manager-模块"><a href="#5-1-WiFi-Manager-模块" class="headerlink" title="5.1 WiFi Manager 模块"></a>5.1 WiFi Manager 模块</h3><p>ESP-IDF 提供了完整的 WPA2-Enterprise 支持：</p>
+<pre><code class="highlight c"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span>
+    <span class="type">const</span> <span class="type">char</span> *ssid;
+    <span class="type">const</span> <span class="type">char</span> *username;
+    <span class="type">const</span> <span class="type">char</span> *password;
+    <span class="type">const</span> <span class="type">char</span> *identity;
+&#125; <span class="type">wifi_enterprise_config_t</span>;
+
+<span class="type">esp_err_t</span> <span class="title function_">wifi_manager_init</span><span class="params">(<span class="type">const</span> <span class="type">wifi_enterprise_config_t</span> *config)</span> &#123;
+    <span class="comment">// 初始化 NVS、网络协议栈</span>
+    nvs_flash_init();
+    esp_netif_init();
+    esp_event_loop_create_default();
+    esp_netif_create_default_wifi_sta();
+    
+    <span class="comment">// 配置 WPA2-Enterprise</span>
+    esp_eap_client_set_identity(config-&gt;identity);
+    esp_eap_client_set_username(config-&gt;username);
+    esp_eap_client_set_password(config-&gt;password);
+    esp_eap_client_set_disable_time_check(<span class="literal">true</span>);  <span class="comment">// 跳过证书时间校验</span>
+    esp_wifi_sta_enterprise_enable();
+    
+    esp_wifi_start();
+    <span class="comment">// ...</span>
+&#125;</code></pre>
+
+<h3 id="5-2-内存危机：WiFi-TLS-的代价"><a href="#5-2-内存危机：WiFi-TLS-的代价" class="headerlink" title="5.2 内存危机：WiFi + TLS 的代价"></a>5.2 内存危机：WiFi + TLS 的代价</h3><p>WPA2-Enterprise 需要 mbedTLS 来处理 EAP-TLS 握手，这会消耗大量的内部 RAM（IRAM 和 DRAM）。加上 LVGL 的渲染缓冲区和各种 FreeRTOS 任务栈，设备直接因为内存不足在启动时不断重启。</p>
+<p>解决方案：</p>
+<pre><code class="highlight ini"><span class="comment"># sdkconfig 中减小 WiFi 和 TLS 缓冲区</span>
+<span class="attr">CONFIG_ESP_WIFI_STATIC_RX_BUFFER_NUM</span>=<span class="number">4</span>      <span class="comment"># 默认 10</span>
+<span class="attr">CONFIG_ESP_WIFI_DYNAMIC_RX_BUFFER_NUM</span>=<span class="number">8</span>      <span class="comment"># 默认 32</span>
+<span class="attr">CONFIG_MBEDTLS_SSL_IN_CONTENT_LEN</span>=<span class="number">4096</span>       <span class="comment"># 默认 16384</span>
+<span class="attr">CONFIG_MBEDTLS_SSL_OUT_CONTENT_LEN</span>=<span class="number">4096</span>      <span class="comment"># 默认 16384</span>
+<span class="attr">CONFIG_MBEDTLS_DYNAMIC_BUFFER</span>=y              <span class="comment"># 动态分配</span>
+<span class="attr">CONFIG_MBEDTLS_DYNAMIC_FREE_PEER_CERT</span>=y</code></pre>
+
+<p>同时把网络初始化放到独立的 FreeRTOS 任务中，给足 16KB 栈空间：</p>
+<pre><code class="highlight c">xTaskCreatePinnedToCore(network_init_task, <span class="string">&quot;net_init&quot;</span>, <span class="number">16384</span>, <span class="literal">NULL</span>, <span class="number">3</span>, <span class="literal">NULL</span>, <span class="number">1</span>);</code></pre>
+
+<h3 id="5-3-NTP-时间同步"><a href="#5-3-NTP-时间同步" class="headerlink" title="5.3 NTP 时间同步"></a>5.3 NTP 时间同步</h3><p>连上 WiFi 后，立刻配置 NTP 同步时间。之前时钟页面显示的是开机后的计时器时间（从 1970-01-01 开始算），连上 WiFi 并同步 NTP 后才显示正确的当前时间。</p>
+<pre><code class="highlight c">setenv(<span class="string">&quot;TZ&quot;</span>, <span class="string">&quot;CST-8&quot;</span>, <span class="number">1</span>);   <span class="comment">// 中国时区 UTC+8</span>
+tzset();
+esp_sntp_setoperatingmode(ESP_SNTP_OPMODE_POLL);
+esp_sntp_setservername(<span class="number">0</span>, <span class="string">&quot;ntp.aliyun.com&quot;</span>);
+esp_sntp_setservername(<span class="number">1</span>, <span class="string">&quot;pool.ntp.org&quot;</span>);
+esp_sntp_init();</code></pre>
+<h2 id="-1"><a href="#-1" class="headerlink" title=""></a><img src="/blog/assets/2026-07/21_ff1c5ee0a1b4.png" alt="image"></h2><h2 id="六、Mac-Server：本地数据中心"><a href="#六、Mac-Server：本地数据中心" class="headerlink" title="六、Mac-Server：本地数据中心"></a>六、Mac-Server：本地数据中心</h2><p>ESP32 的算力和网络能力有限，不适合直接调用各种外部 API。于是用 FastAPI 在 Mac 上搭了一个本地服务端，作为数据中转。</p>
+<h3 id="6-1-服务端架构"><a href="#6-1-服务端架构" class="headerlink" title="6.1 服务端架构"></a>6.1 服务端架构</h3><pre><code class="highlight python"><span class="comment"># server.py — FastAPI 入口</span>
+app = FastAPI()
+
+<span class="comment"># REST API（ESP32 HTTP 轮询）</span>
+<span class="meta">@app.get(<span class="params"><span class="string">&quot;/api/weather/current&quot;</span></span>)      </span><span class="comment"># 当前天气</span>
+<span class="meta">@app.get(<span class="params"><span class="string">&quot;/api/weather/forecast&quot;</span></span>)     </span><span class="comment"># 5日预报</span>
+<span class="meta">@app.get(<span class="params"><span class="string">&quot;/api/cursor/usage&quot;</span></span>)         </span><span class="comment"># Cursor API 用量</span>
+<span class="meta">@app.get(<span class="params"><span class="string">&quot;/api/deepseek/usage&quot;</span></span>)       </span><span class="comment"># DeepSeek 余额</span>
+
+<span class="comment"># WebSocket（实时推送）</span>
+<span class="meta">@app.websocket(<span class="params"><span class="string">&quot;/ws/spectrum&quot;</span></span>)        </span><span class="comment"># 音频频谱数据</span></code></pre>
+
+<h3 id="6-2-Bearer-Token-认证"><a href="#6-2-Bearer-Token-认证" class="headerlink" title="6.2 Bearer Token 认证"></a>6.2 Bearer Token 认证</h3><p>所有 API 请求需要在 Header 中携带 Bearer Token：</p>
+<pre><code class="highlight plaintext">Authorization: Bearer esp32-******-change-me</code></pre>
+
+<p>WebSocket 连接通过 query parameter 传递 token：</p>
+<pre><code class="highlight plaintext">ws://host:port/ws/spectrum?token=esp32-******-change-me</code></pre>
+
+<h3 id="6-3-数据轮询策略"><a href="#6-3-数据轮询策略" class="headerlink" title="6.3 数据轮询策略"></a>6.3 数据轮询策略</h3><p>ESP32 端每 30 秒轮询一次天气和 AI 用量数据（<code>data_client.c</code>）。为了避免和 WebSocket 频谱数据争抢网络资源，WebSocket 在 HTTP 首次拉取完成后延迟 5 秒才启动。</p>
+<hr>
+<h2 id="七、中文显示与农历"><a href="#七、中文显示与农历" class="headerlink" title="七、中文显示与农历"></a>七、中文显示与农历</h2><h3 id="7-1-字体问题"><a href="#7-1-字体问题" class="headerlink" title="7.1 字体问题"></a>7.1 字体问题</h3><p>LVGL 内置的 CJK 字体（<code>lv_font_source_han_sans_sc_16_cjk</code>）只包含常用汉字，很多天气描述（如”雷阵雨”的”阵”、”霾”）和日期用字（如”农”、”腊”）都缺失，显示为方块。</p>
+<p>解决方案：用 <code>lv_font_conv</code> 工具从 Noto Sans SC TTF 字体生成自定义 LVGL 字体，精确包含项目需要的所有汉字：</p>
+<pre><code class="highlight bash">npx lv_font_conv \
+  --bpp 4 --size 16 \
+  --font NotoSansSC-Regular.ttf \
+  --range 0x20-0x7F,0xB0 \
+  --symbols <span class="string">&quot;所有需要的中文字符...&quot;</span> \
+  --format lvgl \
+  -o font_noto_sc_16.c</code></pre>
+
+<p>生成的字体文件大约 100KB，包含了所有 UI、天气、日历需要的简体中文字符。</p>
+<h3 id="7-2-字体回退链"><a href="#7-2-字体回退链" class="headerlink" title="7.2 字体回退链"></a>7.2 字体回退链</h3><p>为了兼容性，设置了字体回退链：</p>
+<pre><code class="highlight plaintext">自定义 Noto Sans SC → 内置 CJK 字体 → Montserrat（数字/英文）</code></pre>
+
+<p>实现上有一个坑：LVGL 的字体描述符（<code>lv_font_t</code>）通常存储在 Flash 中，是 <code>const</code> 的，无法直接修改 <code>fallback</code> 指针。需要先 <code>memcpy</code> 到 RAM 中的副本，再设置回退指针：</p>
+<pre><code class="highlight c"><span class="type">static</span> <span class="type">lv_font_t</span> s_noto_16;  <span class="comment">// RAM 中的可写副本</span>
+<span class="built_in">memcpy</span>(&amp;s_noto_16, &amp;font_noto_sc_16, <span class="keyword">sizeof</span>(<span class="type">lv_font_t</span>));
+s_noto_16.fallback = &amp;lv_font_source_han_sans_sc_16_cjk;</code></pre>
+
+<h3 id="7-3-农历转换"><a href="#7-3-农历转换" class="headerlink" title="7.3 农历转换"></a>7.3 农历转换</h3><p>实现了完整的公历 → 农历转换算法（<code>lunar_cal.c</code>），覆盖 1900-2100 年：</p>
+<pre><code class="highlight c"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span>
+    <span class="type">int</span> year, month, day;
+    <span class="type">bool</span> is_leap;
+&#125; <span class="type">lunar_date_t</span>;
+
+<span class="type">void</span> <span class="title function_">solar_to_lunar</span><span class="params">(<span class="type">int</span> sy, <span class="type">int</span> sm, <span class="type">int</span> sd, <span class="type">lunar_date_t</span> *ld)</span>;
+<span class="type">const</span> <span class="type">char</span> *<span class="title function_">lunar_month_str</span><span class="params">(<span class="type">const</span> <span class="type">lunar_date_t</span> *ld)</span>;  <span class="comment">// &quot;正月&quot;、&quot;二月&quot;...</span>
+<span class="type">const</span> <span class="type">char</span> *<span class="title function_">lunar_day_str</span><span class="params">(<span class="type">int</span> day)</span>;                     <span class="comment">// &quot;初一&quot;、&quot;十五&quot;...</span></code></pre>
+
+<p>时钟页面的日期显示效果：<code>2026年7月21日 星期二 六月初七</code></p>
+<hr>
+<h2 id="八、天气图标：QWeather-Icon-Font"><a href="#八、天气图标：QWeather-Icon-Font" class="headerlink" title="八、天气图标：QWeather Icon Font"></a>八、天气图标：QWeather Icon Font</h2><h3 id="8-1-从文字到图标"><a href="#8-1-从文字到图标" class="headerlink" title="8.1 从文字到图标"></a>8.1 从文字到图标</h3><p>最初天气图标是用文字显示的（”晴”、”云”、”雨”），但这不够直观。QWeather 提供了一套 <a target="_blank" rel="noopener" href="https://icons.qweather.com/">天气图标字体</a>，支持 150+ 种天气状况。</p>
+<h3 id="8-2-图标字体生成"><a href="#8-2-图标字体生成" class="headerlink" title="8.2 图标字体生成"></a>8.2 图标字体生成</h3><p>从 QWeather 的 TTF 字体文件生成 LVGL 字体：</p>
+<pre><code class="highlight bash">npx lv_font_conv \
+  --bpp 4 --size 24 \
+  --font qweather-icons.ttf \
+  --range 0xF101-0xF146 \
+  --format lvgl \
+  -o font_qweather_24.c</code></pre>
+
+<h3 id="8-3-图标代码映射"><a href="#8-3-图标代码映射" class="headerlink" title="8.3 图标代码映射"></a>8.3 图标代码映射</h3><p>QWeather API 返回数字图标代码（如 “100” 表示晴天），需要映射到字体中的 Unicode 码点：</p>
+<pre><code class="highlight c"><span class="type">const</span> <span class="type">char</span> *<span class="title function_">qw_icon_str</span><span class="params">(<span class="type">int</span> code)</span> &#123;
+    <span class="type">uint16_t</span> cp;
+    <span class="keyword">switch</span>(code) &#123;
+        <span class="keyword">case</span> <span class="number">100</span>: cp = <span class="number">0xF101</span>; <span class="keyword">break</span>;  <span class="comment">// 晴</span>
+        <span class="keyword">case</span> <span class="number">101</span>: cp = <span class="number">0xF102</span>; <span class="keyword">break</span>;  <span class="comment">// 多云</span>
+        <span class="keyword">case</span> <span class="number">104</span>: cp = <span class="number">0xF104</span>; <span class="keyword">break</span>;  <span class="comment">// 阴</span>
+        <span class="keyword">case</span> <span class="number">300</span>: cp = <span class="number">0xF10D</span>; <span class="keyword">break</span>;  <span class="comment">// 阵雨</span>
+        <span class="keyword">case</span> <span class="number">305</span>: cp = <span class="number">0xF112</span>; <span class="keyword">break</span>;  <span class="comment">// 小雨</span>
+        <span class="comment">// ... 更多映射</span>
+    &#125;
+    <span class="comment">// 将 Unicode 码点编码为 UTF-8</span>
+    <span class="type">static</span> <span class="type">char</span> buf[<span class="number">4</span>];
+    buf[<span class="number">0</span>] = <span class="number">0xEF</span>;                    <span class="comment">// 3字节 UTF-8</span>
+    buf[<span class="number">1</span>] = <span class="number">0x80</span> | ((cp &gt;&gt; <span class="number">6</span>) &amp; <span class="number">0x3F</span>);
+    buf[<span class="number">2</span>] = <span class="number">0x80</span> | (cp &amp; <span class="number">0x3F</span>);
+    buf[<span class="number">3</span>] = <span class="string">&#x27;\0&#x27;</span>;
+    <span class="keyword">return</span> buf;
+&#125;</code></pre>
+
+<hr>
+<h2 id="九、音频频谱可视化"><a href="#九、音频频谱可视化" class="headerlink" title="九、音频频谱可视化"></a>九、音频频谱可视化</h2><p>这是整个项目最有趣也最有挑战的部分——让 ESP32 实时显示 Mac 正在播放的音乐频谱。</p>
+<h3 id="9-1-macOS-音频捕获"><a href="#9-1-macOS-音频捕获" class="headerlink" title="9.1 macOS 音频捕获"></a>9.1 macOS 音频捕获</h3><p>使用 <code>catap</code> 库（基于 macOS 14.2+ 的 Core Audio Tap API）捕获系统音频：</p>
+<pre><code class="highlight python"><span class="keyword">import</span> catap
+
+session = catap.record_system_audio(
+    output_path=<span class="literal">None</span>,      <span class="comment"># 不录制到文件</span>
+    on_buffer=on_buffer    <span class="comment"># 每收到一帧音频回调</span>
+)
+session.start()</code></pre>
+
+<p>注意：<code>catap</code> 需要 macOS 的 <strong>“屏幕与系统音频录制”</strong> 权限。不同的终端应用（Terminal.app vs iTerm2）需要分别授权。</p>
+<h3 id="9-2-FFT-频谱分析"><a href="#9-2-FFT-频谱分析" class="headerlink" title="9.2 FFT 频谱分析"></a>9.2 FFT 频谱分析</h3><p>收到原始音频数据后，做 FFT 变换提取频谱：</p>
+<pre><code class="highlight python"><span class="keyword">def</span> <span class="title function_">_compute_spectrum</span>(<span class="params">self, audio_data</span>):
+    windowed = audio_data * np.hanning(<span class="variable language_">self</span>.fft_size)
+    fft_data = np.<span class="built_in">abs</span>(np.fft.rfft(windowed))
+    
+    <span class="comment"># 对数分布分频段（低频更密）</span>
+    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="variable language_">self</span>.bands):
+        start = <span class="built_in">int</span>((freq_bins - <span class="number">1</span>) * (<span class="number">2</span> ** (i / <span class="variable language_">self</span>.bands) - <span class="number">1</span>))
+        end = <span class="built_in">int</span>((freq_bins - <span class="number">1</span>) * (<span class="number">2</span> ** ((i + <span class="number">1</span>) / <span class="variable language_">self</span>.bands) - <span class="number">1</span>))
+        band_energy = np.mean(fft_data[start:end])
+        <span class="comment"># ...</span>
+    
+    <span class="comment"># 分贝映射 + 归一化到 0~1</span>
+    <span class="keyword">for</span> v <span class="keyword">in</span> band_values:
+        db = <span class="number">20</span> * np.log10(<span class="built_in">max</span>(v / max_val, <span class="number">1e-6</span>))
+        norm = <span class="built_in">max</span>(<span class="number">0.0</span>, <span class="built_in">min</span>(<span class="number">1.0</span>, (db + <span class="number">60</span>) / <span class="number">60</span>))</code></pre>
+
+<h3 id="9-3-WebSocket-二进制协议"><a href="#9-3-WebSocket-二进制协议" class="headerlink" title="9.3 WebSocket 二进制协议"></a>9.3 WebSocket 二进制协议</h3><p>最初用 JSON 传输频谱数据，但 ESP32 上的 cJSON 解析开销太大，导致频谱动画卡顿。改用自定义二进制协议后性能大幅提升：</p>
+<pre><code class="highlight plaintext">┌──────────┬───────┬──────────────────┐
+│  &quot;SPEC&quot;  │ Flags │  float32 × 32    │
+│ (4 bytes)│(1 byte)│  (128 bytes)     │
+└──────────┴───────┴──────────────────┘
+Total: 133 bytes/frame</code></pre>
+
+<ul>
+<li><code>Flags</code> 的 bit0：<code>is_playing</code>，标识是否有音频在播放</li>
+<li><code>float32 × 32</code>：32 个频段的能量值（0.0~1.0）</li>
+</ul>
+<p>Python 端打包：</p>
+<pre><code class="highlight python">message = <span class="string">b&#x27;SPEC&#x27;</span> + struct.pack(<span class="string">&#x27;B&#x27;</span>, flags) + struct.pack(<span class="string">&#x27;32f&#x27;</span>, *bands)
+<span class="keyword">await</span> ws.send_bytes(message)</code></pre>
+
+<p>ESP32 端解包：</p>
+<pre><code class="highlight c"><span class="keyword">if</span> (data-&gt;op_code == <span class="number">2</span> &amp;&amp; data-&gt;payload_len == <span class="number">133</span>) &#123;
+    <span class="type">const</span> <span class="type">uint8_t</span> *p = data-&gt;data_ptr;
+    <span class="keyword">if</span> (<span class="built_in">memcmp</span>(p, <span class="string">&quot;SPEC&quot;</span>, <span class="number">4</span>) != <span class="number">0</span>) <span class="keyword">break</span>;
+    <span class="type">bool</span> is_playing = (p[<span class="number">4</span>] &amp; <span class="number">0x01</span>) != <span class="number">0</span>;
+    <span class="type">float</span> bands[<span class="number">32</span>];
+    <span class="built_in">memcpy</span>(bands, p + <span class="number">5</span>, <span class="number">128</span>);  <span class="comment">// 直接 memcpy，零解析开销</span>
+&#125;</code></pre>
+
+<p>JSON → 二进制的效果：</p>
+<ul>
+<li>数据量：~800 bytes → 133 bytes（减少 83%）</li>
+<li>ESP32 解析耗时：~2ms → ~0ms</li>
+<li>整体延迟降低约 50%</li>
+</ul>
+<h3 id="9-4-频谱-UI-渲染"><a href="#9-4-频谱-UI-渲染" class="headerlink" title="9.4 频谱 UI 渲染"></a>9.4 频谱 UI 渲染</h3><p>32 条频谱柱状图使用 LVGL <code>lv_obj</code> 实现，每条柱子独立上色（HSL 彩虹色），从底部向上生长：</p>
+<pre><code class="highlight c"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">32</span>; i++) &#123;
+    <span class="type">float</span> hue = (<span class="type">float</span>)i / <span class="number">32</span> * <span class="number">280.0f</span>;
+    <span class="type">lv_color_t</span> color = hsl_color(hue, <span class="number">0.85f</span>, <span class="number">0.55f</span>);
+    
+    <span class="type">int</span> h = (<span class="type">int</span>)(data[i] * MAX_HEIGHT);
+    lv_obj_set_height(bar, h);
+    lv_obj_set_y(bar, <span class="number">172</span> - <span class="number">8</span> - h);  <span class="comment">// 从底部向上增长</span>
+&#125;</code></pre>
+
+<p>频谱的状态指示：</p>
+<ul>
+<li><strong>绿色 “Live”</strong> — WebSocket 已连接且音频正在播放</li>
+<li><strong>黄色 “Connected”</strong> — WebSocket 已连接但无音频</li>
+<li><strong>灰色 “Offline”</strong> — WebSocket 未连接</li>
+</ul>
+<hr>
+<h2 id="十、性能调优之路"><a href="#十、性能调优之路" class="headerlink" title="十、性能调优之路"></a>十、性能调优之路</h2><p>ESP32-S3 + LVGL + 软件旋转的组合对性能要求很高。整个过程中遇到了多次性能危机。</p>
+<h3 id="10-1-Task-Watchdog-超时"><a href="#10-1-Task-Watchdog-超时" class="headerlink" title="10.1 Task Watchdog 超时"></a>10.1 Task Watchdog 超时</h3><p><strong>症状</strong>：设备随机重启，日志显示 <code>Task watchdog got triggered - LVGL (CPU 0)</code>。</p>
+<p><strong>原因</strong>：LVGL 渲染任务长时间阻塞，无法喂狗。</p>
+<p><strong>治理措施</strong>：</p>
+<ul>
+<li>增大 WDT 超时时间：<code>CONFIG_ESP_TASK_WDT_TIMEOUT_S=30</code></li>
+<li>禁用 IDLE0 任务的 WDT 检查</li>
+<li>增大 LVGL 任务栈：16KB</li>
+</ul>
+<h3 id="10-2-AI-用量页面的-Canvas-地雷"><a href="#10-2-AI-用量页面的-Canvas-地雷" class="headerlink" title="10.2 AI 用量页面的 Canvas 地雷"></a>10.2 AI 用量页面的 Canvas 地雷</h3><p><strong>症状</strong>：切换到 AI 用量页面必定卡死。</p>
+<p><strong>原因</strong>：使用 <code>lv_canvas</code> 画渐变弧形时，LVGL 需要分配层缓冲区（layer buffer），在内存紧张时进入无限重试循环。</p>
+<p><strong>解决</strong>：用 LVGL 原生的 <code>lv_arc</code> 控件替代 <code>lv_canvas</code>，避免了额外的层缓冲区分配。</p>
+<h3 id="10-3-阴影渲染的代价"><a href="#10-3-阴影渲染的代价" class="headerlink" title="10.3 阴影渲染的代价"></a>10.3 阴影渲染的代价</h3><p><strong>症状</strong>：<code>blur_walk_cb</code> 触发 WDT 超时。</p>
+<p><strong>原因</strong>：LVGL 的阴影渲染使用了高斯模糊，在 ESP32 上非常耗时。</p>
+<p><strong>解决</strong>：去掉所有 UI 元素的阴影样式。</p>
+<h3 id="10-4-内存分配策略"><a href="#10-4-内存分配策略" class="headerlink" title="10.4 内存分配策略"></a>10.4 内存分配策略</h3><p><strong>症状</strong>：WiFi + TLS 连接后，LVGL 渲染时因内存不足再次触发 WDT。</p>
+<p><strong>原因</strong>：LVGL 默认使用自己的内置堆（64KB DRAM），WiFi + TLS 占用了大量内部 RAM 后，LVGL 堆不够用。</p>
+<p><strong>解决</strong>：让 LVGL 使用系统 malloc，这样 LVGL 的大块分配会自动走 PSRAM（8MB）：</p>
+<pre><code class="highlight ini"><span class="attr">CONFIG_LV_USE_CLIB_MALLOC</span>=y           <span class="comment"># LVGL 使用系统 malloc</span>
+<span class="attr">CONFIG_SPIRAM_MALLOC_ALWAYSINTERNAL</span>=<span class="number">4096</span>  <span class="comment"># 4KB 以上分配走 PSRAM</span></code></pre>
+
+<h3 id="10-5-帧率优化"><a href="#10-5-帧率优化" class="headerlink" title="10.5 帧率优化"></a>10.5 帧率优化</h3><p>最终的性能参数：</p>
+<pre><code class="highlight ini"><span class="attr">CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ</span>=<span class="number">240</span>     <span class="comment"># CPU 频率拉满</span>
+<span class="attr">CONFIG_LV_DEF_REFR_PERIOD</span>=<span class="number">33</span>            <span class="comment"># LVGL 刷新周期 33ms (30fps)</span></code></pre>
+
+<pre><code class="highlight c"><span class="meta">#<span class="keyword">define</span> LVGL_TASK_MIN_DELAY_MS 20       <span class="comment">// LVGL 任务最小延迟</span></span></code></pre>
+
+<p>频谱动画在 30fps 下表现流畅，柱状图的上升响应及时，下降衰减自然。</p>
+<hr>
+<h2 id="十一、Web-管理面板"><a href="#十一、Web-管理面板" class="headerlink" title="十一、Web 管理面板"></a>十一、Web 管理面板</h2><p>在 Mac 浏览器上可以打开 <code>http://localhost:8849/dashboard</code> 查看：</p>
+<ul>
+<li><strong>服务器状态</strong> — 运行时间、API 调用次数</li>
+<li><strong>ESP32 设备状态</strong> — 最后心跳时间、IP 地址、WiFi 信号强度</li>
+<li><strong>AI 用量</strong> — Cursor&#x2F;DeepSeek 的配额和使用量</li>
+<li><strong>天气信息</strong> — 当前天气和预报</li>
+<li><strong>WiFi 配置</strong> — 可以远程配置 ESP32 的 WiFi 连接</li>
+</ul>
+<p>管理面板使用暗色主题，每 5 分钟自动刷新数据。</p>
+<hr>
+<h2 id="十二、最终效果与项目结构"><a href="#十二、最终效果与项目结构" class="headerlink" title="十二、最终效果与项目结构"></a>十二、最终效果与项目结构</h2><h3 id="项目文件结构"><a href="#项目文件结构" class="headerlink" title="项目文件结构"></a>项目文件结构</h3><pre><code class="highlight plaintext">esp32-agent/
+├── firmware/                    # ESP32 固件
+│   ├── main/
+│   │   ├── main.c              # 主入口：LCD/LVGL/Touch 初始化、旋转、DMA
+│   │   ├── wifi_manager.c/h    # WPA2-Enterprise WiFi 管理
+│   │   ├── data_client.c/h     # HTTP 数据轮询客户端
+│   │   ├── ws_client.c/h       # WebSocket 频谱客户端
+│   │   ├── ui_manager.c/h      # 5 页 UI 管理、翻页手势
+│   │   ├── ui_clock.c/h        # 翻页时钟 + 农历
+│   │   ├── ui_weather.c/h      # 天气页 + QWeather 图标
+│   │   ├── ui_spectrum.c/h     # 32 频段频谱可视化
+│   │   ├── ui_dashboard.c/h    # AI 用量环形图
+│   │   ├── ui_fonts.c/h        # 字体管理（回退链）
+│   │   ├── ui_icons.c/h        # QWeather 图标映射
+│   │   ├── lunar_cal.c/h       # 公历→农历转换
+│   │   ├── font_noto_sc_16.c   # 中文字体 16px
+│   │   ├── font_noto_sc_14.c   # 中文字体 14px
+│   │   ├── font_qweather_24.c  # 天气图标字体 24px
+│   │   └── user_config.h       # 硬件引脚和分辨率配置
+│   ├── sdkconfig               # ESP-IDF 配置
+│   └── CMakeLists.txt
+├── mac-server/                  # Mac 服务端
+│   ├── server.py               # FastAPI 入口
+│   ├── config.yaml             # 服务配置
+│   ├── weather_client.py       # QWeather API
+│   ├── audio_capture.py        # macOS 音频捕获 + FFT
+│   ├── ws_spectrum.py          # WebSocket 频谱广播
+│   ├── cursor_client.py        # Cursor 用量查询
+│   ├── deepseek_client.py      # DeepSeek 余额查询
+│   ├── static/dashboard.html   # Web 管理面板
+│   └── requirements.txt
+└── lvgl-simulator/              # 桌面 LVGL 模拟器（开发用）</code></pre>
+
+<h3 id="五个页面"><a href="#五个页面" class="headerlink" title="五个页面"></a>五个页面</h3><table>
+<thead>
+<tr>
+<th>页面</th>
+<th>内容</th>
+<th>数据来源</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Clock</td>
+<td>翻页时钟 + 日期 + 星期 + 农历</td>
+<td>本地 RTC（NTP 同步）</td>
+</tr>
+<tr>
+<td>Weather</td>
+<td>天气图标 + 温度 + 湿度 + 风力</td>
+<td>QWeather API via Mac-Server</td>
+</tr>
+<tr>
+<td>Forecast</td>
+<td>5 日天气预报</td>
+<td>QWeather API via Mac-Server</td>
+</tr>
+<tr>
+<td>Spectrum</td>
+<td>32 频段实时音频频谱</td>
+<td>macOS 音频 via WebSocket</td>
+</tr>
+<tr>
+<td>Dashboard</td>
+<td>Cursor&#x2F;DeepSeek API 用量</td>
+<td>Cursor&#x2F;DeepSeek API via Mac-Server</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="十三、踩坑总结与经验"><a href="#十三、踩坑总结与经验" class="headerlink" title="十三、踩坑总结与经验"></a>十三、踩坑总结与经验</h2><h3 id="硬件相关"><a href="#硬件相关" class="headerlink" title="硬件相关"></a>硬件相关</h3><ol>
+<li><p><strong>AXS15231B + QSPI 不支持硬件旋转</strong>：这是最大的坑，浪费了一整天。如果你的应用对帧率要求高，选板子时一定要确认屏幕控制器在你使用的接口模式下是否支持 <code>swap_xy</code>。</p>
+</li>
+<li><p><strong>PSRAM 是救命稻草</strong>：8MB PSRAM 让很多内存紧张的问题迎刃而解，但要注意 DMA 不能直接从 PSRAM 读数据（需要先 memcpy 到内部 RAM）。</p>
+</li>
+<li><p><strong>串口和 USB 是两回事</strong>：ESP32-S3 的 UART（GPIO 44&#x2F;43）和 USB Serial&#x2F;JTAG 是两个不同的控制台通道，配置不对会看不到应用日志。</p>
+</li>
+</ol>
+<h3 id="LVGL-相关"><a href="#LVGL-相关" class="headerlink" title="LVGL 相关"></a>LVGL 相关</h3><ol start="4">
+<li><p><strong>v8 → v9 迁移要仔细</strong>：API 变化很大，特别是 display 和 draw buffer 的初始化方式。</p>
+</li>
+<li><p><strong>避免使用 Canvas 和阴影</strong>：在资源受限的嵌入式设备上，这两个特性是性能杀手。</p>
+</li>
+<li><p><strong>字体 fallback 需要可写副本</strong>：<code>const</code> 字体描述符存在 Flash 中，不能直接修改 <code>fallback</code> 指针。</p>
+</li>
+<li><p><strong>让 LVGL 使用系统 malloc</strong>：<code>CONFIG_LV_USE_CLIB_MALLOC=y</code> 配合 PSRAM，比 LVGL 内置堆灵活得多。</p>
+</li>
+</ol>
+<h3 id="网络相关"><a href="#网络相关" class="headerlink" title="网络相关"></a>网络相关</h3><ol start="8">
+<li><p><strong>WPA2-Enterprise 很吃内存</strong>：mbedTLS 的 TLS 握手需要大量临时内存，要调小缓冲区并启用动态分配。</p>
+</li>
+<li><p><strong>WebSocket 用二进制协议</strong>：JSON 解析在 ESP32 上开销不小，对于高频实时数据（如频谱），二进制协议是更好的选择。</p>
+</li>
+<li><p><strong>macOS 音频录制权限</strong>：<code>catap</code> 需要在”系统设置→隐私与安全→屏幕与系统音频录制”中授权运行它的终端应用。</p>
+</li>
+</ol>
+<h3 id="调试技巧"><a href="#调试技巧" class="headerlink" title="调试技巧"></a>调试技巧</h3><ol start="11">
+<li><strong>先在模拟器上开发 UI</strong>：可以节省大量烧录时间。</li>
+<li><strong>用 <code>idf.py monitor</code> 看日志</strong>：但注意要配对正确的控制台通道。</li>
+<li><strong>善用 FreeRTOS Task Watchdog</strong>：它能帮你发现阻塞问题，但超时时间别设太短。</li>
+</ol>
+<hr>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>从公众号看到别人的作品，到自己动手做出一个功能完整的桌面智能仪表盘，整个过程比预想的复杂得多。最终的成品虽然谈不上完美（帧率还可以更高、UI 还可以更精致），但每次看到桌上的小屏幕实时跳动着音乐频谱、显示着天气和时间，都觉得这几天的折腾是值得的。</p>
+<p>这个项目的所有代码都在 <code>esp32-agent</code> 目录下，包括固件、服务端和模拟器。如果你也有一块类似的 ESP32 开发板，希望这篇文章能帮你少踩一些坑。</p>
+<hr>
+<p><em>技术栈：ESP-IDF v5.5.3 &#x2F; LVGL v9.5.0 &#x2F; FastAPI &#x2F; catap &#x2F; QWeather API</em><br><em>硬件：Waveshare ESP32-S3-Touch-LCD-3.49</em></p>
+
+            </div>
+          
+
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/blog/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/">嵌入式开发</a>
+		  
+			<a href="/blog/tags/DIY/">DIY</a>
+		  
+		</div>
+		
+
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/blog/posts/ea42aebb.html">
+        <span class="next-text nav-default">英国摇滚乐队 平克·弗洛伊德（Pink Floyd）</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+        
+  <div class="comments" id="comments">
+    
+      <div id="waline"></div>
+    
+  </div>
+
+
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2015 -
+    
+    2026
+    <span class="footer-author">opnext.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> and <a class="theme-link" target="_blank" rel="noopener" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+    </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
+<script type="module">
+  import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  init({
+    el: '#waline',
+    serverURL: 'https://waline.opqnext.com',
+    path: window.location.pathname,
+    lang: 'zh-CN',
+  });
+</script>
+
+
+    
+
+
+
+
+  
+    <script type="text/javascript" src="/blog/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+
+    <script type="text/javascript" src="/blog/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/blog/js/src/bootstrap.js?v=1.1"></script>
+
+  </body>
+</html>
