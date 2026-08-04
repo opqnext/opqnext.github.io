@@ -1,0 +1,141 @@
+{
+  "updated_at": "2026-08-04T18:29:28+08:00",
+  "albums": [
+    {
+      "id": 428503,
+      "name": "The Dark Side of the Moon",
+      "cover": "https://p1.music.126.net/VedZWmCq-USwDJknsWVlbw==/109951172026965929.jpg",
+      "artist": "Pink Floyd",
+      "publish_date": "1973-03-01",
+      "url": "https://music.163.com/#/album?id=428503"
+    },
+    {
+      "id": 428476,
+      "name": "The Wall",
+      "cover": "https://p2.music.126.net/u7Rbmtuu_U_CMXLqfNYi4A==/109951172027025814.jpg",
+      "artist": "Pink Floyd",
+      "publish_date": "1979-11-30",
+      "url": "https://music.163.com/#/album?id=428476"
+    },
+    {
+      "id": 21092,
+      "name": "天堂之花",
+      "cover": "https://p1.music.126.net/yfhZZFgTOqBtJ372_ZfGzg==/1408474397894968.jpg",
+      "artist": "宝罗",
+      "publish_date": "1998-08-21",
+      "url": "https://music.163.com/#/album?id=21092"
+    },
+    {
+      "id": 38306,
+      "name": "万能青年旅店 同名专辑",
+      "cover": "https://p1.music.126.net/W1kczDCB4-r-uNAznD1ljg==/108851651165850.jpg",
+      "artist": "万能青年旅店",
+      "publish_date": "2010-11-12",
+      "url": "https://music.163.com/#/album?id=38306"
+    },
+    {
+      "id": 136196162,
+      "name": "上西天",
+      "cover": "https://p2.music.126.net/wfHNPaCsVXmguoONwwAQYQ==/109951170151732063.jpg",
+      "artist": "朱芳琼",
+      "publish_date": "2011-06-11",
+      "url": "https://music.163.com/#/album?id=136196162"
+    },
+    {
+      "id": 2270080,
+      "name": "此时此刻",
+      "cover": "https://p1.music.126.net/v0kFX0jaRLHHQcZHkpFFLQ==/109951166562841180.jpg",
+      "artist": "许巍",
+      "publish_date": "2012-12-10",
+      "url": "https://music.163.com/#/album?id=2270080"
+    },
+    {
+      "id": 36538,
+      "name": "他在时间门外",
+      "cover": "https://p2.music.126.net/BmZvZjwltvf6iz2pRNgtWA==/109951165497836417.jpg",
+      "artist": "哪吒乐队",
+      "publish_date": "2012-12-20",
+      "url": "https://music.163.com/#/album?id=36538"
+    },
+    {
+      "id": 2893001,
+      "name": "幻象波普星",
+      "cover": "https://p1.music.126.net/I4gc1-zZGimqPBsPD-GaIQ==/109951172945801085.jpg",
+      "artist": "刺猬",
+      "publish_date": "2014-04-20",
+      "url": "https://music.163.com/#/album?id=2893001"
+    },
+    {
+      "id": 35188253,
+      "name": "正大光明",
+      "cover": "https://p1.music.126.net/7yBopk9QV_ZRK1rAJ7Mafw==/109951172945800149.jpg",
+      "artist": "废墟乐队",
+      "publish_date": "2017-02-01",
+      "url": "https://music.163.com/#/album?id=35188253"
+    },
+    {
+      "id": 35120980,
+      "name": "Visuals",
+      "cover": "https://p1.music.126.net/lpX7fWEgqlKanwgMzFlDCg==/18569651883238220.jpg",
+      "artist": "Mew",
+      "publish_date": "2017-04-28",
+      "url": "https://music.163.com/#/album?id=35120980"
+    },
+    {
+      "id": 78809447,
+      "name": "In the End",
+      "cover": "https://p2.music.126.net/FLg-ePGetDLWs58nrBbKtA==/109951164031278533.jpg",
+      "artist": "The Cranberries",
+      "publish_date": "2019-04-26",
+      "url": "https://music.163.com/#/album?id=78809447"
+    },
+    {
+      "id": 92098050,
+      "name": "再次来临 自选辑",
+      "cover": "https://p1.music.126.net/GpAltg8gXBlNRsCj7zFuHA==/109951165121450255.jpg",
+      "artist": "谢天笑",
+      "publish_date": "2020-07-15",
+      "url": "https://music.163.com/#/album?id=92098050"
+    },
+    {
+      "id": 120605500,
+      "name": "冀西南林路行",
+      "cover": "https://p2.music.126.net/aEehIWg8Qk5DXLGf0XZHqw==/109951166554891221.jpg",
+      "artist": "万能青年旅店",
+      "publish_date": "2020-12-22",
+      "url": "https://music.163.com/#/album?id=120605500"
+    },
+    {
+      "id": 126677649,
+      "name": "劳动之余",
+      "cover": "https://p1.music.126.net/wwI2HhxuxW4-RlZph9BiWw==/109951165930841290.jpg",
+      "artist": "声音玩具",
+      "publish_date": "2021-05-01",
+      "url": "https://music.163.com/#/album?id=126677649"
+    },
+    {
+      "id": 127969622,
+      "name": "《昔日我曾苍老》二十周年精选集",
+      "cover": "https://p1.music.126.net/PAtjiHlMRbx5V-B16bx7nQ==/109951166032565536.jpg",
+      "artist": "声音碎片乐队",
+      "publish_date": "2021-05-28",
+      "url": "https://music.163.com/#/album?id=127969622"
+    },
+    {
+      "id": 149430776,
+      "name": "有限身 无穷念",
+      "cover": "https://p1.music.126.net/BAG-5AbK1fqvIC4NAVw-rg==/109951172952620145.jpg",
+      "artist": "声音碎片乐队",
+      "publish_date": "2022-08-10",
+      "url": "https://music.163.com/#/album?id=149430776"
+    },
+    {
+      "id": 255681776,
+      "name": "情人该有的慈悲",
+      "cover": "https://p2.music.126.net/9wR7VR9T7DzuBV-gHN2mog==/109951170216750730.jpg",
+      "artist": "周传雄",
+      "publish_date": "2024-12-05",
+      "url": "https://music.163.com/#/album?id=255681776"
+    }
+  ]
+}
