@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-04T18:29:28+08:00",
+  "updated_at": "2026-08-06T17:47:16+08:00",
   "albums": [
     {
       "id": 428503,
@@ -16,6 +16,14 @@
       "artist": "Pink Floyd",
       "publish_date": "1979-11-30",
       "url": "https://music.163.com/#/album?id=428476"
+    },
+    {
+      "id": 134727313,
+      "name": "Pulse (Live)",
+      "cover": "https://p2.music.126.net/WMk3EWh8f3HSGPq1Qa2ZnA==/109951172026967946.jpg",
+      "artist": "Pink Floyd",
+      "publish_date": "1995-05-29",
+      "url": "https://music.163.com/#/album?id=134727313"
     },
     {
       "id": 21092,
