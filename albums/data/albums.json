@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-06T17:47:16+08:00",
+  "updated_at": "2026-08-13T19:16:42+08:00",
   "albums": [
     {
       "id": 428503,
@@ -16,6 +16,14 @@
       "artist": "Pink Floyd",
       "publish_date": "1979-11-30",
       "url": "https://music.163.com/#/album?id=428476"
+    },
+    {
+      "id": 1967983,
+      "name": "MTV Unplugged In New York",
+      "cover": "https://p1.music.126.net/aq_tCGNRN2k9LtkGijccqg==/109951165134113158.jpg",
+      "artist": "Nirvana",
+      "publish_date": "1994-11-01",
+      "url": "https://music.163.com/#/album?id=1967983"
     },
     {
       "id": 134727313,
